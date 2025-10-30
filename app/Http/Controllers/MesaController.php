@@ -3,17 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Events\MesaCerrada;
+use App\Models\Inscripcion;
 use App\Models\Jornada;
 use App\Models\JornadaApartado;
 use App\Models\Mesa;
 use App\Services\DescargaImagenRemota;
+use Carbon\CarbonInterface;
+use DateTimeInterface;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 final class MesaController extends Controller
@@ -35,8 +42,6 @@ final class MesaController extends Controller
             ->orderByDesc('id')
             ->first();
 
-        $hasOpenEnroll = Schema::hasColumn('mesas', 'inscripciones_abren_at');
-
         // Incluir FKs/fechas usadas en vistas y helpers
         $select = [
             'id',
@@ -53,7 +58,7 @@ final class MesaController extends Controller
             'created_by',
             'manager_id',
         ];
-        if ($hasOpenEnroll) {
+        if (Mesa::hasOpenEnrollmentColumn()) {
             $select[] = 'inscripciones_abren_at';
         }
 
@@ -77,9 +82,15 @@ final class MesaController extends Controller
             ->paginate($perPage)
             ->withQueryString();
 
+        $indexData = $this->buildMesaIndexPayload($tables, $jornada, $r);
+
         return view('mesas.index', [
             'tables' => $tables,
             'jornada' => $jornada,
+            'sinApartadoCards' => $indexData['sinApartado'],
+            'porApartadoCards' => $indexData['porApartado'],
+            'hasTables' => $indexData['hasTables'],
+            'isGuest' => $indexData['isGuest'],
         ]);
     }
 
@@ -94,7 +105,10 @@ final class MesaController extends Controller
                         $cols[] = $c;
                     }
                 }
-            } catch (\Throwable) {
+            } catch (\Throwable $e) {
+                Log::warning('No se pudieron inspeccionar columnas telefónicas en usuarios.', [
+                    'exception' => $e,
+                ]);
             }
             return array_values(array_unique($cols));
         });
@@ -141,7 +155,7 @@ final class MesaController extends Controller
             return back()->with('error', 'No hay una jornada abierta.')->withInput();
         }
 
-        $hasOpenEnroll = Schema::hasColumn('mesas', 'inscripciones_abren_at');
+        $hasOpenEnroll = Mesa::hasOpenEnrollmentColumn();
 
         $rules = [
             'title' => ['required', 'string', 'max:120'],
@@ -295,7 +309,7 @@ final class MesaController extends Controller
         $u = $request->user();
         $esAdminMod = method_exists($u, 'hasAnyRole') ? $u->hasAnyRole(['admin', 'moderator']) : false;
         $esManager = (int) $u->id === (int) ($mesa->manager_id ?? 0);
-        $hasOpenEnroll = Schema::hasColumn('mesas', 'inscripciones_abren_at');
+        $hasOpenEnroll = Mesa::hasOpenEnrollmentColumn();
 
         if ($esAdminMod) {
             $rules = [
@@ -541,6 +555,244 @@ final class MesaController extends Controller
     }
 
     /* ===================== helpers privados ===================== */
+
+    /**
+     * @param  \Illuminate\Contracts\Pagination\LengthAwarePaginator|\Illuminate\Contracts\Pagination\Paginator|\Illuminate\Database\Eloquent\Collection|Collection  $tables
+     * @return array{sinApartado: array<int, array>, porApartado: array<int, array{title:string, titleUpper:string, cards:array<int, array>}>, hasTables: bool, isGuest: bool}
+     */
+    private function buildMesaIndexPayload($tables, ?Jornada $jornada, Request $request): array
+    {
+        $collection = method_exists($tables, 'getCollection')
+            ? $tables->getCollection()
+            : collect($tables ?? []);
+
+        if (!$collection instanceof Collection) {
+            $collection = collect($collection);
+        }
+
+        $user = $request->user();
+        $displayTz = config('app.display_timezone', config('app.timezone', 'America/Argentina/La_Rioja'));
+
+        $soyManagerEnJornada = false;
+        $misMesaIds = [];
+        $misApartados = [];
+
+        if ($user && $jornada) {
+            $soyManagerEnJornada = Mesa::query()
+                ->where('jornada_id', $jornada->id)
+                ->where('manager_id', $user->id)
+                ->exists();
+
+            $rows = Inscripcion::query()
+                ->join('mesas as mm', 'mm.id', '=', 'inscripciones.mesa_id')
+                ->where('inscripciones.user_id', $user->id)
+                ->where('inscripciones.is_waiting', false)
+                ->where('mm.jornada_id', $jornada->id)
+                ->get(['inscripciones.mesa_id', 'mm.jornada_apartado_id']);
+
+            $misMesaIds = $rows->pluck('mesa_id')->map(fn($id) => (int) $id)->all();
+            $misApartados = $rows->map(function ($r) {
+                return is_null($r->jornada_apartado_id) ? 'null' : (string) $r->jornada_apartado_id;
+            })->unique()->values()->all();
+        }
+
+        $sinApartado = [];
+        $porApartado = [];
+
+        foreach ($collection as $mesa) {
+            if (!$mesa instanceof Mesa) {
+                continue;
+            }
+
+            $card = $this->makeMesaCardData(
+                $mesa,
+                $soyManagerEnJornada,
+                $misMesaIds,
+                $misApartados,
+                $displayTz,
+                $user !== null
+            );
+
+            if ($card['apartadoTitle'] === '') {
+                $sinApartado[] = $card;
+            } else {
+                $porApartado[$card['apartadoTitle']][] = $card;
+            }
+        }
+
+        $groupedApartados = [];
+        if (!empty($porApartado)) {
+            ksort($porApartado, \SORT_NATURAL | \SORT_FLAG_CASE);
+            foreach ($porApartado as $title => $cards) {
+                $groupedApartados[] = [
+                    'title' => $title,
+                    'titleUpper' => $this->toUpper($title),
+                    'cards' => $cards,
+                ];
+            }
+        }
+
+        return [
+            'sinApartado' => $sinApartado,
+            'porApartado' => $groupedApartados,
+            'hasTables' => $collection->count() > 0,
+            'isGuest' => $user === null,
+        ];
+    }
+
+    /**
+     * @param  int[]        $misMesaIds
+     * @param  list<string> $misApartados
+     * @return array{
+     *     mesaId:int,
+     *     title:string,
+     *     image:?string,
+     *     showUrl:string,
+     *     signupUrl:?string,
+     *     apartadoTitle:string,
+     *     isOpen:bool,
+     *     capacity:int,
+     *     isFull:bool,
+     *     singleVote:bool,
+     *     opensAtLabel:?string,
+     *     countdown:array{visible:bool, iso:?string, label:?string, timestamp:?int},
+     *     button:array{show:bool, disabled:bool, title:string, label:string, autoActivateAt:?int, selfEnrolled:bool}
+     * }
+     */
+    private function makeMesaCardData(
+        Mesa $mesa,
+        bool $soyManagerEnJornada,
+        array $misMesaIds,
+        array $misApartados,
+        string $displayTz,
+        bool $userLoggedIn
+    ): array {
+        $image = method_exists($mesa, 'getImageSrcAttribute')
+            ? $mesa->image_src
+            : ($mesa->image_path
+                ? asset('storage/' . ltrim($mesa->image_path, '/'))
+                : ($mesa->image_url ?? null));
+
+        $apartadoTitle = trim((string) optional($mesa->apartado)->titulo);
+        $isOpen = method_exists($mesa, 'isEffectivelyOpen') ? (bool) $mesa->isEffectivelyOpen() : (bool) ($mesa->is_open ?? false);
+        $capacity = (int) ($mesa->capacity ?? 0);
+
+        $aperturaBase = $mesa->inscripciones_abren_at ?? $mesa->opens_at;
+        $aperturaLocal = $this->toDisplayCarbon($aperturaBase, $displayTz);
+        $opensTimestamp = $aperturaLocal ? $aperturaLocal->copy()->utc()->getTimestampMs() : null;
+        $yaAbre = $aperturaLocal ? Carbon::now($displayTz)->greaterThanOrEqualTo($aperturaLocal) : true;
+
+        $effectiveCapacity = method_exists($mesa, 'capacidadEfectiva')
+            ? (int) $mesa->capacidadEfectiva()
+            : max(0, $capacity - ((bool) ($mesa->manager_counts_as_player ?? false) ? 1 : 0));
+
+        $confirmadas = $mesa->confirmadas_count ?? null;
+        $confirmadasInt = is_numeric($confirmadas) ? (int) $confirmadas : -1;
+        $estaLlena = $confirmadasInt >= 0 ? $confirmadasInt >= $effectiveCapacity : false;
+
+        $apartadoKey = is_null($mesa->jornada_apartado_id) ? 'null' : (string) $mesa->jornada_apartado_id;
+
+        $yoEnEsta = in_array((int) $mesa->id, $misMesaIds, true);
+        $yaEnApartado = !$yoEnEsta && in_array($apartadoKey, $misApartados, true);
+
+        $bloqueoHorario = $aperturaLocal !== null && !$yaAbre;
+        $bloqueoOtraMesa = $yaEnApartado;
+        $bloqueoLlena = $estaLlena;
+        $disabled = $bloqueoHorario || $bloqueoOtraMesa || $bloqueoLlena;
+
+        $buttonTitle = $bloqueoLlena
+            ? 'Mesa llena'
+            : ($bloqueoOtraMesa
+                ? 'Ya estás inscripto en otra mesa de este turno'
+                : ($bloqueoHorario
+                    ? 'Disponible: ' . ($aperturaLocal ? $aperturaLocal->isoFormat('DD/MM/YYYY HH:mm') : '')
+                    : ($yoEnEsta ? 'Ya estás inscripto en esta mesa' : 'Inscribirme')));
+
+        $buttonLabel = $yoEnEsta
+            ? 'Ya estás inscripto'
+            : ($bloqueoLlena
+                ? 'Mesa llena'
+                : ($bloqueoOtraMesa
+                    ? 'Ya estás inscripto en otra mesa de este turno'
+                    : ($bloqueoHorario ? 'Abre pronto' : 'Inscribirme')));
+
+        $routeShow = Route::has('mesas.show') ? route('mesas.show', $mesa) : '#';
+        $routeSignup = null;
+        if (Route::has('mesas.signup')) {
+            $routeSignup = route('mesas.signup', $mesa);
+        } elseif (Route::has('inscripciones.store')) {
+            $routeSignup = route('inscripciones.store', $mesa);
+        }
+
+        $opensAtLabel = $this->toDisplayCarbon($mesa->opens_at, $displayTz)?->format('d/m H:i');
+
+        return [
+            'mesaId' => (int) $mesa->id,
+            'title' => (string) $mesa->title,
+            'image' => $image,
+            'showUrl' => $routeShow,
+            'signupUrl' => $routeSignup,
+            'apartadoTitle' => $apartadoTitle,
+            'isOpen' => $isOpen,
+            'capacity' => $capacity,
+            'isFull' => $estaLlena,
+            'singleVote' => !empty($mesa->single_vote),
+            'opensAtLabel' => $opensAtLabel,
+            'countdown' => [
+                'visible' => $aperturaLocal !== null,
+                'iso' => $aperturaLocal?->toAtomString(),
+                'label' => $aperturaLocal?->format('Y-m-d H:i'),
+                'timestamp' => $opensTimestamp,
+            ],
+            'button' => [
+                'show' => $routeSignup !== null && !$soyManagerEnJornada && $userLoggedIn,
+                'disabled' => $disabled || $yoEnEsta,
+                'title' => $buttonTitle,
+                'label' => $buttonLabel,
+                'autoActivateAt' => (!$bloqueoLlena && !$bloqueoOtraMesa && $bloqueoHorario) ? $opensTimestamp : null,
+                'selfEnrolled' => $yoEnEsta,
+            ],
+        ];
+    }
+
+    private function toDisplayCarbon($value, string $tz): ?Carbon
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        if ($value instanceof CarbonInterface) {
+            return $value->copy()->setTimezone($tz);
+        }
+
+        if ($value instanceof DateTimeInterface) {
+            return Carbon::instance($value)->setTimezone($tz);
+        }
+
+        if (is_string($value) && trim($value) !== '') {
+            try {
+                return Carbon::parse($value, $tz);
+            } catch (\Throwable $e) {
+                Log::debug('No se pudo parsear la fecha de apertura de mesa.', [
+                    'value' => $value,
+                    'exception' => $e,
+                ]);
+            }
+        }
+
+        return null;
+    }
+
+    private function toUpper(string $value): string
+    {
+        if ($value === '') {
+            return '';
+        }
+
+        return function_exists('mb_strtoupper')
+            ? mb_strtoupper($value, 'UTF-8')
+            : strtoupper($value);
+    }
 
     private function capacidadEfectiva(Mesa $m): int
     {
