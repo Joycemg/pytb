@@ -21,6 +21,7 @@
               <tr>
                 <th>Título</th>
                 <th>Autor</th>
+                <th>Estilo</th>
                 <th>Publicado</th>
                 <th class="text-right">Acciones</th>
               </tr>
@@ -32,6 +33,15 @@
                     <a href="{{ route('blog.show', ['post' => $post->slug]) }}" target="_blank" rel="noopener">{{ $post->title }}</a>
                   </td>
                   <td>{{ $post->author->name ?? '—' }}</td>
+                  <td>
+                    @php
+                      $theme = $post->theme ?? config('blog.default_theme', 'classic');
+                      $themes = (array) config('blog.themes', []);
+                      $label = $themes[$theme]['label'] ?? ucfirst($theme);
+                      $accent = $post->accent_color ?? ($themes[$theme]['accent'] ?? config('blog.default_accent'));
+                    @endphp
+                    <span class="blog-manage-theme" style="--accent-color: {{ $accent }}">{{ $label }}</span>
+                  </td>
                   <td>
                     @if ($post->published_at)
                       {{ $post->published_at->timezone(config('app.timezone', 'UTC'))->format('d/m/Y H:i') }}

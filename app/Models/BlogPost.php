@@ -20,6 +20,11 @@ final class BlogPost extends Model
         'slug',
         'excerpt',
         'content',
+        'theme',
+        'accent_color',
+        'accent_text_color',
+        'hero_image_url',
+        'hero_image_caption',
         'published_at',
     ];
 
