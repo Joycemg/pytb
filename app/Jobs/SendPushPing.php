@@ -13,26 +13,20 @@ use Illuminate\Support\Collection;
 
 final class SendPushPing implements ShouldQueue
 {
-    use Dispatchable;
-    use InteractsWithQueue;
-    use Queueable;
-    use SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Tamaño del lote a procesar.
-     */
+    /** Tamaño del lote a procesar. */
     public static int $chunkSize = 100;
-
-    /**
-     * Cola dedicada para los envíos Web Push.
-     */
-    public string $queue = 'webpush';
 
     /**
      * @param  array<int, int|string>  $subscriptionIds
      */
     public function __construct(public array $subscriptionIds)
     {
+        // Fijá la cola aquí (provisto por el trait Queueable)
+        $this->onQueue('webpush');
+        // o, equivalente:
+        // $this->queue = 'webpush';
     }
 
     public function handle(WebPushSender $sender): void
