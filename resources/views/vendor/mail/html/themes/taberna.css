@@ -1,0 +1,220 @@
+/* === THEME: La Taberna ===
+   Paleta:
+   bg:    #F5E9DF
+   ink:   #2B2A28
+   panel: #FFF7EE
+   line:  #E9D8C9
+   brand: #8C2E2E
+   accent:#C9A66B
+   muted: #7C6F63
+*/
+
+body,
+body *:not(html):not(style):not(br):not(tr):not(code) {
+    box-sizing: border-box;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif !important;
+}
+
+body {
+    background-color: #F5E9DF !important;
+    color: #2B2A28 !important;
+    -webkit-text-size-adjust: none;
+}
+
+.wrapper {
+    width: 100% !important;
+    background-color: #F5E9DF !important;
+}
+
+.content {
+    width: 100%;
+}
+
+/* Header con marca */
+.header {
+    padding: 24px 0;
+    text-align: center;
+}
+
+.header a {
+    color: #8C2E2E !important;
+    text-decoration: none !important;
+    font-weight: 700;
+}
+
+/* “Tarjeta” interna */
+.body {
+    background-color: #F5E9DF !important;
+    width: 100%;
+}
+
+/* Espaciado interno más cómodo */
+.inner-body {
+    width: 570px;
+    margin: 0 auto;
+    background-color: #FFF7EE !important;
+    border: 1px solid #E9D8C9 !important;
+    padding: 32px 40px !important;
+    /* ↑ Aumentamos espacio interno */
+}
+
+/* Separación entre secciones */
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+blockquote,
+table {
+    margin-top: 0;
+    margin-bottom: 1rem !important;
+}
+
+/* Botón con más aire */
+.table .button,
+.button {
+    margin: 1.2rem 0 !important;
+}
+
+/* Footer un poco más separado del contenido */
+.footer {
+    padding: 24px 0 40px !important;
+}
+
+/* Tipografía */
+h1,
+h2,
+h3 {
+    color: #2B2A28 !important;
+}
+
+h1 {
+    font-size: 24px;
+    font-weight: 800;
+    margin-top: 0;
+}
+
+h2 {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+p,
+ul,
+ol,
+blockquote {
+    color: #2B2A28 !important;
+    line-height: 1.5;
+}
+
+p.sub {
+    color: #7C6F63 !important;
+    font-size: 13px;
+}
+
+/* Links */
+a {
+    color: #8C2E2E !important;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline !important;
+}
+
+/* Botón principal (cuadrado, marca) */
+.button {
+    background-color: #8C2E2E !important;
+    border: 2px solid #8C2E2E !important;
+    color: #fff !important;
+    font-weight: 700 !important;
+    border-radius: 0 !important;
+    text-decoration: none !important;
+}
+
+.button:hover {
+    filter: brightness(.96);
+}
+
+/* “Ghost/line” por si lo usás como secundario */
+.button.secondary {
+    background-color: transparent !important;
+    color: #8C2E2E !important;
+    border-color: #8C2E2E !important;
+}
+
+/* Paneles / tablas / código */
+.table table td,
+.panel {
+    background-color: #FFF7EE !important;
+    border: 1px solid #E9D8C9 !important;
+}
+
+.table th {
+    color: #2B2A28 !important;
+    border-bottom: 1px solid #E9D8C9 !important;
+}
+
+.code,
+pre {
+    background-color: #FFF7EE !important;
+    border: 1px solid #E9D8C9 !important;
+    color: #2B2A28 !important;
+}
+
+/* Footer */
+.footer {
+    width: 570px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 16px 0 32px;
+}
+
+.footer p {
+    color: #7C6F63 !important;
+}
+
+/* Dark mode seguro */
+@media (prefers-color-scheme: dark) {
+
+    body,
+    .wrapper,
+    .body {
+        background-color: #221F1C !important;
+    }
+
+    .inner-body,
+    .panel,
+    .code,
+    pre {
+        background-color: #2B2824 !important;
+    }
+
+    h1,
+    h2,
+    h3,
+    p,
+    li,
+    td {
+        color: #F5E9DF !important;
+    }
+
+    .footer p {
+        color: #C2B7AC !important;
+    }
+
+    .table th {
+        color: #F5E9DF !important;
+        border-color: #6c5f53 !important;
+    }
+
+    .button {
+        background-color: #8C2E2E !important;
+        color: #fff !important;
+    }
+
+    a {
+        color: #E5B3B3 !important;
+    }
+}

@@ -1,0 +1,10 @@
+/* resources/css/tokens.css */
+:root{
+  --bg:#F5E9DF;
+  --ink:#2B2A28;
+  --panel:#FFF7EE;
+  --line:#E9D8C9;
+  --brand:#8C2E2E;
+  --accent:#C9A66B;
+  --muted:#7C6F63;
+}

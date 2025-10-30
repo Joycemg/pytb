@@ -1,0 +1,1 @@
+Colocá tu logo como 'public/images/logo.png' para que aparezca en el header.

@@ -1,0 +1,11 @@
+/* Sólo utilidades de barra para no pisar header.css */
+.nav {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.grow {
+    flex: 1;
+}

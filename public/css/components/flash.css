@@ -1,0 +1,23 @@
+/* resources/css/components/flash.css */
+
+.flash {
+    padding: .7rem .9rem;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--ink);
+}
+
+.flash.warn,
+.flash-warn {
+    border-color: #e0b4b4;
+    background: #fff;
+    color: var(--ink);
+}
+
+.flash.error,
+.flash-error {
+    border-color: #e0b4b4;
+    background: #fff;
+    color: var(--ink);
+}

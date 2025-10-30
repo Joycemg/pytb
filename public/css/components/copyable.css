@@ -1,0 +1,47 @@
+.copyable {
+    cursor: pointer;
+    border-bottom: 1px dashed rgba(0, 0, 0, .25);
+    padding-bottom: 1px;
+}
+
+.copyable.copied {
+    position: relative;
+    border-bottom-color: transparent;
+}
+
+.copyable.copied::after {
+    content: "Copiado ✓";
+    position: absolute;
+    top: -1.6rem;
+    left: 0;
+    font-size: .75rem;
+    background: #198754;
+    color: #fff;
+    padding: .1rem .4rem;
+    border-radius: .25rem;
+    white-space: nowrap;
+    transform: translateY(6px);
+    animation: pop 1.2s ease forwards;
+    pointer-events: none;
+}
+
+@keyframes pop {
+    0% {
+        opacity: 0;
+        transform: translateY(6px)
+    }
+
+    20% {
+        opacity: 1;
+        transform: translateY(0)
+    }
+
+    80% {
+        opacity: 1
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-4px)
+    }
+}

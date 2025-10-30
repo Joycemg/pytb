@@ -1,0 +1,73 @@
+/* ===== Modal de confirmación (match con diseño global claro) ===== */
+
+/* <dialog>: animación, backdrop y esquema de color forzado a claro */
+dialog#pwd-confirm {
+    border: none;
+    padding: 0;
+    width: min(92vw, 440px);
+    transform: translateY(6px);
+    opacity: 0;
+    transition: transform .16s ease-out, opacity .16s ease-out;
+    color-scheme: light;
+    /* <-- evita auto-darkening del UA */
+}
+
+dialog#pwd-confirm[open] {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+dialog#pwd-confirm::backdrop {
+    background: rgba(20, 16, 15, .45);
+    /* blur y opacidad suaves */
+    backdrop-filter: blur(2px);
+}
+
+/* Caja interna: igual que tus .card (bordes, bg, sombra) */
+dialog#pwd-confirm .card {
+    margin: 0;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--line, #e8ddd8);
+    background: var(--card, #fff);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, .10);
+    color: var(--text, #261d1a);
+    /* texto como el resto de la UI */
+}
+
+/* Título y descripción: usan tus tokens */
+#pwd-confirm-title {
+    margin: .2rem 0 .4rem;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text, #261d1a);
+}
+
+#pwd-confirm-desc {
+    margin: 0 0 .8rem;
+    color: var(--muted, #7b706b);
+    font-size: .95rem;
+}
+
+/* Campo: se apoya en tu forms.css; aseguramos ancho */
+#pwd-confirm-input {
+    width: 100%;
+}
+
+/* Acciones: usan tus botones .btn y .btn.line */
+.modal-actions {
+    display: flex;
+    gap: .5rem;
+    justify-content: flex-end;
+    margin-top: .75rem;
+}
+
+/* Si tenés reglas globales que oscurecen .card en dark-mode,
+   este refuerzo asegura que el modal se mantenga claro. */
+@media (prefers-color-scheme: dark) {
+    dialog#pwd-confirm .card {
+        background: var(--card, #fff);
+        border-color: var(--line, #e8ddd8);
+        color: var(--text, #261d1a);
+    }
+}

@@ -1,0 +1,32 @@
+/* Manager picker */
+
+.manager-picker .mgr-tools {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    margin: .25rem 0 .35rem;
+}
+
+.manager-picker .mgr-filter {
+    flex: 1;
+}
+
+.manager-picker .mgr-select {
+    width: 100%;
+}
+
+.manager-picker .mgr-hint {
+    margin-top: .25rem;
+}
+
+/* Detalle visual para <kbd> */
+.manager-picker kbd {
+    display: inline-block;
+    padding: .05rem .35rem;
+    border: 1px solid var(--line);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .85em;
+    background: #fff;
+}

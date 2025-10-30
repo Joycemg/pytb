@@ -1,0 +1,62 @@
+/* resources/css/app.css */
+
+/* ===== Tokens + base ===== */
+@import "tokens.css";
+@import "base.css";
+@import "utilities.css";
+
+/* ===== Componentes ===== */
+@import "components/badge.css";
+@import "components/buttons.css";
+@import "components/card.css";
+@import "components/chips.css";
+@import "components/copyable.css";
+@import "components/dropdown.css";
+@import "components/flash.css";
+@import "components/forms.css";
+@import "components/manager-picker.css";
+@import "components/pills.css";
+@import "components/ranking.css";
+@import "components/table.css";
+@import "components/modal.css";
+
+/* ===== Layout ===== */
+@import "layout/header.css";
+@import "layout/nav.css";
+
+/* ===== Helpers específicos del layout.blade ===== */
+
+/* footer centrado */
+.app-footer {
+    justify-content: center;
+}
+
+/* tarjeta del bloque de prueba de push */
+.push-test-card {
+    margin: 1rem 0;
+    padding: 1rem;
+    border: 1px solid var(--line, #ccc);
+    border-radius: 8px;
+    background: #fff;
+}
+
+.push-test-hint {
+    font-size: .8rem;
+    margin-top: .4rem;
+    color: var(--muted, #666);
+}
+
+/* variantes flash que usa el layout */
+.flash-warn {
+    border: 1px solid #e0b4b4;
+    background: #fff;
+    border-radius: 8px;
+    padding: .7rem .9rem;
+}
+
+.flash-error {
+    border: 1px solid #e0b4b4;
+    background: #fff;
+    border-radius: 8px;
+    padding: .7rem .9rem;
+}

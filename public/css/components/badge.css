@@ -1,0 +1,23 @@
+/* resources/css/components/badge.css */
+.badge {
+    display: inline-block;
+    min-width: 22px;
+    padding: .1rem .45rem;
+    text-align: center;
+    border-radius: 0;
+    /* cuadrado */
+    font-size: .78rem;
+    font-weight: 800;
+    color: #fff;
+    background: var(--brand);
+    line-height: 1.1;
+}
+
+.badge.warn {
+    padding: .12rem .4rem;
+    background: #a06100;
+    color: #fff;
+    font-weight: 700;
+    font-size: .72rem;
+    border-radius: 0;
+}
