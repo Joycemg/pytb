@@ -82,6 +82,7 @@ final class BlogController extends Controller
         }
 
         $post = new BlogPost();
+        $data['content'] = $this->sanitizeHtml($data['content'] ?? '');
         $post->fill($data);
         $post->user_id = (int) $request->user()->id;
         $post->published_at = $data['published_at'] ?? now();
@@ -112,6 +113,7 @@ final class BlogController extends Controller
             $data['slug'] = Str::slug($data['slug']);
         }
 
+        $data['content'] = $this->sanitizeHtml($data['content'] ?? '');
         $post->fill($data);
         if (empty($data['published_at'])) {
             if ($post->published_at === null) {
@@ -180,5 +182,254 @@ final class BlogController extends Controller
                 'size' => $upload->getSize(),
             ]);
         }
+    }
+
+    private function sanitizeHtml(?string $html): string
+    {
+        $html = (string) ($html ?? '');
+        if (trim($html) === '') {
+            return '';
+        }
+
+        $allowedTags = [
+            'a' => ['href', 'title', 'target', 'rel'],
+            'blockquote' => ['style', 'class'],
+            'br' => [],
+            'code' => ['class'],
+            'div' => ['style', 'class'],
+            'em' => ['style', 'class'],
+            'figure' => ['style', 'class'],
+            'figcaption' => ['style', 'class'],
+            'h1' => ['style', 'class'],
+            'h2' => ['style', 'class'],
+            'h3' => ['style', 'class'],
+            'h4' => ['style', 'class'],
+            'hr' => ['class'],
+            'img' => ['src', 'alt', 'title', 'style', 'class'],
+            'li' => ['style', 'class'],
+            'ol' => ['style', 'class'],
+            'p' => ['style', 'class'],
+            'pre' => ['style', 'class'],
+            'span' => ['style', 'class'],
+            'strong' => ['style', 'class'],
+            'table' => ['style', 'class'],
+            'tbody' => ['style', 'class'],
+            'td' => ['style', 'class'],
+            'th' => ['style', 'class'],
+            'thead' => ['style', 'class'],
+            'tr' => ['style', 'class'],
+            'u' => ['style', 'class'],
+            'ul' => ['style', 'class'],
+        ];
+
+        $allowedClassPrefixes = ['blog-'];
+        $allowedStyles = [
+            'background',
+            'background-color',
+            'border',
+            'border-color',
+            'border-radius',
+            'border-style',
+            'border-width',
+            'color',
+            'display',
+            'font-size',
+            'font-style',
+            'font-weight',
+            'gap',
+            'grid-template-columns',
+            'line-height',
+            'margin',
+            'margin-bottom',
+            'margin-left',
+            'margin-right',
+            'margin-top',
+            'max-width',
+            'padding',
+            'padding-bottom',
+            'padding-left',
+            'padding-right',
+            'padding-top',
+            'text-align',
+            'text-decoration',
+            'width',
+        ];
+
+        $allowedUriSchemes = ['http', 'https', 'mailto'];
+
+        $document = new \DOMDocument();
+        $internalErrors = libxml_use_internal_errors(true);
+
+        $document->loadHTML(
+            '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $html,
+            LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
+        );
+
+        libxml_clear_errors();
+        libxml_use_internal_errors($internalErrors);
+
+        $nodes = [];
+        foreach ($document->getElementsByTagName('*') as $node) {
+            $nodes[] = $node;
+        }
+
+        foreach ($nodes as $node) {
+            $tag = strtolower($node->nodeName);
+            if (!array_key_exists($tag, $allowedTags)) {
+                $this->unwrapNode($node);
+                continue;
+            }
+
+            $allowedAttributes = $allowedTags[$tag];
+            if ($node->hasAttributes()) {
+                $attributes = [];
+                foreach ($node->attributes as $attribute) {
+                    $attributes[$attribute->nodeName] = $attribute->nodeValue;
+                }
+
+                foreach ($attributes as $name => $value) {
+                    if (!in_array($name, $allowedAttributes, true)) {
+                        $node->removeAttribute($name);
+                        continue;
+                    }
+
+                    if ($name === 'style') {
+                        $filteredStyle = $this->filterInlineStyles($value, $allowedStyles);
+                        if ($filteredStyle === '') {
+                            $node->removeAttribute('style');
+                        } else {
+                            $node->setAttribute('style', $filteredStyle);
+                        }
+                        continue;
+                    }
+
+                    if ($name === 'class') {
+                        $filteredClass = $this->filterClasses($value, $allowedClassPrefixes);
+                        if ($filteredClass === '') {
+                            $node->removeAttribute('class');
+                        } else {
+                            $node->setAttribute('class', $filteredClass);
+                        }
+                        continue;
+                    }
+
+                    if ($tag === 'a' && $name === 'href') {
+                        if (!$this->isAllowedUrl($value, $allowedUriSchemes)) {
+                            $node->removeAttribute('href');
+                        } else {
+                            $target = $node->getAttribute('target');
+                            if ($target === '_blank') {
+                                $rel = $node->getAttribute('rel');
+                                $relParts = array_filter(explode(' ', strtolower($rel)));
+                                $relParts = array_unique(array_merge($relParts, ['noopener', 'noreferrer']));
+                                $node->setAttribute('rel', implode(' ', $relParts));
+                            }
+                        }
+                        continue;
+                    }
+
+                    if ($tag === 'img' && $name === 'src') {
+                        if (!$this->isAllowedUrl($value, $allowedUriSchemes)) {
+                            $node->removeAttribute('src');
+                        }
+                        continue;
+                    }
+                }
+            }
+
+            if ($tag === 'img' && !$node->hasAttribute('alt')) {
+                $node->setAttribute('alt', '');
+            }
+        }
+
+        $body = $document->getElementsByTagName('body')->item(0);
+        if ($body === null) {
+            return '';
+        }
+
+        $output = '';
+        foreach ($body->childNodes as $child) {
+            $output .= $document->saveHTML($child);
+        }
+
+        return trim($output);
+    }
+
+    private function unwrapNode(\DOMNode $node): void
+    {
+        $parent = $node->parentNode;
+        if ($parent === null) {
+            $node->parentNode?->removeChild($node);
+            return;
+        }
+
+        while ($node->firstChild !== null) {
+            $parent->insertBefore($node->firstChild, $node);
+        }
+
+        $parent->removeChild($node);
+    }
+
+    private function filterInlineStyles(string $style, array $allowedStyles): string
+    {
+        $rules = explode(';', $style);
+        $clean = [];
+
+        foreach ($rules as $rule) {
+            if (trim($rule) === '') {
+                continue;
+            }
+
+            [$property, $value] = array_pad(explode(':', $rule, 2), 2, '');
+            $property = strtolower(trim($property));
+            $value = trim($value);
+
+            if ($property === '' || !in_array($property, $allowedStyles, true)) {
+                continue;
+            }
+
+            if (stripos($value, 'expression') !== false || stripos($value, 'javascript:') !== false || stripos($value, 'url(') !== false) {
+                continue;
+            }
+
+            $clean[] = $property . ':' . $value;
+        }
+
+        return implode(';', $clean);
+    }
+
+    private function filterClasses(string $classAttr, array $allowedPrefixes): string
+    {
+        $classes = preg_split('/\s+/', trim($classAttr));
+        $classes = array_filter($classes, function (string $class) use ($allowedPrefixes): bool {
+            foreach ($allowedPrefixes as $prefix) {
+                if (str_starts_with($class, $prefix)) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+
+        return implode(' ', $classes);
+    }
+
+    private function isAllowedUrl(string $url, array $allowedSchemes): bool
+    {
+        $url = trim($url);
+        if ($url === '') {
+            return false;
+        }
+
+        $parsed = parse_url($url);
+        if ($parsed === false) {
+            return false;
+        }
+
+        if (!isset($parsed['scheme'])) {
+            return true;
+        }
+
+        return in_array(strtolower($parsed['scheme']), $allowedSchemes, true);
     }
 }

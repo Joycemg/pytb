@@ -50,7 +50,46 @@
 
           <div class="form-group">
             <label for="content">Contenido</label>
+            <div class="blog-editor" data-blog-editor data-target="content">
+              <div class="blog-editor-toolbar" role="toolbar" aria-label="Herramientas de formato">
+                <div class="blog-editor-group" role="group" aria-label="Formato de texto">
+                  <button type="button" class="blog-editor-btn" data-command="bold" title="Negrita"><span>Negrita</span></button>
+                  <button type="button" class="blog-editor-btn" data-command="italic" title="Cursiva"><span>Cursiva</span></button>
+                  <button type="button" class="blog-editor-btn" data-command="underline" title="Subrayado"><span>Subrayado</span></button>
+                  <button type="button" class="blog-editor-btn" data-command="removeFormat" title="Limpiar formato"><span>Limpiar</span></button>
+                </div>
+                <div class="blog-editor-group" role="group" aria-label="Bloques">
+                  <button type="button" class="blog-editor-btn" data-format-block="p" title="Párrafo">P</button>
+                  <button type="button" class="blog-editor-btn" data-format-block="h2" title="Título">H2</button>
+                  <button type="button" class="blog-editor-btn" data-format-block="blockquote" title="Cita">❝</button>
+                  <button type="button" class="blog-editor-btn" data-command="insertOrderedList" title="Lista numerada">1.</button>
+                  <button type="button" class="blog-editor-btn" data-command="insertUnorderedList" title="Lista con viñetas">•</button>
+                </div>
+                <div class="blog-editor-group" role="group" aria-label="Alineación">
+                  <button type="button" class="blog-editor-btn" data-command="justifyLeft" title="Alinear a la izquierda">⟸</button>
+                  <button type="button" class="blog-editor-btn" data-command="justifyCenter" title="Centrar">☼</button>
+                  <button type="button" class="blog-editor-btn" data-command="justifyRight" title="Alinear a la derecha">⟹</button>
+                </div>
+                <div class="blog-editor-group" role="group" aria-label="Colores">
+                  <label class="blog-editor-color" title="Color de texto">
+                    <span>Texto</span>
+                    <input type="color" data-color-command="foreColor" value="#1f2937">
+                  </label>
+                  <label class="blog-editor-color" title="Color de fondo">
+                    <span>Fondo</span>
+                    <input type="color" data-color-command="hiliteColor" value="#f7f8fa">
+                  </label>
+                </div>
+                <div class="blog-editor-group" role="group" aria-label="Enlaces y multimedia">
+                  <button type="button" class="blog-editor-btn" data-action="createLink" title="Insertar enlace">🔗</button>
+                  <button type="button" class="blog-editor-btn" data-action="insertImage" title="Insertar imagen">🖼️</button>
+                  <button type="button" class="blog-editor-btn" data-action="insertBox" title="Insertar caja resaltada">▩</button>
+                </div>
+              </div>
+              <div id="content-editor" class="blog-editor-canvas" contenteditable="true" aria-label="Editor de contenido enriquecido"></div>
+            </div>
             <textarea id="content" name="content" rows="12" required>{{ old('content', $post->content) }}</textarea>
+            <small class="hint">Escribí libremente, podés aplicar colores, encabezados, imágenes remotas y cajas resaltadas. Si desactivás JavaScript, el área inferior funciona como editor plano.</small>
           </div>
 
           <div class="form-group">
@@ -85,3 +124,11 @@
     </div>
   </div>
 @endsection
+
+@push('head')
+  <link rel="stylesheet" href="{{ asset('css/components/blog-editor.css') }}">
+@endpush
+
+@push('scripts')
+  <script src="{{ asset('js/blog-editor.js') }}" defer></script>
+@endpush
