@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PushSubscription extends Model
 {
+    use HasFactory;
+
     // Si tu tabla es 'push_subscriptions' podés omitir esto.
     protected $table = 'push_subscriptions';
 
