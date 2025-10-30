@@ -139,6 +139,7 @@
 
     var customPanel = picker.querySelector('[data-color-custom-panel]');
     var customInput = customPanel ? customPanel.querySelector('[data-color-custom-input]') : null;
+    var customPicker = customPanel ? customPanel.querySelector('[data-color-custom-picker]') : null;
     var customError = customPanel ? customPanel.querySelector('[data-color-custom-error]') : null;
     var customPreview = customPanel ? customPanel.querySelector('[data-color-custom-preview]') : null;
 
@@ -162,6 +163,29 @@
       customPreview.style.setProperty('--custom-color', color);
     }
 
+    function getRoleDefaultColor() {
+      var defaults = getThemeDefaults(container);
+      var role = picker.dataset.role || '';
+      return role === 'text' ? defaults.text : defaults.accent;
+    }
+
+    function getCustomDefaultColor() {
+      var defaultColor = normalizeHex(getRoleDefaultColor()) || '#2563EB';
+      return defaultColor;
+    }
+
+    function syncCustomControls(value) {
+      var normalized = normalizeHex(value);
+      var color = normalized || getCustomDefaultColor();
+      if (customInput) {
+        customInput.value = normalized || (value || color);
+      }
+      if (customPicker) {
+        customPicker.value = color.toLowerCase();
+      }
+      updateCustomPreview(color);
+    }
+
     function closeCustomPanel() {
       if (!customPanel) {
         return;
@@ -179,39 +203,44 @@
       customPanel.classList.add('is-visible');
       hideCustomError();
       var initial = input.value || '';
-      if (customInput) {
-        customInput.value = initial;
-        updateCustomPreview(initial);
-        window.setTimeout(function () {
+      syncCustomControls(initial);
+      window.setTimeout(function () {
+        if (customInput) {
           customInput.focus();
           if (typeof customInput.select === 'function') {
             customInput.select();
           }
-        }, 20);
-      } else {
-        updateCustomPreview(initial);
-      }
+        } else if (customPicker) {
+          customPicker.focus();
+        }
+      }, 20);
     }
 
     function applyCustomColor() {
-      if (!customInput) {
-        return false;
+      var normalized = null;
+      if (customInput) {
+        normalized = normalizeHex(customInput.value || '');
       }
-      var normalized = normalizeHex(customInput.value || '');
+      if (!normalized && customPicker) {
+        normalized = normalizeHex(customPicker.value || '');
+        if (normalized && customInput) {
+          customInput.value = normalized;
+        }
+      }
       if (!normalized) {
         if (customError) {
           customError.textContent = 'Ingresá un color válido en formato #RRGGBB.';
           customError.hidden = false;
           customError.classList.add('is-visible');
         }
-        customInput.classList.add('is-invalid');
-        customInput.focus();
+        if (customInput) {
+          customInput.classList.add('is-invalid');
+          customInput.focus();
+        }
         return false;
       }
 
-      var defaults = getThemeDefaults(container);
-      var role = picker.dataset.role || '';
-      var defaultColor = role === 'text' ? defaults.text : defaults.accent;
+      var defaultColor = normalizeHex(getRoleDefaultColor()) || '#2563EB';
 
       input.value = normalized;
       input.dataset.locked = normalized === defaultColor ? 'false' : 'true';
@@ -225,7 +254,7 @@
 
     var defaults = getThemeDefaults(container);
     var role = picker.dataset.role || '';
-    var defaultColor = role === 'text' ? defaults.text : defaults.accent;
+    var defaultColor = normalizeHex(role === 'text' ? defaults.text : defaults.accent);
     if (normalizeHex(input.value) === defaultColor) {
       input.dataset.locked = 'false';
     } else if (input.value) {
@@ -240,7 +269,7 @@
       event.preventDefault();
 
       defaults = getThemeDefaults(container);
-      defaultColor = role === 'text' ? defaults.text : defaults.accent;
+      defaultColor = normalizeHex(role === 'text' ? defaults.text : defaults.accent);
 
       if (target.hasAttribute('data-color-custom')) {
         openCustomPanel();
@@ -266,6 +295,10 @@
       customInput.addEventListener('input', function () {
         hideCustomError();
         updateCustomPreview(customInput.value);
+        var normalized = normalizeHex(customInput.value || '');
+        if (customPicker && normalized) {
+          customPicker.value = normalized.toLowerCase();
+        }
       });
 
       customInput.addEventListener('keydown', function (event) {
@@ -276,6 +309,17 @@
           event.preventDefault();
           closeCustomPanel();
         }
+      });
+    }
+
+    if (customPicker) {
+      customPicker.addEventListener('input', function () {
+        hideCustomError();
+        var normalized = normalizeHex(customPicker.value || '');
+        if (customInput && normalized) {
+          customInput.value = normalized;
+        }
+        updateCustomPreview(customPicker.value);
       });
     }
 
