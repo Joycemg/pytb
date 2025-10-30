@@ -15,8 +15,12 @@
       </p>
     </header>
 
+    @php
+      $rawContent = $post->content ?? '';
+      $hasMarkup = str_contains((string) $rawContent, '<');
+    @endphp
     <div class="blog-post-content">
-      {!! nl2br(e($post->content)) !!}
+      {!! $hasMarkup ? $rawContent : nl2br(e($rawContent)) !!}
     </div>
 
     @if ($post->attachments->isNotEmpty())

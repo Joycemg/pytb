@@ -60,7 +60,7 @@
     margin-bottom: 2rem;
 }
 
-.blog-post-content {
+.blog-post-content { 
     font-size: 1.05rem;
     line-height: 1.7;
     color: var(--text, #1f2933);
@@ -72,6 +72,86 @@
 
 .blog-post-content p {
     margin-bottom: 1rem;
+}
+
+.blog-post-content h2,
+.blog-post-content h3,
+.blog-post-content h4 {
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: .85rem;
+}
+
+.blog-post-content blockquote {
+    border-left: 4px solid #94a3b8;
+    margin: 1.8rem 0;
+    padding: .75rem 1.25rem;
+    border-radius: 12px;
+    background: rgba(148, 163, 184, .12);
+    font-style: italic;
+}
+
+.blog-post-content ul,
+.blog-post-content ol {
+    margin: 1rem 0 1rem 1.5rem;
+    padding-left: 0;
+}
+
+.blog-post-content li {
+    margin-bottom: .5rem;
+}
+
+.blog-post-content img,
+.blog-post-content .blog-image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1.75rem auto;
+    border-radius: 14px;
+    box-shadow: 0 12px 24px rgba(15, 23, 42, .16);
+}
+
+.blog-post-content figure {
+    margin: 2rem auto;
+    text-align: center;
+}
+
+.blog-post-content figcaption {
+    margin-top: .75rem;
+    font-size: .9rem;
+    color: var(--muted, #6b7280);
+}
+
+.blog-post-content .blog-box {
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    margin: 2rem 0;
+    border: 1px solid rgba(15, 23, 42, .08);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, .08);
+}
+
+.blog-post-content .blog-box p:last-child {
+    margin-bottom: 0;
+}
+
+.blog-post-content .blog-box-info {
+    background: linear-gradient(180deg, rgba(37, 99, 235, .08) 0%, rgba(191, 219, 254, .35) 100%);
+    border-left: 6px solid #2563eb;
+}
+
+.blog-post-content .blog-box-success {
+    background: linear-gradient(180deg, rgba(22, 163, 74, .08) 0%, rgba(187, 247, 208, .32) 100%);
+    border-left: 6px solid #16a34a;
+}
+
+.blog-post-content .blog-box-warning {
+    background: linear-gradient(180deg, rgba(234, 179, 8, .1) 0%, rgba(254, 240, 138, .38) 100%);
+    border-left: 6px solid #d97706;
+}
+
+.blog-post-content .blog-box-neutral {
+    background: linear-gradient(180deg, rgba(15, 23, 42, .05) 0%, rgba(148, 163, 184, .2) 100%);
+    border-left: 6px solid #0f172a;
 }
 
 .blog-post-attachments {
