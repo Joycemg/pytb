@@ -7,69 +7,69 @@
 }
 
 /* Columnas */
-.col-idx {
+.ranking-table .col-idx {
     width: 64px;
     text-align: left;
 }
 
-.col-honor {
+.ranking-table .col-honor {
     width: 120px;
     text-align: right;
 }
 
 /* Fila del usuario actual y top 3 */
-.fila-yo {
+.ranking-table .fila-yo {
     outline: 3px solid var(--accent);
     background: #fff;
 }
 
-.fila-yo.top-1,
-.fila-yo.top-2,
-.fila-yo.top-3 {
+.ranking-table .fila-yo.top-1,
+.ranking-table .fila-yo.top-2,
+.ranking-table .fila-yo.top-3 {
     outline-width: 2px;
 }
 
-.top-1 {
+.ranking-table .top-1 {
     background: #fff8e1;
 }
 
 /* dorado claro   */
-.top-2 {
+.ranking-table .top-2 {
     background: #f3f6ff;
 }
 
 /* plateado claro */
-.top-3 {
+.ranking-table .top-3 {
     background: #fff4ec;
 }
 
 /* bronce claro   */
 
 /* Chapitas de posición */
-.rank-badge {
+.ranking-table .rank-badge {
     display: inline-block;
     min-width: 2.1rem;
     padding: .1rem .45rem;
-    border-radius: 9px;
+    border-radius: 9999px;
     font-weight: 700;
     font-size: .9rem;
     text-align: center;
     line-height: 1.2;
 }
 
-.rank-1 {
+.ranking-table .rank-1 {
     background: #fde68a;
     color: #7a5e00;
 }
 
 /* gold */
-.rank-2 {
+.ranking-table .rank-2 {
     background: #e5e7eb;
     color: #374151;
 }
 
 /* silver */
-.rank-3 {
+.ranking-table .rank-3 {
     background: #fed7aa;
     color: #7c3e0a;
 }
@@ -79,16 +79,16 @@
 /* Responsive: ocultar username en pantallas angostas */
 @media (max-width:560px) {
 
-    .col-username,
-    td.col-username {
+    .ranking-table .col-username,
+    .ranking-table td.col-username {
         display: none;
     }
 
-    .col-honor {
+    .ranking-table .col-honor {
         width: 90px;
     }
 
-    .col-idx {
+    .ranking-table .col-idx {
         width: 56px;
     }
 }
