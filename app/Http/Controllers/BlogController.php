@@ -23,14 +23,59 @@ final class BlogController extends Controller
             ->with(['author'])
             ->paginate(10);
 
+        $history = BlogPost::query()
+            ->published()
+            ->latest('published_at')
+            ->get(['id', 'title', 'slug', 'published_at'])
+            ->groupBy(function (BlogPost $post) {
+                return $post->published_at?->format('Y');
+            })
+            ->filter()
+            ->sortKeysDesc()
+            ->map(function ($postsByYear, $year) {
+                $months = $postsByYear
+                    ->groupBy(function (BlogPost $post) {
+                        return $post->published_at?->format('n');
+                    })
+                    ->filter()
+                    ->sortKeysDesc()
+                    ->map(function ($postsByMonth) {
+                        /** @var BlogPost $first */
+                        $first = $postsByMonth->first();
+
+                        return [
+                            'label' => $first->published_at?->translatedFormat('F') ?? '',
+                            'month' => (int) ($first->published_at?->format('n') ?? 0),
+                            'posts' => $postsByMonth->map(function (BlogPost $post) {
+                                return [
+                                    'title' => $post->title,
+                                    'slug' => $post->slug,
+                                    'published_at' => $post->published_at,
+                                ];
+                            })->all(),
+                        ];
+                    })
+                    ->values()
+                    ->all();
+
+                return [
+                    'year' => (int) $year,
+                    'months' => $months,
+                ];
+            })
+            ->values()
+            ->all();
+
         if ($request->wantsJson()) {
             return view('blog.index', [
                 'posts' => $posts,
+                'history' => $history,
             ]);
         }
 
         return view('blog.index', [
             'posts' => $posts,
+            'history' => $history,
         ]);
     }
 

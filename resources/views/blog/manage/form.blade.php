@@ -74,16 +74,17 @@
                   <div class="blog-editor-palette" data-color-command="foreColor" aria-label="Colores de texto">
                     <span class="blog-editor-group-label">Texto</span>
                     <div class="blog-editor-swatches">
-                      <button type="button" class="blog-editor-swatch" data-color-value="#1F2937" style="--swatch:#1F2937" title="Pizarra"></button>
-                      <button type="button" class="blog-editor-swatch" data-color-value="#0F172A" style="--swatch:#0F172A" title="Azul profundo"></button>
-                      <button type="button" class="blog-editor-swatch" data-color-value="#DB2777" style="--swatch:#DB2777" title="Magenta"></button>
-                      <button type="button" class="blog-editor-swatch" data-color-value="#2563EB" style="--swatch:#2563EB" title="Azul" ></button>
-                      <button type="button" class="blog-editor-swatch" data-color-value="#16A34A" style="--swatch:#16A34A" title="Verde"></button>
+                      <button type="button" class="blog-editor-swatch" data-color-value="#1F2937" style="--swatch-color:#1F2937" title="Pizarra"></button>
+                      <button type="button" class="blog-editor-swatch" data-color-value="#0F172A" style="--swatch-color:#0F172A" title="Azul profundo"></button>
+                      <button type="button" class="blog-editor-swatch" data-color-value="#DB2777" style="--swatch-color:#DB2777" title="Magenta"></button>
+                      <button type="button" class="blog-editor-swatch" data-color-value="#2563EB" style="--swatch-color:#2563EB" title="Azul"></button>
+                      <button type="button" class="blog-editor-swatch" data-color-value="#16A34A" style="--swatch-color:#16A34A" title="Verde"></button>
                       <button type="button" class="blog-editor-swatch" data-color-custom title="Color personalizado">Personalizar</button>
                     </div>
                     <div class="blog-editor-color-custom" data-editor-color-panel hidden>
                       <p class="blog-editor-color-custom-title">Elegí un color en formato hex (#RRGGBB)</p>
                       <div class="blog-editor-color-custom-row">
+                        <input type="color" class="blog-editor-color-custom-picker" data-editor-color-picker value="#2563EB" aria-label="Elegir color" />
                         <input type="text" class="blog-editor-color-custom-input" data-editor-color-input placeholder="#2563EB" maxlength="7" autocomplete="off">
                         <span class="blog-editor-color-custom-preview" data-editor-color-preview aria-hidden="true"></span>
                       </div>
@@ -97,16 +98,17 @@
                   <div class="blog-editor-palette" data-color-command="hiliteColor" aria-label="Colores de fondo">
                     <span class="blog-editor-group-label">Fondo</span>
                     <div class="blog-editor-swatches">
-                      <button type="button" class="blog-editor-swatch" data-color-value="#F8FAFC" style="--swatch:#F8FAFC" title="Niebla"></button>
-                      <button type="button" class="blog-editor-swatch" data-color-value="#FDE68A" style="--swatch:#FDE68A" title="Dorado"></button>
-                      <button type="button" class="blog-editor-swatch" data-color-value="#E0F2FE" style="--swatch:#E0F2FE" title="Cielo"></button>
-                      <button type="button" class="blog-editor-swatch" data-color-value="#DCFCE7" style="--swatch:#DCFCE7" title="Prado"></button>
-                      <button type="button" class="blog-editor-swatch" data-color-value="#F3E8FF" style="--swatch:#F3E8FF" title="Lavanda"></button>
+                      <button type="button" class="blog-editor-swatch" data-color-value="#F8FAFC" style="--swatch-color:#F8FAFC" title="Niebla"></button>
+                      <button type="button" class="blog-editor-swatch" data-color-value="#FDE68A" style="--swatch-color:#FDE68A" title="Dorado"></button>
+                      <button type="button" class="blog-editor-swatch" data-color-value="#E0F2FE" style="--swatch-color:#E0F2FE" title="Cielo"></button>
+                      <button type="button" class="blog-editor-swatch" data-color-value="#DCFCE7" style="--swatch-color:#DCFCE7" title="Prado"></button>
+                      <button type="button" class="blog-editor-swatch" data-color-value="#F3E8FF" style="--swatch-color:#F3E8FF" title="Lavanda"></button>
                       <button type="button" class="blog-editor-swatch" data-color-custom title="Color personalizado">Personalizar</button>
                     </div>
                     <div class="blog-editor-color-custom" data-editor-color-panel hidden>
                       <p class="blog-editor-color-custom-title">Ingresá un color en formato hex (#RRGGBB)</p>
                       <div class="blog-editor-color-custom-row">
+                        <input type="color" class="blog-editor-color-custom-picker" data-editor-color-picker value="#FDE68A" aria-label="Elegir color" />
                         <input type="text" class="blog-editor-color-custom-input" data-editor-color-input placeholder="#FDE68A" maxlength="7" autocomplete="off">
                         <span class="blog-editor-color-custom-preview" data-editor-color-preview aria-hidden="true"></span>
                       </div>
@@ -198,6 +200,17 @@
             $textPalette = (array) config('blog.text_palette', []);
             $currentAccent = old('accent_color', $post->accent_color ?? ($themes[$currentTheme]['accent'] ?? config('blog.default_accent')));
             $currentTextAccent = old('accent_text_color', $post->accent_text_color ?? ($themes[$currentTheme]['text'] ?? config('blog.default_text_color')));
+            $accentPickerDefault = $currentAccent ?? '#2563EB';
+            if (!preg_match('/^#[0-9a-fA-F]{6}$/', $accentPickerDefault)) {
+                $accentPickerDefault = '#2563EB';
+            }
+            $accentPickerDefault = strtolower($accentPickerDefault);
+
+            $textPickerDefault = $currentTextAccent ?? '#0F172A';
+            if (!preg_match('/^#[0-9a-fA-F]{6}$/', $textPickerDefault)) {
+                $textPickerDefault = '#0F172A';
+            }
+            $textPickerDefault = strtolower($textPickerDefault);
           @endphp
 
           <div class="form-group">
@@ -226,6 +239,7 @@
                   <div class="blog-color-custom" data-color-custom-panel hidden>
                     <p class="blog-color-custom-title">Elegí un color en formato hex (#RRGGBB)</p>
                     <div class="blog-color-custom-row">
+                      <input type="color" class="blog-color-custom-picker" data-color-custom-picker value="{{ $accentPickerDefault }}" aria-label="Elegir color" />
                       <input type="text" class="blog-color-custom-input" data-color-custom-input placeholder="#2563EB" maxlength="7" autocomplete="off">
                       <span class="blog-color-custom-preview" data-color-custom-preview aria-hidden="true"></span>
                     </div>
@@ -250,6 +264,7 @@
                   <div class="blog-color-custom" data-color-custom-panel hidden>
                     <p class="blog-color-custom-title">Elegí un color en formato hex (#RRGGBB)</p>
                     <div class="blog-color-custom-row">
+                      <input type="color" class="blog-color-custom-picker" data-color-custom-picker value="{{ $textPickerDefault }}" aria-label="Elegir color" />
                       <input type="text" class="blog-color-custom-input" data-color-custom-input placeholder="#0F172A" maxlength="7" autocomplete="off">
                       <span class="blog-color-custom-preview" data-color-custom-preview aria-hidden="true"></span>
                     </div>

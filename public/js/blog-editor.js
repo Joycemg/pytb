@@ -144,6 +144,7 @@
     this.wrapper.querySelectorAll('.blog-editor-palette[data-color-command]').forEach(function (palette) {
       var customPanel = palette.querySelector('[data-editor-color-panel]');
       var customInput = customPanel ? customPanel.querySelector('[data-editor-color-input]') : null;
+      var customPicker = customPanel ? customPanel.querySelector('[data-editor-color-picker]') : null;
       var customError = customPanel ? customPanel.querySelector('[data-editor-color-error]') : null;
       var customPreview = customPanel ? customPanel.querySelector('[data-editor-color-preview]') : null;
 
@@ -167,6 +168,35 @@
         customPreview.style.setProperty('--editor-custom-color', color);
       }
 
+      function getDefaultCustomColor() {
+        if (customInput) {
+          var placeholder = customInput.getAttribute('placeholder');
+          var normalizedPlaceholder = normalizeColor(placeholder);
+          if (normalizedPlaceholder) {
+            return normalizedPlaceholder;
+          }
+        }
+        if (customPicker) {
+          var pickerValue = normalizeColor(customPicker.value);
+          if (pickerValue) {
+            return pickerValue;
+          }
+        }
+        return '#2563EB';
+      }
+
+      function syncCustomControls(value) {
+        var normalized = normalizeColor(value);
+        var color = normalized || getDefaultCustomColor();
+        if (customInput) {
+          customInput.value = normalized || (value || color);
+        }
+        if (customPicker) {
+          customPicker.value = color.toLowerCase();
+        }
+        updateCustomPreview(color);
+      }
+
       function closeCustomPanel() {
         if (!customPanel) {
           return;
@@ -184,33 +214,40 @@
         customPanel.classList.add('is-active');
         hideCustomError();
         var value = initial || palette.getAttribute('data-active-color') || '';
-        if (customInput) {
-          customInput.value = value;
-          updateCustomPreview(value);
-          window.setTimeout(function () {
+        syncCustomControls(value);
+        window.setTimeout(function () {
+          if (customInput) {
             customInput.focus();
             if (typeof customInput.select === 'function') {
               customInput.select();
             }
-          }, 20);
-        } else {
-          updateCustomPreview(value);
-        }
+          } else if (customPicker) {
+            customPicker.focus();
+          }
+        }, 20);
       }
 
       function applyCustomColor() {
-        if (!customInput) {
-          return null;
+        var normalized = null;
+        if (customInput) {
+          normalized = normalizeColor(customInput.value || '');
         }
-        var normalized = normalizeColor(customInput.value || '');
+        if (!normalized && customPicker) {
+          normalized = normalizeColor(customPicker.value || '');
+          if (normalized && customInput) {
+            customInput.value = normalized;
+          }
+        }
         if (!normalized) {
           if (customError) {
             customError.textContent = 'Ingresá un color válido en formato #RRGGBB.';
             customError.hidden = false;
             customError.classList.add('is-visible');
           }
-          customInput.classList.add('is-invalid');
-          customInput.focus();
+          if (customInput) {
+            customInput.classList.add('is-invalid');
+            customInput.focus();
+          }
           return null;
         }
         closeCustomPanel();
@@ -258,6 +295,10 @@
         customInput.addEventListener('input', function () {
           hideCustomError();
           updateCustomPreview(customInput.value);
+          var normalized = normalizeColor(customInput.value || '');
+          if (customPicker && normalized) {
+            customPicker.value = normalized.toLowerCase();
+          }
         });
 
         customInput.addEventListener('keydown', function (event) {
@@ -286,6 +327,17 @@
             event.preventDefault();
             closeCustomPanel();
           }
+        });
+      }
+
+      if (customPicker) {
+        customPicker.addEventListener('input', function () {
+          hideCustomError();
+          var normalized = normalizeColor(customPicker.value || '');
+          if (customInput && normalized) {
+            customInput.value = normalized;
+          }
+          updateCustomPreview(customPicker.value);
         });
       }
 
