@@ -74,13 +74,12 @@
                   $themeLabel = null;
               }
             @endphp
-            <article class="card blog-card blog-theme-{{ $theme }}" style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }};">
-              @if ($post->hero_image_url)
+            @php $hasHeroImage = filled($post->hero_image_url); @endphp
+            <article class="card blog-card blog-theme-{{ $theme }} {{ $hasHeroImage ? '' : 'blog-card--no-media' }}" style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }};">
+              @if ($hasHeroImage)
                 <figure class="blog-card-media">
                   <img src="{{ $post->hero_image_url }}" alt="" loading="lazy">
                 </figure>
-              @else
-                <div class="blog-card-media blog-card-media--empty" aria-hidden="true"></div>
               @endif
 
               <div class="card-body">
