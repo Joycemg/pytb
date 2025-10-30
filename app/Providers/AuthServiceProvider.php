@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\BlogPost;
 use App\Models\Inscripcion;
 use App\Models\Jornada;
 use App\Models\Mesa;
+use App\Policies\BlogPostPolicy;
 use App\Policies\InscripcionPolicy;
 use App\Policies\JornadaPolicy;
 use App\Policies\MesaPolicy;
@@ -20,6 +22,7 @@ final class AuthServiceProvider extends ServiceProvider
         Jornada::class => JornadaPolicy::class,
         \App\Models\Usuario::class => \App\Policies\UsuarioPolicy::class,
         \App\Models\UserAudit::class => \App\Policies\UserAuditPolicy::class,
+        BlogPost::class => BlogPostPolicy::class,
     ];
 
     public function boot(): void

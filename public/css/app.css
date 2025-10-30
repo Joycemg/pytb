@@ -19,6 +19,7 @@
 @import "components/ranking.css";
 @import "components/table.css";
 @import "components/modal.css";
+@import "components/blog.css";
 
 /* ===== Layout ===== */
 @import "layout/header.css";

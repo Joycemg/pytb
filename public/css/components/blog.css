@@ -1,0 +1,169 @@
+.blog-list .page-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.blog-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    margin-top: 1.5rem;
+}
+
+.blog-card-title {
+    margin: 0 0 .6rem;
+    font-size: 1.35rem;
+}
+
+.blog-card-title a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.blog-card-title a:hover,
+.blog-card-title a:focus {
+    text-decoration: underline;
+}
+
+.blog-card-meta {
+    margin: 0 0 .8rem;
+    color: var(--muted, #6c757d);
+    font-size: .9rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem .6rem;
+}
+
+.blog-card-excerpt {
+    margin: 0 0 1rem;
+    color: var(--text, #1f2933);
+}
+
+.blog-card-link {
+    margin-top: auto;
+}
+
+.blog-pagination {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.blog-post {
+    padding-bottom: 3rem;
+}
+
+.blog-post .page-head {
+    margin-bottom: 2rem;
+}
+
+.blog-post-content {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--text, #1f2933);
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .08);
+}
+
+.blog-post-content p {
+    margin-bottom: 1rem;
+}
+
+.blog-post-attachments {
+    margin-top: 2.5rem;
+}
+
+.blog-post-attachments h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.blog-post-attachments ul,
+.attachment-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.blog-post-attachments li,
+.attachment-list li {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .6rem 0;
+    border-bottom: 1px solid var(--line, #e5e7eb);
+}
+
+.blog-post-attachments li:last-child,
+.attachment-list li:last-child {
+    border-bottom: none;
+}
+
+.attachment-list form {
+    display: inline-flex;
+}
+
+.attachment-meta {
+    color: var(--muted, #6c757d);
+    font-size: .85rem;
+}
+
+.blog-post-footer {
+    margin-top: 2rem;
+}
+
+.blog-manage .page-head,
+.blog-form .page-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.blog-manage .btn-group {
+    display: inline-flex;
+    gap: .5rem;
+}
+
+.blog-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.blog-form .form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: .4rem;
+}
+
+.blog-form .form-group input[type="text"],
+.blog-form .form-group textarea {
+    width: 100%;
+}
+
+.blog-form .hint {
+    display: block;
+    margin-top: .35rem;
+    font-size: .85rem;
+    color: var(--muted, #6c757d);
+}
+
+.blog-form .attachment-list form {
+    margin-left: auto;
+}
+
+.blog-form .attachment-list .btn-sm {
+    padding: .3rem .6rem;
+    font-size: .85rem;
+}
+
+.blog-form .form-actions {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-end;
+}
