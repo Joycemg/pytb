@@ -137,6 +137,92 @@
       }
     });
 
+    var customPanel = picker.querySelector('[data-color-custom-panel]');
+    var customInput = customPanel ? customPanel.querySelector('[data-color-custom-input]') : null;
+    var customError = customPanel ? customPanel.querySelector('[data-color-custom-error]') : null;
+    var customPreview = customPanel ? customPanel.querySelector('[data-color-custom-preview]') : null;
+
+    function hideCustomError() {
+      if (customError) {
+        customError.textContent = '';
+        customError.hidden = true;
+        customError.classList.remove('is-visible');
+      }
+      if (customInput) {
+        customInput.classList.remove('is-invalid');
+      }
+    }
+
+    function updateCustomPreview(value) {
+      if (!customPreview) {
+        return;
+      }
+      var normalized = normalizeHex(value);
+      var color = normalized || '#E2E8F0';
+      customPreview.style.setProperty('--custom-color', color);
+    }
+
+    function closeCustomPanel() {
+      if (!customPanel) {
+        return;
+      }
+      customPanel.hidden = true;
+      customPanel.classList.remove('is-visible');
+      hideCustomError();
+    }
+
+    function openCustomPanel() {
+      if (!customPanel) {
+        return;
+      }
+      customPanel.hidden = false;
+      customPanel.classList.add('is-visible');
+      hideCustomError();
+      var initial = input.value || '';
+      if (customInput) {
+        customInput.value = initial;
+        updateCustomPreview(initial);
+        window.setTimeout(function () {
+          customInput.focus();
+          if (typeof customInput.select === 'function') {
+            customInput.select();
+          }
+        }, 20);
+      } else {
+        updateCustomPreview(initial);
+      }
+    }
+
+    function applyCustomColor() {
+      if (!customInput) {
+        return false;
+      }
+      var normalized = normalizeHex(customInput.value || '');
+      if (!normalized) {
+        if (customError) {
+          customError.textContent = 'Ingresá un color válido en formato #RRGGBB.';
+          customError.hidden = false;
+          customError.classList.add('is-visible');
+        }
+        customInput.classList.add('is-invalid');
+        customInput.focus();
+        return false;
+      }
+
+      var defaults = getThemeDefaults(container);
+      var role = picker.dataset.role || '';
+      var defaultColor = role === 'text' ? defaults.text : defaults.accent;
+
+      input.value = normalized;
+      input.dataset.locked = normalized === defaultColor ? 'false' : 'true';
+      buttons.forEach(function (button) {
+        button.classList.remove('is-active');
+      });
+      closeCustomPanel();
+      updatePreview(container);
+      return true;
+    }
+
     var defaults = getThemeDefaults(container);
     var role = picker.dataset.role || '';
     var defaultColor = role === 'text' ? defaults.text : defaults.accent;
@@ -157,34 +243,59 @@
       defaultColor = role === 'text' ? defaults.text : defaults.accent;
 
       if (target.hasAttribute('data-color-custom')) {
-        var promptValue = input.value || '#';
-        var result = window.prompt('Ingresá un color en formato hex (#FFAA00):', promptValue);
-        var normalized = normalizeHex(result);
-        if (!normalized) {
-          if (result !== null) {
-            window.alert('El color ingresado no es válido. Usá el formato #RRGGBB.');
-          }
-          return;
-        }
-        input.value = normalized;
-        input.dataset.locked = 'true';
-        buttons.forEach(function (button) {
-          button.classList.remove('is-active');
-        });
-      } else {
-        var color = normalizeHex(target.getAttribute('data-color-value'));
-        if (!color) {
-          return;
-        }
-        input.value = color;
-        input.dataset.locked = color === defaultColor ? 'false' : 'true';
-        buttons.forEach(function (button) {
-          button.classList.toggle('is-active', button === target);
-        });
+        openCustomPanel();
+        return;
       }
+
+      closeCustomPanel();
+
+      var color = normalizeHex(target.getAttribute('data-color-value'));
+      if (!color) {
+        return;
+      }
+      input.value = color;
+      input.dataset.locked = color === defaultColor ? 'false' : 'true';
+      buttons.forEach(function (button) {
+        button.classList.toggle('is-active', button === target);
+      });
 
       updatePreview(container);
     });
+
+    if (customInput) {
+      customInput.addEventListener('input', function () {
+        hideCustomError();
+        updateCustomPreview(customInput.value);
+      });
+
+      customInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          applyCustomColor();
+        } else if (event.key === 'Escape') {
+          event.preventDefault();
+          closeCustomPanel();
+        }
+      });
+    }
+
+    if (customPanel) {
+      customPanel.addEventListener('click', function (event) {
+        var actionButton = event.target.closest('[data-color-custom-action]');
+        if (!actionButton) {
+          return;
+        }
+        event.preventDefault();
+        var action = actionButton.getAttribute('data-color-custom-action');
+        if (action === 'cancel') {
+          closeCustomPanel();
+          return;
+        }
+        if (action === 'apply') {
+          applyCustomColor();
+        }
+      });
+    }
   }
 
   ready(function () {

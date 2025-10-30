@@ -1,4 +1,5 @@
 .blog-editor {
+    position: relative;
     border: 1px solid var(--line, #d1d5db);
     border-radius: 12px;
     overflow: hidden;
@@ -38,6 +39,22 @@
     line-height: 1;
     cursor: pointer;
     transition: background .2s ease, border-color .2s ease;
+}
+
+.blog-editor-btn--with-label {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-weight: 600;
+}
+
+.blog-editor-btn-icon {
+    font-size: 1rem;
+}
+
+.blog-editor-btn-label {
+    font-size: .78rem;
+    font-weight: 600;
 }
 
 .blog-editor-btn span {
@@ -95,6 +112,113 @@
     position: relative;
     transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
     text-indent: -9999px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35);
+}
+
+.blog-editor-color-custom {
+    margin-top: .75rem;
+    padding: .65rem .75rem;
+    border-radius: 10px;
+    border: 1px dashed rgba(15, 23, 42, .18);
+    background: rgba(148, 163, 184, .12);
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+}
+
+.blog-editor-color-custom[hidden] {
+    display: none;
+}
+
+.blog-editor-color-custom-title {
+    margin: 0;
+    font-size: .75rem;
+    font-weight: 600;
+    color: rgba(15, 23, 42, .7);
+}
+
+.blog-editor-color-custom-row {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.blog-editor-color-custom-input {
+    flex: 1;
+    border: 1px solid rgba(15, 23, 42, .18);
+    border-radius: 8px;
+    padding: .4rem .6rem;
+    font-size: .9rem;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.blog-editor-color-custom-input:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, .22);
+    outline: none;
+}
+
+.blog-editor-color-custom-input.is-invalid {
+    border-color: #f97316;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, .25);
+}
+
+.blog-editor-color-custom-preview {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--editor-custom-color, #e2e8f0);
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, .16);
+}
+
+.blog-editor-color-custom-error {
+    margin: -.25rem 0 0;
+    font-size: .72rem;
+    font-weight: 600;
+    color: #d97706;
+    display: none;
+}
+
+.blog-editor-color-custom-error.is-visible {
+    display: block;
+}
+
+.blog-editor-color-custom-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: .5rem;
+}
+
+.blog-editor-color-custom-btn {
+    border-radius: 999px;
+    border: 1px solid rgba(15, 23, 42, .12);
+    background: #ffffff;
+    color: #0f172a;
+    padding: .35rem .8rem;
+    font-size: .78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s ease, border-color .2s ease;
+}
+
+.blog-editor-color-custom-btn:hover,
+.blog-editor-color-custom-btn:focus {
+    background: #f1f5f9;
+    border-color: rgba(15, 23, 42, .2);
+    outline: none;
+}
+
+.blog-editor-color-custom-btn.is-primary {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, .25);
+}
+
+.blog-editor-color-custom-btn.is-primary:hover,
+.blog-editor-color-custom-btn.is-primary:focus {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
 }
 
 .blog-editor-swatch:hover,
@@ -198,6 +322,192 @@
 .blog-editor-canvas .blog-box-neutral {
     background: linear-gradient(180deg, rgba(15, 23, 42, .06) 0%, rgba(148, 163, 184, .22) 100%);
     border-left: 6px solid #0f172a;
+}
+
+.blog-editor-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, .38);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease;
+    z-index: 20;
+}
+
+.blog-editor.has-dialog .blog-editor-overlay {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.blog-editor-dialogs {
+    position: absolute;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    pointer-events: none;
+    z-index: 30;
+}
+
+.blog-editor.has-dialog .blog-editor-dialogs {
+    display: flex;
+    pointer-events: auto;
+}
+
+.blog-editor-dialog {
+    display: none;
+    flex-direction: column;
+    gap: .85rem;
+    width: min(440px, 100%);
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, .25);
+    padding: 1.4rem 1.6rem;
+}
+
+.blog-editor-dialog.is-active {
+    display: flex;
+}
+
+.blog-editor-dialog-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.blog-editor-dialog-description,
+.blog-editor-dialog-hint {
+    margin: 0;
+    color: rgba(15, 23, 42, .75);
+    font-size: .9rem;
+}
+
+.blog-editor-dialog-label {
+    font-weight: 600;
+    font-size: .85rem;
+    color: #0f172a;
+}
+
+.blog-editor-dialog-input {
+    border: 1px solid rgba(15, 23, 42, .15);
+    border-radius: 10px;
+    padding: .55rem .75rem;
+    font-size: .95rem;
+    width: 100%;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.blog-editor-dialog-input:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, .25);
+    outline: none;
+}
+
+.blog-editor-dialog-input.is-invalid {
+    border-color: #f97316;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, .25);
+}
+
+.blog-editor-dialog-error {
+    margin: -.25rem 0 0;
+    color: #d97706;
+    font-size: .85rem;
+    font-weight: 600;
+    display: none;
+}
+
+.blog-editor-dialog-error.is-visible {
+    display: block;
+}
+
+.blog-editor-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: .75rem;
+    margin-top: .5rem;
+}
+
+.blog-editor-dialog-btn {
+    border-radius: 999px;
+    border: 1px solid rgba(15, 23, 42, .12);
+    background: #f8fafc;
+    color: #0f172a;
+    padding: .45rem 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s ease, border-color .2s ease, color .2s ease;
+}
+
+.blog-editor-dialog-btn:hover,
+.blog-editor-dialog-btn:focus {
+    background: #e2e8f0;
+    border-color: rgba(15, 23, 42, .22);
+    outline: none;
+}
+
+.blog-editor-dialog-btn.is-primary {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 10px 25px rgba(37, 99, 235, .35);
+}
+
+.blog-editor-dialog-btn.is-primary:hover,
+.blog-editor-dialog-btn.is-primary:focus {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+}
+
+.blog-editor-choice-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+}
+
+.blog-editor-choice {
+    flex: 1 1 45%;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    padding: .7rem .9rem;
+    background: rgba(15, 23, 42, .05);
+    color: #0f172a;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+
+.blog-editor-choice:hover,
+.blog-editor-choice:focus {
+    transform: translateY(-1px);
+    border-color: rgba(37, 99, 235, .45);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, .18);
+    outline: none;
+}
+
+.blog-editor-choice.is-active {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, .25);
+    background: rgba(37, 99, 235, .12);
+}
+
+@media (max-width: 640px) {
+    .blog-editor-dialog {
+        padding: 1.25rem;
+    }
+
+    .blog-editor-dialog-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .blog-editor-dialog-btn {
+        text-align: center;
+        width: 100%;
+    }
 }
 
 @media (max-width: 640px) {
