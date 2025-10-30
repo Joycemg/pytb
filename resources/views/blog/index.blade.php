@@ -4,6 +4,8 @@
 
 @section('content')
   @php
+    use Illuminate\Support\Str;
+
     $history = $history ?? [];
   @endphp
 
@@ -54,40 +56,55 @@
       <div class="blog-main">
         <div class="blog-grid">
           @forelse ($posts as $post)
-          @php
-            $theme = $post->theme ?? config('blog.default_theme', 'classic');
-            $themes = (array) config('blog.themes', []);
-            if (!array_key_exists($theme, $themes)) {
-                $theme = config('blog.default_theme', 'classic');
-          }
-          $accent = $post->accent_color ?? ($themes[$theme]['accent'] ?? config('blog.default_accent'));
-          $accentText = $post->accent_text_color ?? ($themes[$theme]['text'] ?? config('blog.default_text_color'));
-        @endphp
-        <article class="card blog-card blog-theme-{{ $theme }}" style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }};">
-          <div class="card-body">
-            <span class="blog-card-tag">{{ $themes[$theme]['label'] ?? ucfirst($theme) }}</span>
-            <h2 class="blog-card-title">
-              <a href="{{ route('blog.show', ['post' => $post->slug]) }}">{{ $post->title }}</a>
-            </h2>
+            @php
+              $theme = $post->theme ?? config('blog.default_theme', 'classic');
+              $themes = (array) config('blog.themes', []);
+              if (!array_key_exists($theme, $themes)) {
+                  $theme = config('blog.default_theme', 'classic');
+              }
+              $accent = $post->accent_color ?? ($themes[$theme]['accent'] ?? config('blog.default_accent'));
+              $accentText = $post->accent_text_color ?? ($themes[$theme]['text'] ?? config('blog.default_text_color'));
+              $themeLabel = $themes[$theme]['label'] ?? null;
 
-            <p class="blog-card-meta">
-              @php $publishedAt = $post->published_at?->timezone(config('app.timezone', 'UTC')); @endphp
-              <span>Por {{ $post->author->name ?? 'Equipo de La Taberna' }}</span>
-              @if ($publishedAt)
-                <span>· {{ $publishedAt->translatedFormat('d \d\e F, Y H:i') }}</span>
+              if ($themeLabel === null && !empty($theme)) {
+                  $themeLabel = ucwords(str_replace(['-', '_'], ' ', $theme));
+              }
+
+              if (Str::lower((string) $themeLabel) === 'home') {
+                  $themeLabel = null;
+              }
+            @endphp
+            <article class="card blog-card blog-theme-{{ $theme }}" style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }};">
+              @if ($post->hero_image_url)
+                <figure class="blog-card-media">
+                  <img src="{{ $post->hero_image_url }}" alt="" loading="lazy">
+                </figure>
+              @else
+                <div class="blog-card-media blog-card-media--fallback" aria-hidden="true"></div>
               @endif
-            </p>
 
-            <p class="blog-card-excerpt">{{ $post->excerpt_computed }}</p>
+              <div class="card-body">
+                @if (!empty($themeLabel))
+                  <span class="blog-card-tag">{{ $themeLabel }}</span>
+                @endif
 
-            <a class="btn btn-primary blog-card-link" href="{{ route('blog.show', ['post' => $post->slug]) }}">Leer más</a>
-          </div>
-          @if ($post->hero_image_url)
-            <div class="blog-card-hero" aria-hidden="true">
-              <img src="{{ $post->hero_image_url }}" alt="" loading="lazy">
-            </div>
-          @endif
-        </article>
+                <h2 class="blog-card-title">
+                  <a href="{{ route('blog.show', ['post' => $post->slug]) }}">{{ $post->title }}</a>
+                </h2>
+
+                <p class="blog-card-meta">
+                  @php $publishedAt = $post->published_at?->timezone(config('app.timezone', 'UTC')); @endphp
+                  <span>Por {{ $post->author->name ?? 'Equipo de La Taberna' }}</span>
+                  @if ($publishedAt)
+                    <span>· {{ $publishedAt->translatedFormat('d \d\e F, Y H:i') }}</span>
+                  @endif
+                </p>
+
+                <p class="blog-card-excerpt">{{ $post->excerpt_computed }}</p>
+
+                <a class="btn btn-primary blog-card-link" href="{{ route('blog.show', ['post' => $post->slug]) }}">Leer más</a>
+              </div>
+            </article>
           @empty
             <div class="card">
               <div class="card-body">
