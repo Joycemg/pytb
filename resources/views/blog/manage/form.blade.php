@@ -81,6 +81,18 @@
                       <button type="button" class="blog-editor-swatch" data-color-value="#16A34A" style="--swatch:#16A34A" title="Verde"></button>
                       <button type="button" class="blog-editor-swatch" data-color-custom title="Color personalizado">Personalizar</button>
                     </div>
+                    <div class="blog-editor-color-custom" data-editor-color-panel hidden>
+                      <p class="blog-editor-color-custom-title">Elegí un color en formato hex (#RRGGBB)</p>
+                      <div class="blog-editor-color-custom-row">
+                        <input type="text" class="blog-editor-color-custom-input" data-editor-color-input placeholder="#2563EB" maxlength="7" autocomplete="off">
+                        <span class="blog-editor-color-custom-preview" data-editor-color-preview aria-hidden="true"></span>
+                      </div>
+                      <p class="blog-editor-color-custom-error" data-editor-color-error hidden>Ingresá un color válido. Ejemplo: #2563EB</p>
+                      <div class="blog-editor-color-custom-actions">
+                        <button type="button" class="blog-editor-color-custom-btn" data-editor-color-action="cancel">Cancelar</button>
+                        <button type="button" class="blog-editor-color-custom-btn is-primary" data-editor-color-action="apply">Aplicar</button>
+                      </div>
+                    </div>
                   </div>
                   <div class="blog-editor-palette" data-color-command="hiliteColor" aria-label="Colores de fondo">
                     <span class="blog-editor-group-label">Fondo</span>
@@ -92,13 +104,82 @@
                       <button type="button" class="blog-editor-swatch" data-color-value="#F3E8FF" style="--swatch:#F3E8FF" title="Lavanda"></button>
                       <button type="button" class="blog-editor-swatch" data-color-custom title="Color personalizado">Personalizar</button>
                     </div>
+                    <div class="blog-editor-color-custom" data-editor-color-panel hidden>
+                      <p class="blog-editor-color-custom-title">Ingresá un color en formato hex (#RRGGBB)</p>
+                      <div class="blog-editor-color-custom-row">
+                        <input type="text" class="blog-editor-color-custom-input" data-editor-color-input placeholder="#FDE68A" maxlength="7" autocomplete="off">
+                        <span class="blog-editor-color-custom-preview" data-editor-color-preview aria-hidden="true"></span>
+                      </div>
+                      <p class="blog-editor-color-custom-error" data-editor-color-error hidden>Ingresá un color válido. Ejemplo: #FDE68A</p>
+                      <div class="blog-editor-color-custom-actions">
+                        <button type="button" class="blog-editor-color-custom-btn" data-editor-color-action="cancel">Cancelar</button>
+                        <button type="button" class="blog-editor-color-custom-btn is-primary" data-editor-color-action="apply">Aplicar</button>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div class="blog-editor-group" role="group" aria-label="Enlaces y multimedia">
-                  <button type="button" class="blog-editor-btn" data-action="createLink" title="Insertar enlace">🔗</button>
-                  <button type="button" class="blog-editor-btn" data-action="insertImage" title="Insertar imagen">🖼️</button>
-                  <button type="button" class="blog-editor-btn" data-action="insertBox" title="Insertar caja resaltada">▩</button>
+                  <button type="button" class="blog-editor-btn blog-editor-btn--with-label" data-action="createLink" title="Insertar enlace">
+                    <span class="blog-editor-btn-icon" aria-hidden="true">🔗</span>
+                    <span class="blog-editor-btn-label">Enlace</span>
+                  </button>
+                  <button type="button" class="blog-editor-btn blog-editor-btn--with-label" data-action="insertImage" title="Insertar imagen">
+                    <span class="blog-editor-btn-icon" aria-hidden="true">🖼️</span>
+                    <span class="blog-editor-btn-label">Imagen</span>
+                  </button>
+                  <button type="button" class="blog-editor-btn blog-editor-btn--with-label" data-action="insertBox" title="Insertar caja resaltada">
+                    <span class="blog-editor-btn-icon" aria-hidden="true">🗂</span>
+                    <span class="blog-editor-btn-label">Caja</span>
+                  </button>
                 </div>
+              </div>
+              <div class="blog-editor-overlay" data-editor-overlay hidden></div>
+              <div class="blog-editor-dialogs" data-blog-editor-dialogs>
+                <section class="blog-editor-dialog" data-editor-dialog="link" hidden>
+                  <h3 class="blog-editor-dialog-title">Insertar enlace</h3>
+                  <p class="blog-editor-dialog-description">Agregá un enlace con un texto descriptivo para que la lectura sea más clara.</p>
+                  <label class="blog-editor-dialog-label" for="blog-editor-link-url">URL del enlace</label>
+                  <input id="blog-editor-link-url" type="url" class="blog-editor-dialog-input" data-dialog-input="url" placeholder="https://ejemplo.com/articulo" autocomplete="off" data-dialog-focus>
+                  <label class="blog-editor-dialog-label" for="blog-editor-link-text">Texto visible (opcional)</label>
+                  <input id="blog-editor-link-text" type="text" class="blog-editor-dialog-input" data-dialog-input="text" placeholder="Leer más sobre…" autocomplete="off">
+                  <p class="blog-editor-dialog-hint">Si no completás el texto se usará el contenido seleccionado en el editor.</p>
+                  <p class="blog-editor-dialog-error" data-dialog-error hidden></p>
+                  <div class="blog-editor-dialog-actions">
+                    <button type="button" class="blog-editor-dialog-btn" data-dialog-action="cancel">Cancelar</button>
+                    <button type="button" class="blog-editor-dialog-btn is-primary" data-dialog-action="submit">Insertar enlace</button>
+                  </div>
+                </section>
+
+                <section class="blog-editor-dialog" data-editor-dialog="image" hidden>
+                  <h3 class="blog-editor-dialog-title">Insertar imagen</h3>
+                  <p class="blog-editor-dialog-description">Pegá una imagen alojada en un sitio externo. Asegurate de tener permiso para usarla.</p>
+                  <label class="blog-editor-dialog-label" for="blog-editor-image-url">URL de la imagen</label>
+                  <input id="blog-editor-image-url" type="url" class="blog-editor-dialog-input" data-dialog-input="url" placeholder="https://cdn.ejemplo.com/imagen.jpg" autocomplete="off" data-dialog-focus>
+                  <label class="blog-editor-dialog-label" for="blog-editor-image-alt">Texto alternativo</label>
+                  <input id="blog-editor-image-alt" type="text" class="blog-editor-dialog-input" data-dialog-input="alt" placeholder="Descripción corta de la imagen" autocomplete="off">
+                  <p class="blog-editor-dialog-hint">El texto alternativo ayuda a las personas con lectores de pantalla y mejora el SEO.</p>
+                  <p class="blog-editor-dialog-error" data-dialog-error hidden></p>
+                  <div class="blog-editor-dialog-actions">
+                    <button type="button" class="blog-editor-dialog-btn" data-dialog-action="cancel">Cancelar</button>
+                    <button type="button" class="blog-editor-dialog-btn is-primary" data-dialog-action="submit">Insertar imagen</button>
+                  </div>
+                </section>
+
+                <section class="blog-editor-dialog" data-editor-dialog="box" hidden>
+                  <h3 class="blog-editor-dialog-title">Caja resaltada</h3>
+                  <p class="blog-editor-dialog-description">Elegí el estilo de caja para destacar consejos, avisos o resultados.</p>
+                  <div class="blog-editor-choice-group" role="group" aria-label="Tipo de caja resaltada">
+                    <button type="button" class="blog-editor-choice" data-box-value="info">Informativa</button>
+                    <button type="button" class="blog-editor-choice" data-box-value="success">Éxito</button>
+                    <button type="button" class="blog-editor-choice" data-box-value="warning">Alerta</button>
+                    <button type="button" class="blog-editor-choice" data-box-value="neutral">Neutra</button>
+                  </div>
+                  <p class="blog-editor-dialog-hint">Podés editar el texto una vez insertada la caja.</p>
+                  <div class="blog-editor-dialog-actions">
+                    <button type="button" class="blog-editor-dialog-btn" data-dialog-action="cancel">Cancelar</button>
+                    <button type="button" class="blog-editor-dialog-btn is-primary" data-dialog-action="submit">Insertar caja</button>
+                  </div>
+                </section>
               </div>
               <div id="content-editor" class="blog-editor-canvas" contenteditable="true" aria-label="Editor de contenido enriquecido"></div>
             </div>
@@ -142,6 +223,18 @@
                     @endforeach
                     <button type="button" class="blog-color-swatch is-custom" data-color-custom title="Elegir otro color">✦</button>
                   </div>
+                  <div class="blog-color-custom" data-color-custom-panel hidden>
+                    <p class="blog-color-custom-title">Elegí un color en formato hex (#RRGGBB)</p>
+                    <div class="blog-color-custom-row">
+                      <input type="text" class="blog-color-custom-input" data-color-custom-input placeholder="#2563EB" maxlength="7" autocomplete="off">
+                      <span class="blog-color-custom-preview" data-color-custom-preview aria-hidden="true"></span>
+                    </div>
+                    <p class="blog-color-custom-error" data-color-custom-error hidden>Ingresá un color válido. Ejemplo: #2563EB</p>
+                    <div class="blog-color-custom-actions">
+                      <button type="button" class="blog-color-custom-btn" data-color-custom-action="cancel">Cancelar</button>
+                      <button type="button" class="blog-color-custom-btn is-primary" data-color-custom-action="apply">Aplicar color</button>
+                    </div>
+                  </div>
                 </div>
 
                 <div class="blog-color-picker" data-blog-color-picker data-input="#accent_text_color" data-role="text">
@@ -153,6 +246,18 @@
                       </button>
                     @endforeach
                     <button type="button" class="blog-color-swatch is-custom" data-color-custom title="Elegir otro color">✦</button>
+                  </div>
+                  <div class="blog-color-custom" data-color-custom-panel hidden>
+                    <p class="blog-color-custom-title">Elegí un color en formato hex (#RRGGBB)</p>
+                    <div class="blog-color-custom-row">
+                      <input type="text" class="blog-color-custom-input" data-color-custom-input placeholder="#0F172A" maxlength="7" autocomplete="off">
+                      <span class="blog-color-custom-preview" data-color-custom-preview aria-hidden="true"></span>
+                    </div>
+                    <p class="blog-color-custom-error" data-color-custom-error hidden>Ingresá un color válido. Ejemplo: #0F172A</p>
+                    <div class="blog-color-custom-actions">
+                      <button type="button" class="blog-color-custom-btn" data-color-custom-action="cancel">Cancelar</button>
+                      <button type="button" class="blog-color-custom-btn is-primary" data-color-custom-action="apply">Aplicar color</button>
+                    </div>
                   </div>
                 </div>
               </div>
