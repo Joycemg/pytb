@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Schema;
 
 final class Mesa extends Model
 {
@@ -50,6 +51,8 @@ final class Mesa extends Model
 
     /** Cache interno por request para evitar recuentos repetidos */
     private ?int $capacityLeftCache = null;
+
+    private static ?bool $hasOpenEnrollmentColumnCache = null;
 
     /* ───────── Relaciones ───────── */
 
@@ -175,7 +178,7 @@ final class Mesa extends Model
     public function scopeSelectCard($q)
     {
         $t = $this->getTable();
-        return $q->select([
+        $columns = [
             $t . '.id',
             $t . '.jornada_id',
             $t . '.jornada_apartado_id',
@@ -191,12 +194,27 @@ final class Mesa extends Model
             $t . '.created_by',
             $t . '.manager_id',
             $t . '.opens_at',
-            $t . '.inscripciones_abren_at',
             $t . '.closed_at',
-        ]);
+        ];
+
+        if (self::hasOpenEnrollmentColumn()) {
+            $columns[] = $t . '.inscripciones_abren_at';
+        }
+
+        return $q->select($columns);
     }
 
     /* ───────── Helpers ───────── */
+
+    public static function hasOpenEnrollmentColumn(): bool
+    {
+        if (self::$hasOpenEnrollmentColumnCache === null) {
+            $instance = new static();
+            self::$hasOpenEnrollmentColumnCache = Schema::hasColumn($instance->getTable(), 'inscripciones_abren_at');
+        }
+
+        return self::$hasOpenEnrollmentColumnCache;
+    }
 
     public function isOpenNow(): bool
     {
