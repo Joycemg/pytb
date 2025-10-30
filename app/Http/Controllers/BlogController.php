@@ -81,6 +81,8 @@ final class BlogController extends Controller
             $data['slug'] = Str::slug($data['slug']);
         }
 
+        $data = $this->prepareCustomization($data);
+
         $post = new BlogPost();
         $data['content'] = $this->sanitizeHtml($data['content'] ?? '');
         $post->fill($data);
@@ -112,6 +114,8 @@ final class BlogController extends Controller
         if (!empty($data['slug'])) {
             $data['slug'] = Str::slug($data['slug']);
         }
+
+        $data = $this->prepareCustomization($data, $post);
 
         $data['content'] = $this->sanitizeHtml($data['content'] ?? '');
         $post->fill($data);
@@ -431,5 +435,58 @@ final class BlogController extends Controller
         }
 
         return in_array(strtolower($parsed['scheme']), $allowedSchemes, true);
+    }
+
+    private function prepareCustomization(array $data, ?BlogPost $post = null): array
+    {
+        $themes = (array) config('blog.themes', []);
+        $defaultTheme = (string) config('blog.default_theme', 'classic');
+        $theme = (string) ($data['theme'] ?? ($post?->theme ?? $defaultTheme));
+        if (!array_key_exists($theme, $themes)) {
+            $theme = $defaultTheme;
+        }
+
+        $data['theme'] = $theme;
+
+        $accent = $this->normalizeHexColor($data['accent_color'] ?? null);
+        if ($accent === null) {
+            $accent = $this->normalizeHexColor($themes[$theme]['accent'] ?? null)
+                ?? $this->normalizeHexColor((string) config('blog.default_accent', '#2563EB'));
+        }
+
+        $textAccent = $this->normalizeHexColor($data['accent_text_color'] ?? null);
+        if ($textAccent === null) {
+            $textAccent = $this->normalizeHexColor($themes[$theme]['text'] ?? null)
+                ?? $this->normalizeHexColor((string) config('blog.default_text_color', '#0F172A'));
+        }
+
+        $data['accent_color'] = $accent;
+        $data['accent_text_color'] = $textAccent;
+        $data['hero_image_url'] = isset($data['hero_image_url']) && $data['hero_image_url'] !== ''
+            ? trim((string) $data['hero_image_url'])
+            : null;
+        $data['hero_image_caption'] = isset($data['hero_image_caption']) && $data['hero_image_caption'] !== ''
+            ? trim((string) $data['hero_image_caption'])
+            : null;
+
+        return $data;
+    }
+
+    private function normalizeHexColor(?string $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $trimmed = strtoupper(ltrim(trim($value), '#'));
+        if ($trimmed === '') {
+            return null;
+        }
+
+        if (!preg_match('/^[0-9A-F]{6}$/', $trimmed)) {
+            return null;
+        }
+
+        return '#' . $trimmed;
     }
 }

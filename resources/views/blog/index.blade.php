@@ -11,8 +11,18 @@
 
     <div class="blog-grid">
       @forelse ($posts as $post)
-        <article class="card blog-card">
+        @php
+          $theme = $post->theme ?? config('blog.default_theme', 'classic');
+          $themes = (array) config('blog.themes', []);
+          if (!array_key_exists($theme, $themes)) {
+              $theme = config('blog.default_theme', 'classic');
+          }
+          $accent = $post->accent_color ?? ($themes[$theme]['accent'] ?? config('blog.default_accent'));
+          $accentText = $post->accent_text_color ?? ($themes[$theme]['text'] ?? config('blog.default_text_color'));
+        @endphp
+        <article class="card blog-card blog-theme-{{ $theme }}" style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }};">
           <div class="card-body">
+            <span class="blog-card-tag">{{ $themes[$theme]['label'] ?? ucfirst($theme) }}</span>
             <h2 class="blog-card-title">
               <a href="{{ route('blog.show', ['post' => $post->slug]) }}">{{ $post->title }}</a>
             </h2>
@@ -29,6 +39,11 @@
 
             <a class="btn btn-primary blog-card-link" href="{{ route('blog.show', ['post' => $post->slug]) }}">Leer más</a>
           </div>
+          @if ($post->hero_image_url)
+            <div class="blog-card-hero" aria-hidden="true">
+              <img src="{{ $post->hero_image_url }}" alt="" loading="lazy">
+            </div>
+          @endif
         </article>
       @empty
         <div class="card">

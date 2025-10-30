@@ -56,23 +56,68 @@
     outline-offset: 1px;
 }
 
-.blog-editor-color {
-    display: inline-flex;
-    align-items: center;
-    gap: .25rem;
-    font-size: .75rem;
-    font-weight: 600;
-    color: var(--muted, #475569);
+.blog-editor-group-colors {
+    align-items: stretch;
+    gap: .75rem;
 }
 
-.blog-editor-color input[type="color"] {
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    border: 1px solid var(--line, #cbd5f5);
+.blog-editor-group-label {
+    display: inline-block;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--muted, #475569);
+    margin-bottom: .35rem;
+}
+
+.blog-editor-palette {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+    min-width: 120px;
+}
+
+.blog-editor-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+}
+
+.blog-editor-swatch {
+    width: 28px;
+    height: 28px;
     border-radius: 6px;
-    background: transparent;
+    border: 2px solid transparent;
+    background: var(--swatch, var(--swatch-color, #0f172a));
+    background-color: var(--swatch-color, #0f172a);
     cursor: pointer;
+    position: relative;
+    transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    text-indent: -9999px;
+}
+
+.blog-editor-swatch:hover,
+.blog-editor-swatch:focus {
+    transform: translateY(-1px);
+    border-color: rgba(15, 23, 42, .35);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, .18);
+}
+
+.blog-editor-swatch.is-active {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, .35);
+}
+
+.blog-editor-swatch.is-custom {
+    width: auto;
+    min-width: 90px;
+    padding: .3rem .6rem;
+    background: linear-gradient(135deg, rgba(15, 23, 42, .08) 0%, rgba(148, 163, 184, .12) 100%);
+    color: var(--muted, #475569);
+    font-size: .75rem;
+    font-weight: 600;
+    text-indent: 0;
 }
 
 .blog-editor-canvas {
@@ -164,7 +209,11 @@
         padding: .3rem .45rem;
     }
 
-    .blog-editor-color span {
-        display: none;
+    .blog-editor-group-colors {
+        width: 100%;
+    }
+
+    .blog-editor-palette {
+        flex: 1;
     }
 }

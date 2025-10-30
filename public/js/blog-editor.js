@@ -13,6 +13,28 @@
     return range && canvas.contains(range.commonAncestorContainer);
   }
 
+  function normalizeColor(value) {
+    if (!value) {
+      return null;
+    }
+    var trimmed = String(value).trim();
+    if (trimmed === '') {
+      return null;
+    }
+    if (trimmed.charAt(0) === '#') {
+      trimmed = trimmed.slice(1);
+    }
+    if (trimmed.length === 3) {
+      trimmed = trimmed.split('').map(function (char) {
+        return char + char;
+      }).join('');
+    }
+    if (!/^([0-9a-fA-F]{6})$/.test(trimmed)) {
+      return null;
+    }
+    return '#' + trimmed.toUpperCase();
+  }
+
   function Editor(wrapper) {
     this.wrapper = wrapper;
     this.canvas = wrapper.querySelector('.blog-editor-canvas');
@@ -102,15 +124,42 @@
       }
     });
 
-    this.wrapper.querySelectorAll('[data-color-command]').forEach(function (input) {
-      input.addEventListener('input', function () {
+    this.wrapper.querySelectorAll('.blog-editor-palette[data-color-command]').forEach(function (palette) {
+      palette.addEventListener('click', function (event) {
+        var swatch = event.target.closest('[data-color-value], [data-color-custom]');
+        if (!swatch) {
+          return;
+        }
+        event.preventDefault();
         self.restoreSelection();
         self.canvas.focus();
-        var cmd = input.getAttribute('data-color-command');
+        var cmd = palette.getAttribute('data-color-command');
         if (!cmd) {
           return;
         }
-        var value = input.value;
+        var value;
+        if (swatch.hasAttribute('data-color-custom')) {
+          var current = palette.getAttribute('data-active-color') || '#';
+          var result = window.prompt('Ingresá un color en formato hex (#FFAA00):', current);
+          value = normalizeColor(result);
+          if (!value) {
+            if (result !== null) {
+              window.alert('El color ingresado no es válido. Usá el formato #RRGGBB.');
+            }
+            return;
+          }
+        } else {
+          value = normalizeColor(swatch.getAttribute('data-color-value'));
+          if (!value) {
+            return;
+          }
+        }
+
+        palette.querySelectorAll('[data-color-value]').forEach(function (button) {
+          button.classList.toggle('is-active', button === swatch);
+        });
+        palette.setAttribute('data-active-color', value);
+
         if (cmd === 'hiliteColor' && !document.queryCommandSupported('hiliteColor')) {
           cmd = 'backColor';
         }

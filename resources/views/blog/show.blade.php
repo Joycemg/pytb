@@ -3,7 +3,16 @@
 @section('title', $post->title)
 
 @section('content')
-  <article class="page container blog-post">
+  @php
+    $theme = $post->theme ?? config('blog.default_theme', 'classic');
+    $themes = (array) config('blog.themes', []);
+    if (!array_key_exists($theme, $themes)) {
+        $theme = config('blog.default_theme', 'classic');
+    }
+    $accent = $post->accent_color ?? ($themes[$theme]['accent'] ?? config('blog.default_accent'));
+    $accentText = $post->accent_text_color ?? ($themes[$theme]['text'] ?? config('blog.default_text_color'));
+  @endphp
+  <article class="page container blog-post blog-theme-{{ $theme }}" style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }};">
     <header class="page-head">
       <h1 class="page-title">{{ $post->title }}</h1>
       <p class="blog-card-meta">
@@ -14,6 +23,15 @@
         @endif
       </p>
     </header>
+
+    @if ($post->hero_image_url)
+      <figure class="blog-post-hero">
+        <img src="{{ $post->hero_image_url }}" alt="{{ $post->hero_image_caption ?? '' }}">
+        @if ($post->hero_image_caption)
+          <figcaption>{{ $post->hero_image_caption }}</figcaption>
+        @endif
+      </figure>
+    @endif
 
     @php
       $rawContent = $post->content ?? '';
