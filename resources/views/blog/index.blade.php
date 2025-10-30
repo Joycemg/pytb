@@ -80,7 +80,7 @@
                   <img src="{{ $post->hero_image_url }}" alt="" loading="lazy">
                 </figure>
               @else
-                <div class="blog-card-media blog-card-media--fallback" aria-hidden="true"></div>
+                <div class="blog-card-media blog-card-media--empty" aria-hidden="true"></div>
               @endif
 
               <div class="card-body">
