@@ -6,72 +6,74 @@
     gap: 1rem;
 }
 
+
 .blog-layout {
     display: grid;
-    grid-template-columns: minmax(220px, 280px) 1fr;
-    gap: 2rem;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 260px);
+    gap: 1.5rem;
     align-items: flex-start;
     margin-top: 2rem;
+}
+
+.blog-main {
+    order: 1;
 }
 
 .blog-history {
     position: sticky;
     top: 5rem;
-    background: var(--panel, #fff7ee);
-    border-radius: 18px;
-    padding: 1.5rem;
-    box-shadow: 0 20px 45px rgba(43, 42, 40, .15);
-    border: 1px solid var(--line, #e9d8c9);
+    background: transparent;
+    border-radius: 0;
+    padding: .75rem 0;
+    box-shadow: none;
+    border: none;
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    gap: 1rem;
     color: var(--ink, #2b2a28);
+    order: 2;
 }
 
 .blog-history-title {
     margin: 0;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--ink, #2b2a28) 80%, transparent);
+    text-transform: uppercase;
+    letter-spacing: .06em;
 }
 
 .blog-history-groups {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: .75rem;
 }
 
 .blog-history-year {
     display: flex;
     flex-direction: column;
-    gap: .75rem;
+    gap: .5rem;
 }
 
 .blog-history-year-title {
     margin: 0;
-    font-size: .95rem;
-    font-weight: 700;
-    color: color-mix(in srgb, var(--ink, #2b2a28) 70%, transparent);
+    font-size: .85rem;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--ink, #2b2a28) 65%, transparent);
     letter-spacing: .08em;
     text-transform: uppercase;
 }
 
-.blog-history-month {
-    border: 1px solid color-mix(in srgb, var(--accent, #c9a66b) 45%, transparent);
-    border-radius: 14px;
-    background: linear-gradient(150deg, color-mix(in srgb, var(--accent, #c9a66b) 30%, transparent) 0%, rgba(255, 247, 238, .95) 100%);
-    padding: .25rem .6rem;
-    transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease;
-}
 
-.blog-history-month[open] {
-    box-shadow: 0 18px 35px rgba(43, 42, 40, .18);
-    border-color: color-mix(in srgb, var(--brand, #8c2e2e) 35%, var(--accent, #c9a66b) 65%);
-    transform: translateY(-2px);
+.blog-history-month {
+    border: none;
+    border-radius: 0;
+    background: none;
+    padding: 0;
 }
 
 .blog-history-month + .blog-history-month {
-    margin-top: .55rem;
+    margin-top: .35rem;
 }
 
 .blog-history-month-summary {
@@ -80,21 +82,22 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    gap: .75rem;
     font-weight: 600;
-    color: var(--ink, #2b2a28);
-    font-size: .95rem;
-    padding: .55rem .35rem;
+    color: color-mix(in srgb, var(--ink, #2b2a28) 75%, transparent);
+    font-size: .9rem;
+    padding: .35rem 0;
 }
 
 .blog-history-month-summary::-webkit-details-marker {
     display: none;
 }
 
+
 .blog-history-month-summary::after {
     content: '▾';
-    font-size: .85rem;
-    color: color-mix(in srgb, var(--ink, #2b2a28) 55%, transparent);
+    font-size: .75rem;
+    color: color-mix(in srgb, var(--ink, #2b2a28) 45%, transparent);
     transition: transform .2s ease;
 }
 
@@ -102,18 +105,20 @@
     transform: rotate(180deg);
 }
 
+
 .blog-history-list {
     list-style: none;
-    margin: 0 0 .6rem;
+    margin: 0 0 .5rem;
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: .6rem;
+    gap: .4rem;
 }
 
 .blog-history-item {
     margin: 0;
 }
+
 
 .blog-history-link {
     display: flex;
@@ -121,15 +126,15 @@
     gap: .15rem;
     text-decoration: none;
     color: inherit;
-    padding: .55rem .7rem;
-    border-radius: 10px;
-    transition: background .2s ease, box-shadow .2s ease, transform .2s ease;
+    padding: .35rem 0;
+    border-radius: 0;
+    transition: color .2s ease;
 }
 
 .blog-history-link:hover,
 .blog-history-link:focus {
-    background: color-mix(in srgb, var(--accent, #c9a66b) 22%, transparent);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brand, #8c2e2e) 35%, transparent);
+    color: color-mix(in srgb, var(--brand, #8c2e2e) 55%, var(--ink, #2b2a28) 45%);
+    text-decoration: underline;
     outline: none;
 }
 
@@ -220,6 +225,10 @@
     padding: 1.2rem 1.35rem 1.45rem;
     background: rgba(255, 255, 255, .9);
     flex: 1;
+}
+
+.blog-card--no-media .card-body {
+    padding-top: 1.6rem;
 }
 
 .blog-card-meta {
