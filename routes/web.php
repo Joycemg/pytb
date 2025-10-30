@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 // App controllers
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\InscripcionController;
 use App\Http\Controllers\JornadaApartadoController;
 use App\Http\Controllers\JornadaController;
@@ -34,7 +35,9 @@ Route::pattern('jornada', '\d+');
 Route::pattern('apartado', '\d+');
 
 /* --------------------------------- Home -------------------------------- */
-Route::get('/', [MesaController::class, 'index'])->name('home');
+Route::get('/', [BlogController::class, 'home'])->name('home');
+Route::get('/blog', [BlogController::class, 'home'])->name('blog.index');
+Route::get('/blog/{post:slug}', [BlogController::class, 'show'])->name('blog.show');
 
 /* ---------------------------------- Auth -------------------------------- */
 Route::middleware('guest')->group(function () {
@@ -142,6 +145,28 @@ Route::middleware(['auth', EnsureUserIsActive::class])
         Route::post('/moderacion/mesa/{mesa}/confirmar', [ModeracionController::class, 'confirmarMesa'])
             ->middleware('can:update,mesa')
             ->name('moderacion.confirmarMesa');
+
+        /* ===== Blog ===== */
+        Route::get('/panel/blog', [BlogController::class, 'manage'])
+            ->name('blog.manage');
+
+        Route::get('/panel/blog/nueva', [BlogController::class, 'create'])
+            ->name('blog.create');
+
+        Route::post('/panel/blog', [BlogController::class, 'store'])
+            ->name('blog.store');
+
+        Route::get('/panel/blog/{post}/editar', [BlogController::class, 'edit'])
+            ->name('blog.edit');
+
+        Route::put('/panel/blog/{post}', [BlogController::class, 'update'])
+            ->name('blog.update');
+
+        Route::delete('/panel/blog/{post}', [BlogController::class, 'destroy'])
+            ->name('blog.destroy');
+
+        Route::delete('/panel/blog/{post}/adjuntos/{attachment}', [BlogController::class, 'destroyAttachment'])
+            ->name('blog.attachments.destroy');
 
         /* ===== Panel / Ranking / Perfil ===== */
         Route::get('/panel', [PanelController::class, 'show'])->name('dashboard');

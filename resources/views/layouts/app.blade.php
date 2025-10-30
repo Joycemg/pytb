@@ -120,6 +120,9 @@
            class="nav-main"
            data-nav-collapsible>
         <a class="nav-link"
+           href="{{ route('blog.index') }}">Blog</a>
+
+        <a class="nav-link"
            href="{{ route('mesas.index') }}">Mesas</a>
 
         @if (LRoute::has('jornadas.index'))
@@ -195,6 +198,10 @@
                           style="margin-left:.35rem">{{ $pendCount }}</span>
                   @endif
                 </a>
+              @endif
+
+              @if (LRoute::has('blog.manage'))
+                <a href="{{ route('blog.manage') }}">Blog</a>
               @endif
 
               @if (LRoute::has('admin.usuarios.index'))
