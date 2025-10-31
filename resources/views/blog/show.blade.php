@@ -16,7 +16,33 @@
     $plainContent = trim(preg_replace('/\s+/', ' ', strip_tags((string) $rawContent)) ?? '');
     $wordCount = max(0, str_word_count($plainContent));
     $readingMinutes = max(1, (int) ceil($wordCount / 220));
+    $metaTitle = $post->meta_title ?: $post->title;
+    $metaDescription = $post->meta_description ?: \Illuminate\Support\Str::limit($plainContent, 160);
+    $metaImage = $post->meta_image_url ?: ($post->hero_image_url ?? null);
   @endphp
+
+  @push('head')
+    <meta name="description" content="{{ $metaDescription }}">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="{{ $metaTitle }}">
+    <meta property="og:description" content="{{ $metaDescription }}">
+    <meta property="og:url" content="{{ route('blog.show', ['post' => $post->slug]) }}">
+    @if ($metaImage)
+      <meta property="og:image" content="{{ $metaImage }}">
+    @endif
+    @if ($post->published_at)
+      <meta property="article:published_time" content="{{ $post->published_at->toIso8601String() }}">
+    @endif
+    @if ($post->author)
+      <meta property="article:author" content="{{ $post->author->name }}">
+    @endif
+    <meta name="twitter:card" content="{{ $metaImage ? 'summary_large_image' : 'summary' }}">
+    <meta name="twitter:title" content="{{ $metaTitle }}">
+    <meta name="twitter:description" content="{{ $metaDescription }}">
+    @if ($metaImage)
+      <meta name="twitter:image" content="{{ $metaImage }}">
+    @endif
+  @endpush
   <article class="page container blog-post blog-theme-{{ $theme }}" style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }};">
     <header class="page-head">
       <h1 class="page-title">{{ $post->title }}</h1>
@@ -31,6 +57,14 @@
         @endif
       </p>
     </header>
+
+    @if ($post->tags->isNotEmpty())
+      <ul class="blog-post-tags" aria-label="Etiquetas">
+        @foreach ($post->tags as $tag)
+          <li><a class="blog-post-tag" href="{{ route('blog.index', ['tag' => $tag->slug]) }}">#{{ $tag->name }}</a></li>
+        @endforeach
+      </ul>
+    @endif
 
     @if ($post->hero_image_url)
       <figure class="blog-post-hero">
