@@ -324,6 +324,10 @@ final class BlogController extends Controller
 
         foreach ($nodes as $node) {
             $tag = strtolower($node->nodeName);
+
+            if (in_array($tag, ['html', 'head', 'body'], true)) {
+                continue;
+            }
             if (!array_key_exists($tag, $allowedTags)) {
                 $this->unwrapNode($node);
                 continue;

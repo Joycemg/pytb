@@ -809,12 +809,15 @@
     border: 1px solid var(--line, #e9d8c9);
     box-shadow: 0 28px 48px rgba(43, 42, 40, .18);
     position: relative;
+    max-height: min(360px, 45vh);
+    aspect-ratio: 3 / 1;
 }
 
 .blog-post-hero img {
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
 }
 
 .blog-post-hero figcaption {
