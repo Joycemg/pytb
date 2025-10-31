@@ -41,7 +41,11 @@
     }
 
     .blog-filter-control {
-        @apply flex flex-wrap items-end gap-2;
+        @apply flex flex-nowrap items-end gap-2;
+    }
+
+    .blog-filter-field--search .blog-filter-control input {
+        @apply flex-1 min-w-0;
     }
 
     .blog-filter-actions {
