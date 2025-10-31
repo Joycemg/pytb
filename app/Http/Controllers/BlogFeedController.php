@@ -13,30 +13,6 @@ final class BlogFeedController extends Controller
 {
     use BlogFilterHelpers;
 
-    public function rss(): Response
-    {
-        $posts = BlogPost::query()
-            ->published()
-            ->latest('published_at')
-            ->with(['author', 'tags'])
-            ->take(30)
-            ->get();
-
-        $items = $this->mapPostsForFeeds($posts);
-        $firstItem = $items->first();
-        $updatedAt = is_array($firstItem) ? ($firstItem['published_at'] ?? now()) : now();
-
-        $content = view('blog.feeds.rss', [
-            'items' => $items,
-            'updatedAt' => $updatedAt,
-            'siteTitle' => config('app.name', 'La Taberna') . ' · Blog',
-            'siteUrl' => route('blog.index'),
-        ])->render();
-
-        return response($content, 200)
-            ->header('Content-Type', 'application/rss+xml; charset=UTF-8');
-    }
-
     public function atom(): Response
     {
         $posts = BlogPost::query()
@@ -112,7 +88,6 @@ final class BlogFeedController extends Controller
                 'active' => $this->blogFiltersAreActive($normalizedFilters),
             ],
             'feeds' => [
-                'rss' => route('blog.rss'),
                 'atom' => route('blog.atom'),
             ],
         ]);
