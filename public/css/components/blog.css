@@ -726,9 +726,24 @@
 
 
 .blog-post {
-    padding-bottom: 3rem;
     --blog-accent: var(--blog-accent, var(--brand, #8c2e2e));
     --blog-accent-text: var(--blog-accent-text, var(--ink, #2b2a28));
+    margin-top: 1.75rem;
+    padding: clamp(1.5rem, 4vw, 2.75rem);
+    padding-bottom: clamp(2.5rem, 5vw, 3.5rem);
+    border-radius: 22px;
+    background: #fff;
+    border: 1px solid color-mix(in srgb, var(--line, #e9d8c9) 80%, transparent);
+    box-shadow: 0 18px 36px rgba(15, 23, 42, .12);
+}
+
+@media (max-width: 40em) {
+    .blog-post {
+        margin-top: 1.25rem;
+        padding: 1.25rem 1.4rem 2.5rem;
+        border-radius: 18px;
+        box-shadow: 0 12px 26px rgba(15, 23, 42, .12);
+    }
 }
 
 .blog-post .page-head {
