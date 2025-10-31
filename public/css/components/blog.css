@@ -93,9 +93,22 @@
     margin-top: 0;
 }
 
+.blog-cta--compact {
+    padding: 1rem 1.25rem;
+    border-radius: 14px;
+    background: color-mix(in srgb, rgba(56, 189, 248, .1) 60%, rgba(255, 255, 255, .9));
+    box-shadow: none;
+    gap: .85rem;
+    align-items: center;
+}
+
 .blog-cta-icon {
     font-size: 2.25rem;
     line-height: 1;
+}
+
+.blog-cta--compact .blog-cta-icon {
+    font-size: 1.75rem;
 }
 
 .blog-cta-body {
@@ -111,10 +124,24 @@
     color: var(--ink, #2b2a28);
 }
 
+.blog-cta--compact .blog-cta-title {
+    font-size: 1.1rem;
+}
+
 .blog-cta-text {
     margin: 0;
     font-size: .98rem;
     color: color-mix(in srgb, var(--ink, #2b2a28) 70%, transparent);
+}
+
+.blog-cta--compact .blog-cta-text {
+    font-size: .92rem;
+}
+
+.blog-cta-hint {
+    margin: 0;
+    font-size: .85rem;
+    color: color-mix(in srgb, var(--ink, #2b2a28) 60%, transparent);
 }
 
 .blog-cta-steps {
