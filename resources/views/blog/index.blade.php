@@ -17,11 +17,44 @@
     ];
   @endphp
 
+  @php
+    $latestPost = $posts->first();
+    $latestPublishedAt = optional(optional($latestPost)->published_at)?->timezone(config('app.timezone', 'UTC'));
+  @endphp
+
   <div class="page container blog-list">
-    <header class="page-head blog-header">
-      <div class="blog-header-body">
-        <h1 class="page-title">Novedades</h1>
-        <p class="page-subtitle">Enterate de lo último que sucede en la taberna.</p>
+    <header class="blog-hero" aria-labelledby="blog-hero-title">
+      <div class="blog-hero-content">
+        <div class="blog-hero-copy">
+          <p class="blog-hero-eyebrow">Blog de La Taberna</p>
+          <h1 id="blog-hero-title" class="blog-hero-title">Novedades</h1>
+          <p class="blog-hero-subtitle">Enterate de lo último que sucede en la taberna, descubrí contenidos destacados y guardá lo que más te guste.</p>
+
+          <div class="blog-hero-actions" aria-label="Accesos directos">
+            <a class="blog-hero-action" href="{{ route('blog.rss') }}">RSS</a>
+            <a class="blog-hero-action" href="{{ route('blog.atom') }}">Atom</a>
+            <a class="blog-hero-action" href="{{ route('api.blog.posts') }}">API JSON</a>
+          </div>
+        </div>
+
+        <dl class="blog-hero-stats" aria-label="Indicadores del blog">
+          <div class="blog-hero-stat">
+            <dt>Publicaciones</dt>
+            <dd>{{ number_format($posts->total()) }}</dd>
+          </div>
+
+          @if ($latestPublishedAt)
+            <div class="blog-hero-stat">
+              <dt>Última actualización</dt>
+              <dd>{{ $latestPublishedAt->diffForHumans() }}</dd>
+            </div>
+          @endif
+
+          <div class="blog-hero-stat">
+            <dt>Feeds</dt>
+            <dd>RSS · Atom · JSON</dd>
+          </div>
+        </dl>
       </div>
     </header>
 
@@ -66,18 +99,34 @@
       <div id="blog-posts" class="blog-main">
         <section class="blog-filters" aria-label="Buscar publicaciones">
           <form method="get" action="{{ route('blog.index') }}" class="blog-filter-form">
-            <div class="blog-filter-field">
-              <label for="filter-search">Buscar</label>
-              <input id="filter-search" type="search" name="q" value="{{ $filters['input']['q'] ?? '' }}" placeholder="Título o etiqueta">
+            <div class="blog-filter-grid">
+              <div class="blog-filter-field blog-filter-field--search">
+                <label for="filter-search">Buscá por título, etiqueta o autor</label>
+                <div class="blog-filter-input">
+                  <span class="blog-filter-icon" aria-hidden="true">🔍</span>
+                  <input id="filter-search" type="search" name="q" value="{{ $filters['input']['q'] ?? '' }}" placeholder="Escribí algo como torneo, #evento o Juan">
+                </div>
+              </div>
             </div>
 
             <div class="blog-filter-actions">
               <button type="submit" class="btn btn-primary">Buscar</button>
+
               @if (!empty($filters['active']))
                 <a class="blog-filter-reset" href="{{ route('blog.index') }}">Limpiar</a>
               @endif
-              <span class="blog-filter-hint">Feeds disponibles: <a href="{{ route('blog.rss') }}">RSS</a>, <a href="{{ route('blog.atom') }}">Atom</a>, <a href="{{ route('api.blog.posts') }}">API JSON</a></span>
+
+              <span class="blog-filter-hint">¿Querés recibir novedades? Suscribite desde los accesos directos o guardá el blog como app.</span>
             </div>
+
+            @if (!empty($filters['active']) && filled($filters['applied']['search'] ?? ''))
+              <div class="blog-filter-active" role="status" aria-live="polite">
+                <span class="blog-filter-chip">Mostrando resultados para <strong>{{ $filters['applied']['search'] }}</strong></span>
+                <a class="blog-filter-reset" href="{{ route('blog.index') }}">Quitar filtro</a>
+              </div>
+            @else
+              <p class="blog-filter-suggestion">Tip: probá buscar por <button type="submit" name="q" value="#liga" class="blog-filter-suggestion-btn">#liga</button>, <button type="submit" name="q" value="torneo" class="blog-filter-suggestion-btn">torneo</button> o <button type="submit" name="q" value="equipo" class="blog-filter-suggestion-btn">equipo</button>.</p>
+            @endif
           </form>
         </section>
 
@@ -90,7 +139,7 @@
           </div>
         </section>
 
-        <div class="blog-feed">
+        <div class="blog-feed" aria-live="polite">
           <div class="blog-grid">
             @forelse ($posts as $post)
             @php
@@ -147,9 +196,24 @@
               </a>
             </article>
           @empty
-            <div class="card">
-              <div class="card-body">
-                <p>No hay publicaciones todavía. ¡Vuelve pronto!</p>
+            <div class="blog-empty" role="status" aria-live="polite">
+              <div class="blog-empty-icon" aria-hidden="true">📝</div>
+              <div class="blog-empty-body">
+                @if (!empty($filters['active']) && filled($filters['applied']['search'] ?? ''))
+                  <h2 class="blog-empty-title">No encontramos resultados para “{{ $filters['applied']['search'] }}”.</h2>
+                  <p class="blog-empty-text">Revisá la ortografía, probá con una palabra diferente o explorá el historial para descubrir publicaciones anteriores.</p>
+                  <div class="blog-empty-actions">
+                    <a class="btn btn-primary" href="{{ route('blog.index') }}">Ver todas las novedades</a>
+                    <a class="btn" href="#blog-history">Explorar historial</a>
+                  </div>
+                @else
+                  <h2 class="blog-empty-title">Todavía no hay publicaciones.</h2>
+                  <p class="blog-empty-text">Estamos preparando las primeras novedades. Guardá el blog como app para enterarte apenas publiquemos algo nuevo.</p>
+                  <div class="blog-empty-actions">
+                    <a class="btn btn-primary" href="#blog-history">Revisar historial</a>
+                    <a class="btn" href="{{ route('blog.rss') }}">Suscribirme al RSS</a>
+                  </div>
+                @endif
               </div>
             </div>
           @endforelse
