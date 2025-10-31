@@ -162,13 +162,13 @@
 
 .blog-grid {
     display: grid;
-    gap: 1.5rem;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.1rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
 .blog-card-title {
     margin: 0;
-    font-size: 1.35rem;
+    font-size: 1.2rem;
 }
 
 .blog-card-title a {
@@ -184,10 +184,10 @@
 .blog-card {
     position: relative;
     overflow: hidden;
-    border-radius: 10px;
+    border-radius: 8px;
     border: 1px solid color-mix(in srgb, var(--line, #e9d8c9) 85%, transparent);
     background: linear-gradient(180deg, rgba(255, 247, 238, .98) 0%, rgba(249, 238, 220, .98) 100%);
-    box-shadow: 0 16px 32px rgba(43, 42, 40, .16);
+    box-shadow: 0 12px 24px rgba(43, 42, 40, .16);
     display: flex;
     flex-direction: column;
     min-height: 0;
@@ -206,8 +206,8 @@
 
 .blog-card:hover,
 .blog-card:focus-within {
-    transform: translateY(-4px);
-    box-shadow: 0 22px 44px rgba(43, 42, 40, .18);
+    transform: translateY(-2px);
+    box-shadow: 0 18px 32px rgba(43, 42, 40, .18);
     border-color: color-mix(in srgb, var(--brand, #8c2e2e) 28%, var(--line, #e9d8c9) 72%);
 }
 
@@ -222,17 +222,17 @@
     display: flex;
     flex-direction: column;
     gap: .65rem;
-    padding: 1.2rem 1.35rem 1.45rem;
+    padding: .95rem 1.1rem 1.2rem;
     background: rgba(255, 255, 255, .9);
     flex: 1;
 }
 
 .blog-card--no-media .card-body {
-    padding-top: 1.6rem;
+    padding-top: 1.25rem;
 }
 
 .blog-card-meta {
-    margin: 0 0 .8rem;
+    margin: 0 0 .6rem;
     color: var(--muted, #7c6f63);
     font-size: .9rem;
     display: flex;
@@ -241,7 +241,7 @@
 }
 
 .blog-card-excerpt {
-    margin: 0 0 1rem;
+    margin: 0 0 .75rem;
     color: color-mix(in srgb, var(--ink, #2b2a28) 85%, transparent);
 }
 
@@ -269,7 +269,7 @@
     position: relative;
     margin: 0;
     width: 100%;
-    height: 180px;
+    height: 150px;
     overflow: hidden;
     border-bottom: 1px solid color-mix(in srgb, var(--line, #e9d8c9) 75%, transparent);
     background: linear-gradient(145deg, color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 25%, transparent) 0%, rgba(255, 247, 238, .95) 100%);
@@ -315,8 +315,8 @@
     text-transform: uppercase;
     color: var(--blog-accent-text, var(--ink, #2b2a28));
     background: color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 18%, rgba(255, 247, 238, .92));
-    padding: .3rem .6rem;
-    border-radius: 6px;
+    padding: .25rem .5rem;
+    border-radius: 5px;
     box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 30%, transparent);
 }
 
