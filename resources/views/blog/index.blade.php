@@ -13,8 +13,25 @@
       <p class="page-subtitle">Enterate de lo último que sucede en la taberna.</p>
     </header>
 
+    <section class="blog-hero" aria-label="Destacados del blog">
+      <div class="blog-hero-content">
+        <p class="blog-hero-kicker">Historias &amp; actualizaciones</p>
+        <h2 class="blog-hero-title">Todo lo que pasa en La Taberna</h2>
+        <p class="blog-hero-text">Crónicas de torneos, consejos de las mesas y la voz de la comunidad en un solo lugar.</p>
+        <div class="blog-hero-actions">
+          <a class="btn btn-primary" href="#blog-posts">Explorar novedades</a>
+          <a class="btn" href="#blog-history">Ver historial</a>
+        </div>
+      </div>
+      <ul class="blog-hero-highlights" aria-label="Qué vas a encontrar">
+        <li class="blog-hero-highlight">Crónicas frescas de nuestras jornadas</li>
+        <li class="blog-hero-highlight">Tips para sacarle jugo a cada mesa</li>
+        <li class="blog-hero-highlight">Historias y logros de la comunidad tabernera</li>
+      </ul>
+    </section>
+
     <div class="blog-layout">
-      <aside class="blog-history" aria-label="Historial de publicaciones">
+      <aside id="blog-history" class="blog-history" aria-label="Historial de publicaciones">
         <h2 class="blog-history-title">Historial</h2>
 
         @if (!empty($history))
@@ -51,7 +68,20 @@
         @endif
       </aside>
 
-      <div class="blog-main">
+      <div id="blog-posts" class="blog-main">
+        <section class="blog-cta" aria-label="Usá La Taberna como app">
+          <div class="blog-cta-icon" aria-hidden="true">📲</div>
+          <div class="blog-cta-body">
+            <h2 class="blog-cta-title">Agregá La Taberna a tu pantalla de inicio</h2>
+            <p class="blog-cta-text"><strong>Tip:</strong> instalá el sitio como app para recibir las novedades a un toque de distancia.</p>
+            <ol class="blog-cta-steps">
+              <li>Desde tu navegador, abrí el menú de opciones o compartir.</li>
+              <li>Elegí «Agregar a pantalla de inicio» o «Instalar aplicación».</li>
+              <li>Confirmá y abrí La Taberna desde el nuevo ícono para vivir la experiencia completa.</li>
+            </ol>
+          </div>
+        </section>
+
         <div class="blog-grid">
           @forelse ($posts as $post)
             @php
@@ -64,7 +94,7 @@
               $accentText = $post->accent_text_color ?? ($themes[$theme]['text'] ?? config('blog.default_text_color'));
             @endphp
             @php $hasHeroImage = filled($post->hero_image_url); @endphp
-            <article class="card blog-card blog-theme-{{ $theme }} {{ $hasHeroImage ? '' : 'blog-card--no-media' }}" style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }};">
+            <article class="card blog-card blog-theme-{{ $theme }} {{ $hasHeroImage ? '' : 'blog-card--no-media' }} {{ $loop->first ? 'blog-card--featured' : '' }}" style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }};">
               @if ($hasHeroImage)
                 <figure class="blog-card-media">
                   <img src="{{ $post->hero_image_url }}" alt="" loading="lazy">
