@@ -20,11 +20,11 @@
     }
 
     .blog-filter-form {
-        @apply mb-8 rounded-xl border border-slate-200 bg-white p-4 shadow-sm md:p-6;
+        @apply mb-6 flex flex-col gap-4 rounded-xl border border-slate-200/80 bg-white/80 p-4 md:gap-3 md:p-5;
     }
 
     .blog-filter-grid {
-        @apply grid gap-4 md:grid-cols-2 xl:grid-cols-5;
+        @apply flex flex-col gap-3 md:flex-row md:items-end md:justify-between;
     }
 
     .blog-filter-field {
@@ -32,16 +32,16 @@
     }
 
     .blog-filter-field label {
-        @apply text-sm font-semibold text-slate-600;
+        @apply text-xs font-medium text-slate-500;
     }
 
     .blog-filter-field input,
     .blog-filter-field select {
-        @apply w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200;
+        @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 transition focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200;
     }
 
     .blog-filter-actions {
-        @apply mt-4 flex flex-wrap items-center gap-3;
+        @apply flex flex-shrink-0 items-center gap-2 md:gap-3;
     }
 
     .blog-filter-reset {
@@ -49,7 +49,7 @@
     }
 
     .blog-filter-hint {
-        @apply text-xs text-slate-500;
+        @apply text-xs text-slate-500 md:text-[0.8125rem];
     }
 
     .blog-filter-hint a {
@@ -125,11 +125,11 @@
     }
 
     .blog-filter-field--search {
-        @apply w-full max-w-md;
+        @apply w-full md:max-w-xl;
     }
 
     .blog-filter-field--search input {
-        @apply py-1.5 text-sm;
+        @apply py-2 text-sm;
     }
 
     .blog-filter-field--search input::placeholder {
@@ -137,19 +137,19 @@
     }
 
     .blog-filter-active {
-        @apply mt-6 flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600;
+        @apply mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600;
     }
 
     .blog-filter-chip {
-        @apply inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 font-semibold text-slate-700 shadow-sm;
+        @apply inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-sm font-medium text-slate-700 shadow-sm;
     }
 
     .blog-filter-suggestion {
-        @apply mt-6 text-sm text-slate-500;
+        @apply mt-4 text-sm text-slate-500;
     }
 
     .blog-filter-suggestion-btn {
-        @apply inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600 shadow-sm transition hover:border-slate-300 hover:text-slate-900;
+        @apply inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600 transition hover:border-slate-300 hover:text-slate-900;
     }
 
     .blog-feed {
