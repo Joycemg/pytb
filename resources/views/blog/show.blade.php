@@ -61,4 +61,39 @@
       <a class="btn" href="{{ route('blog.index') }}">← Volver</a>
     </footer>
   </article>
+  @push('scripts')
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const boxes = document.querySelectorAll('.blog-post-content .blog-box');
+
+        boxes.forEach((box) => {
+          if (box.dataset.blogBoxHasConfirm === 'true' || box.querySelector('[data-blog-box-confirm]')) {
+            return;
+          }
+
+          const confirmBtn = document.createElement('button');
+          confirmBtn.type = 'button';
+          confirmBtn.className = 'blog-box-confirm';
+          confirmBtn.setAttribute('data-blog-box-confirm', 'true');
+          confirmBtn.innerHTML = '<span class="blog-box-confirm-icon" aria-hidden="true">✔</span><span>Confirmar</span>';
+
+          confirmBtn.addEventListener('click', () => {
+            const boxBottom = box.getBoundingClientRect().bottom + window.scrollY;
+
+            box.classList.add('blog-box-confirmed');
+            confirmBtn.disabled = true;
+            confirmBtn.setAttribute('aria-pressed', 'true');
+
+            window.scrollTo({
+              top: boxBottom + 16,
+              behavior: 'smooth'
+            });
+          });
+
+          box.dataset.blogBoxHasConfirm = 'true';
+          box.appendChild(confirmBtn);
+        });
+      });
+    </script>
+  @endpush
 @endsection
