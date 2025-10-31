@@ -273,6 +273,32 @@
     });
   };
 
+  Editor.prototype.clearActiveBox = function () {
+    if (!this.canvas) {
+      return;
+    }
+    this.canvas.querySelectorAll('.blog-box.is-active').forEach(function (box) {
+      box.classList.remove('is-active');
+    });
+  };
+
+  Editor.prototype.updateActiveBox = function (range) {
+    if (!this.canvas) {
+      return;
+    }
+    this.clearActiveBox();
+    var currentRange = range || getSelectionRange(this.canvas);
+    if (!currentRange) {
+      return;
+    }
+    var box = closestNode(currentRange.startContainer, function (node) {
+      return node && node.nodeType === 1 && node.classList && node.classList.contains('blog-box');
+    }, this.canvas);
+    if (box) {
+      box.classList.add('is-active');
+    }
+  };
+
   Editor.prototype.registerEvents = function () {
     var self = this;
 
@@ -325,6 +351,7 @@
     this.canvas.addEventListener('scroll', this.boundScrollUpdate);
     this.canvas.addEventListener('input', function () {
       self.decorateBlogBoxes();
+      self.updateActiveBox();
       self.textarea.value = self.prepareContent(self.canvas.innerHTML);
       self.commitHistorySoon();
       self.updateImageToolsPosition();
@@ -332,6 +359,7 @@
     document.addEventListener('click', function (event) {
       if (!self.wrapper.contains(event.target)) {
         self.deactivateImage();
+        self.clearActiveBox();
       }
     });
 
@@ -1448,13 +1476,18 @@
   Editor.prototype.saveSelection = function () {
     var selection = window.getSelection();
     if (!selection || selection.rangeCount === 0) {
+      this.selection = null;
+      this.clearActiveBox();
       return;
     }
     var range = selection.getRangeAt(0);
     if (!isEditableRange(range, this.canvas)) {
+      this.selection = null;
+      this.clearActiveBox();
       return;
     }
     this.selection = range;
+    this.updateActiveBox(range);
   };
 
   Editor.prototype.restoreSelection = function () {
