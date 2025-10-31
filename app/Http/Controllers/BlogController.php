@@ -310,8 +310,8 @@ final class BlogController extends Controller
         $internalErrors = libxml_use_internal_errors(true);
 
         $document->loadHTML(
-            '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . $html,
-            LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
+            '<!DOCTYPE html><html><head><meta charset="utf-8"></head><body>' . $html . '</body></html>',
+            LIBXML_HTML_NODEFDTD
         );
 
         libxml_clear_errors();
@@ -328,6 +328,11 @@ final class BlogController extends Controller
             if (in_array($tag, ['html', 'head', 'body'], true)) {
                 continue;
             }
+            if (in_array($tag, ['script', 'style'], true)) {
+                $node->parentNode?->removeChild($node);
+                continue;
+            }
+
             if (!array_key_exists($tag, $allowedTags)) {
                 $this->unwrapNode($node);
                 continue;
@@ -397,7 +402,7 @@ final class BlogController extends Controller
 
         $body = $document->getElementsByTagName('body')->item(0);
         if ($body === null) {
-            return '';
+            return trim(strip_tags($html));
         }
 
         $output = '';
