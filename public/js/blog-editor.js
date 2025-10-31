@@ -98,6 +98,13 @@
       self.textarea.value = self.prepareContent(self.canvas.innerHTML);
     });
 
+    var form = this.wrapper.closest('form');
+    if (form) {
+      form.addEventListener('submit', function () {
+        self.textarea.value = self.prepareContent(self.canvas.innerHTML);
+      });
+    }
+
     this.wrapper.addEventListener('click', function (event) {
       var button = event.target.closest('[data-command], [data-format-block], [data-action]');
       if (!button) {
