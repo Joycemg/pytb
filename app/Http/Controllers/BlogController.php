@@ -2,30 +2,56 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BlogFilterHelpers;
 use App\Http\Requests\BlogPostRequest;
 use App\Models\BlogAttachment;
 use App\Models\BlogPost;
+use App\Models\BlogTag;
+use App\Models\Usuario;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 final class BlogController extends Controller
 {
-    public function home(Request $request): View
-    {
-        /** @var LengthAwarePaginator $posts */
-        $posts = BlogPost::query()
-            ->published()
-            ->latest('published_at')
-            ->with(['author'])
-            ->paginate(10);
+    use BlogFilterHelpers;
 
-        $history = BlogPost::query()
+    public function home(Request $request): View|JsonResponse
+    {
+        $rawFilters = [
+            'q' => trim((string) $request->query('q', '')),
+            'author' => $request->query('author', ''),
+            'tag' => trim((string) $request->query('tag', '')),
+            'from' => trim((string) $request->query('from', '')),
+            'to' => trim((string) $request->query('to', '')),
+        ];
+
+        $normalizedFilters = $this->normalizeBlogFilters($rawFilters);
+
+        $query = BlogPost::query()
             ->published()
             ->latest('published_at')
+            ->with(['author', 'tags']);
+
+        $this->applyBlogFilters($query, $normalizedFilters);
+
+        /** @var LengthAwarePaginator $posts */
+        $posts = $query
+            ->paginate(10)
+            ->withQueryString();
+
+        $historyQuery = BlogPost::query()
+            ->published()
+            ->latest('published_at');
+
+        $this->applyBlogFilters($historyQuery, $normalizedFilters);
+
+        $history = $historyQuery
             ->get(['id', 'title', 'slug', 'published_at'])
             ->groupBy(function (BlogPost $post) {
                 return $post->published_at?->format('Y');
@@ -66,16 +92,75 @@ final class BlogController extends Controller
             ->values()
             ->all();
 
+        $authors = $this->availableAuthors();
+        $tags = $this->availableTags();
+
+        $hasActiveFilters = $this->blogFiltersAreActive($normalizedFilters);
+
         if ($request->wantsJson()) {
-            return view('blog.index', [
-                'posts' => $posts,
-                'history' => $history,
+            return response()->json([
+                'data' => $posts->getCollection()->map(function (BlogPost $post) {
+                    return [
+                        'id' => $post->id,
+                        'slug' => $post->slug,
+                        'title' => $post->title,
+                        'excerpt' => $post->excerpt_computed,
+                        'published_at' => $post->published_at?->toIso8601String(),
+                        'author' => $post->author === null ? null : [
+                            'id' => $post->author->id,
+                            'name' => $post->author->name,
+                        ],
+                        'tags' => $post->tags->map(function ($tag) {
+                            return [
+                                'id' => $tag->id,
+                                'name' => $tag->name,
+                                'slug' => $tag->slug,
+                            ];
+                        })->all(),
+                    ];
+                })->all(),
+                'meta' => [
+                    'current_page' => $posts->currentPage(),
+                    'last_page' => $posts->lastPage(),
+                    'per_page' => $posts->perPage(),
+                    'total' => $posts->total(),
+                ],
+                'links' => [
+                    'first' => $posts->url(1),
+                    'last' => $posts->url($posts->lastPage()),
+                    'prev' => $posts->previousPageUrl(),
+                    'next' => $posts->nextPageUrl(),
+                ],
+                'filters' => [
+                    'input' => $rawFilters,
+                    'applied' => [
+                        'search' => $normalizedFilters['search'],
+                        'author_id' => $normalizedFilters['author_id'],
+                        'tag' => $normalizedFilters['tag_slug'],
+                        'from' => $normalizedFilters['from']?->toDateString(),
+                        'to' => $normalizedFilters['to']?->toDateString(),
+                    ],
+                    'active' => $this->blogFiltersAreActive($normalizedFilters),
+                ],
             ]);
         }
 
         return view('blog.index', [
             'posts' => $posts,
             'history' => $history,
+            'filters' => [
+                'input' => $rawFilters,
+                'applied' => [
+                    'search' => $normalizedFilters['search'],
+                    'author_id' => $normalizedFilters['author_id'],
+                    'tag_slug' => $normalizedFilters['tag_slug'],
+                    'from' => $normalizedFilters['from']?->toDateString(),
+                    'to' => $normalizedFilters['to']?->toDateString(),
+                ],
+                'active' => $hasActiveFilters,
+            ],
+            'authors' => $authors,
+            'tags' => $tags,
         ]);
     }
 
@@ -89,7 +174,7 @@ final class BlogController extends Controller
         }
 
         return view('blog.show', [
-            'post' => $post->load(['author', 'attachments']),
+            'post' => $post->load(['author', 'attachments', 'tags']),
         ]);
     }
 
@@ -114,6 +199,7 @@ final class BlogController extends Controller
 
         return view('blog.manage.form', [
             'post' => new BlogPost(),
+            'availableTags' => $this->availableTagsForForm(),
         ]);
     }
 
@@ -135,6 +221,7 @@ final class BlogController extends Controller
         $post->published_at = $data['published_at'] ?? now();
         $post->save();
 
+        $this->syncTags($post, $request);
         $this->syncAttachments($post, $request);
 
         return redirect()
@@ -147,7 +234,8 @@ final class BlogController extends Controller
         $this->authorize('update', $post);
 
         return view('blog.manage.form', [
-            'post' => $post->load('attachments'),
+            'post' => $post->load(['attachments', 'tags']),
+            'availableTags' => $this->availableTagsForForm(),
         ]);
     }
 
@@ -173,6 +261,7 @@ final class BlogController extends Controller
         }
         $post->save();
 
+        $this->syncTags($post, $request);
         $this->syncAttachments($post, $request);
 
         return redirect()
@@ -210,6 +299,109 @@ final class BlogController extends Controller
         return redirect()
             ->route('blog.edit', $post)
             ->with('status', 'Archivo eliminado.');
+    }
+
+    /**
+     * @return Collection<int, array{id:int,name:string}>
+     */
+    private function availableAuthors(): Collection
+    {
+        $authorIds = BlogPost::query()
+            ->published()
+            ->select('user_id')
+            ->distinct()
+            ->pluck('user_id')
+            ->filter();
+
+        if ($authorIds->isEmpty()) {
+            return collect();
+        }
+
+        return Usuario::query()
+            ->whereIn('id', $authorIds->all())
+            ->orderBy('name')
+            ->get(['id', 'name'])
+            ->map(fn (Usuario $user) => ['id' => (int) $user->id, 'name' => $user->name ?? ''])
+            ->values();
+    }
+
+    /**
+     * @return Collection<int, array{id:int,name:string,slug:string}>
+     */
+    private function availableTags(): Collection
+    {
+        return BlogTag::query()
+            ->whereHas('posts', function ($query): void {
+                $query->published();
+            })
+            ->orderBy('name')
+            ->get(['id', 'name', 'slug'])
+            ->map(fn (BlogTag $tag) => [
+                'id' => (int) $tag->id,
+                'name' => $tag->name,
+                'slug' => $tag->slug,
+            ])
+            ->values();
+    }
+
+    /**
+     * @return Collection<int, array{id:int,name:string,slug:string}>
+     */
+    private function availableTagsForForm(): Collection
+    {
+        return BlogTag::query()
+            ->orderBy('name')
+            ->get(['id', 'name', 'slug'])
+            ->map(fn (BlogTag $tag) => [
+                'id' => (int) $tag->id,
+                'name' => $tag->name,
+                'slug' => $tag->slug,
+            ])
+            ->values();
+    }
+
+    private function syncTags(BlogPost $post, Request $request): void
+    {
+        $existingTagIds = collect($request->input('tags', []))
+            ->filter(fn ($value) => is_numeric($value))
+            ->map(fn ($value) => (int) $value);
+
+        $rawNewTags = preg_split('/[,;]+/', (string) $request->input('new_tags', ''));
+        $newTags = collect($rawNewTags ?: [])
+            ->map(fn ($value) => Str::of((string) $value)->squish()->toString())
+            ->filter(fn ($value) => $value !== '')
+            ->unique(fn ($value) => Str::lower($value))
+            ->values();
+
+        $createdIds = [];
+        foreach ($newTags as $tagName) {
+            $existing = BlogTag::query()->where('name', $tagName)->first();
+            if ($existing !== null) {
+                $createdIds[] = (int) $existing->id;
+                continue;
+            }
+
+            $baseSlug = Str::slug($tagName);
+            if ($baseSlug === '') {
+                $baseSlug = Str::slug(Str::random(8));
+            }
+
+            $slug = $baseSlug;
+            $suffix = 1;
+            while (BlogTag::where('slug', $slug)->exists()) {
+                $suffix++;
+                $slug = $baseSlug . '-' . $suffix;
+            }
+
+            $tag = BlogTag::create([
+                'name' => $tagName,
+                'slug' => $slug,
+            ]);
+
+            $createdIds[] = (int) $tag->id;
+        }
+
+        $post->tags()->sync($existingTagIds->merge($createdIds)->unique()->all());
     }
 
     private function syncAttachments(BlogPost $post, Request $request): void
@@ -521,6 +713,16 @@ final class BlogController extends Controller
             : null;
         $data['hero_image_caption'] = isset($data['hero_image_caption']) && $data['hero_image_caption'] !== ''
             ? trim((string) $data['hero_image_caption'])
+            : null;
+
+        $data['meta_title'] = isset($data['meta_title']) && $data['meta_title'] !== ''
+            ? trim((string) $data['meta_title'])
+            : null;
+        $data['meta_description'] = isset($data['meta_description']) && $data['meta_description'] !== ''
+            ? trim((string) $data['meta_description'])
+            : null;
+        $data['meta_image_url'] = isset($data['meta_image_url']) && $data['meta_image_url'] !== ''
+            ? trim((string) $data['meta_image_url'])
             : null;
 
         return $data;

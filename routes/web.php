@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\BlogFeedController;
 use App\Http\Controllers\InscripcionController;
 use App\Http\Controllers\JornadaApartadoController;
 use App\Http\Controllers\JornadaController;
@@ -38,6 +39,8 @@ Route::pattern('apartado', '\d+');
 Route::get('/', [BlogController::class, 'home'])->name('home');
 Route::get('/blog', [BlogController::class, 'home'])->name('blog.index');
 Route::get('/blog/{post:slug}', [BlogController::class, 'show'])->name('blog.show');
+Route::get('/blog/rss', [BlogFeedController::class, 'rss'])->name('blog.rss');
+Route::get('/blog/atom', [BlogFeedController::class, 'atom'])->name('blog.atom');
 
 /* ---------------------------------- Auth -------------------------------- */
 Route::middleware('guest')->group(function () {

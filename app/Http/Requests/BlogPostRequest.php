@@ -34,9 +34,15 @@ final class BlogPostRequest extends FormRequest
             'accent_text_color' => ['nullable', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'hero_image_url' => ['nullable', 'url', 'max:500'],
             'hero_image_caption' => ['nullable', 'string', 'max:160'],
+            'meta_title' => ['nullable', 'string', 'max:255'],
+            'meta_description' => ['nullable', 'string', 'max:320'],
+            'meta_image_url' => ['nullable', 'url', 'max:500'],
             'published_at' => ['nullable', 'date'],
             'attachments' => ['sometimes', 'array'],
             'attachments.*' => ['file', 'max:51200'],
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['integer', 'exists:blog_tags,id'],
+            'new_tags' => ['nullable', 'string', 'max:255'],
         ];
     }
 }
