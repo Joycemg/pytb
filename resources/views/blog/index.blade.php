@@ -8,9 +8,11 @@
   @endphp
 
   <div class="page container blog-list">
-    <header class="page-head">
-      <h1 class="page-title">Novedades</h1>
-      <p class="page-subtitle">Enterate de lo último que sucede en la taberna.</p>
+    <header class="page-head blog-header">
+      <div class="blog-header-body">
+        <h1 class="page-title">Novedades</h1>
+        <p class="page-subtitle">Enterate de lo último que sucede en la taberna.</p>
+      </div>
     </header>
 
     <div class="blog-layout">
@@ -61,8 +63,9 @@
           </div>
         </section>
 
-        <div class="blog-grid">
-          @forelse ($posts as $post)
+        <div class="blog-feed">
+          <div class="blog-grid">
+            @forelse ($posts as $post)
             @php
               $theme = $post->theme ?? config('blog.default_theme', 'classic');
               $themes = (array) config('blog.themes', []);
@@ -114,10 +117,11 @@
               </div>
             </div>
           @endforelse
-        </div>
+          </div>
 
-        <div class="blog-pagination">
-          {{ $posts->links() }}
+          <div class="blog-pagination">
+            {{ $posts->links() }}
+          </div>
         </div>
       </div>
     </div>
