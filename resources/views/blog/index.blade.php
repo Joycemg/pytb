@@ -95,29 +95,38 @@
             @endphp
             @php $hasHeroImage = filled($post->hero_image_url); @endphp
             <article class="card blog-card blog-theme-{{ $theme }} {{ $hasHeroImage ? '' : 'blog-card--no-media' }} {{ $loop->first ? 'blog-card--featured' : '' }}" style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }};">
-              @if ($hasHeroImage)
-                <figure class="blog-card-media">
-                  <img src="{{ $post->hero_image_url }}" alt="" loading="lazy">
-                </figure>
-              @endif
+              <div class="blog-card-inner">
+                @if ($hasHeroImage)
+                  <figure class="blog-card-media">
+                    <img src="{{ $post->hero_image_url }}" alt="" loading="lazy">
+                  </figure>
+                @endif
 
-              <div class="card-body">
-                <h2 class="blog-card-title">
-                  <a href="{{ route('blog.show', ['post' => $post->slug]) }}">{{ $post->title }}</a>
-                </h2>
+                <div class="card-body">
+                  <header class="blog-card-header">
+                    <p class="blog-card-meta">
+                      @php $publishedAt = $post->published_at?->timezone(config('app.timezone', 'UTC')); @endphp
+                      <span class="blog-card-author">Por {{ $post->author->name ?? 'Equipo de La Taberna' }}</span>
+                      @if ($publishedAt)
+                        <span class="blog-card-separator" aria-hidden="true">•</span>
+                        <time datetime="{{ $publishedAt->toIso8601String() }}">{{ $publishedAt->translatedFormat('d \d\e F, Y H:i') }}</time>
+                      @endif
+                    </p>
 
-                <p class="blog-card-meta">
-                  @php $publishedAt = $post->published_at?->timezone(config('app.timezone', 'UTC')); @endphp
-                  <span>Por {{ $post->author->name ?? 'Equipo de La Taberna' }}</span>
-                  @if ($publishedAt)
-                    <span>· {{ $publishedAt->translatedFormat('d \d\e F, Y H:i') }}</span>
-                  @endif
-                </p>
+                    <h2 class="blog-card-title">{{ $post->title }}</h2>
+                  </header>
 
-                <p class="blog-card-excerpt">{{ $post->excerpt_computed }}</p>
+                  <p class="blog-card-excerpt">{{ $post->excerpt_computed }}</p>
 
-                <a class="btn btn-primary blog-card-link" href="{{ route('blog.show', ['post' => $post->slug]) }}">Leer más</a>
+                  <footer class="blog-card-footer" aria-hidden="true">
+                    <span class="blog-card-cta">Seguir leyendo</span>
+                  </footer>
+                </div>
               </div>
+
+              <a class="blog-card-link" href="{{ route('blog.show', ['post' => $post->slug]) }}">
+                <span class="sr-only">Leer la publicación {{ $post->title }}</span>
+              </a>
             </article>
           @empty
             <div class="card">
