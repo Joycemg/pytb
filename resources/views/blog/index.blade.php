@@ -4,8 +4,6 @@
 
 @section('content')
   @php
-    use Illuminate\Support\Str;
-
     $history = $history ?? [];
   @endphp
 
@@ -64,15 +62,6 @@
               }
               $accent = $post->accent_color ?? ($themes[$theme]['accent'] ?? config('blog.default_accent'));
               $accentText = $post->accent_text_color ?? ($themes[$theme]['text'] ?? config('blog.default_text_color'));
-              $themeLabel = $themes[$theme]['label'] ?? null;
-
-              if ($themeLabel === null && !empty($theme)) {
-                  $themeLabel = ucwords(str_replace(['-', '_'], ' ', $theme));
-              }
-
-              if (Str::lower((string) $themeLabel) === 'home') {
-                  $themeLabel = null;
-              }
             @endphp
             @php $hasHeroImage = filled($post->hero_image_url); @endphp
             <article class="card blog-card blog-theme-{{ $theme }} {{ $hasHeroImage ? '' : 'blog-card--no-media' }}" style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }};">
@@ -83,10 +72,6 @@
               @endif
 
               <div class="card-body">
-                @if (!empty($themeLabel))
-                  <span class="blog-card-tag">{{ $themeLabel }}</span>
-                @endif
-
                 <h2 class="blog-card-title">
                   <a href="{{ route('blog.show', ['post' => $post->slug]) }}">{{ $post->title }}</a>
                 </h2>
