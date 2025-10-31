@@ -15,7 +15,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('blog_post_tag', function (Blueprint $table): void {
+        Schema::create('blog_post_blog_tag', function (Blueprint $table): void {
             $table->unsignedBigInteger('blog_post_id');
             $table->unsignedBigInteger('blog_tag_id');
 
@@ -35,7 +35,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('blog_post_tag');
+        Schema::dropIfExists('blog_post_blog_tag');
         Schema::dropIfExists('blog_tags');
     }
 };
