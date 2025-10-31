@@ -57,19 +57,6 @@
       </section>
     @endif
 
-    <section class="blog-cta blog-cta--inline" aria-label="Usá La Taberna como app">
-      <div class="blog-cta-icon" aria-hidden="true">📲</div>
-      <div class="blog-cta-body">
-        <h2 class="blog-cta-title">Sumá La Taberna a tu pantalla de inicio</h2>
-        <p class="blog-cta-text">Instalá el sitio como app para guardar esta historia y seguir explorando sin perderte ninguna novedad.</p>
-        <ol class="blog-cta-steps">
-          <li>Abrí el menú de tu navegador.</li>
-          <li>Tocá «Agregar a pantalla de inicio» o «Instalar aplicación».</li>
-          <li>Confirmá: vas a encontrar La Taberna lista en tu dispositivo.</li>
-        </ol>
-      </div>
-    </section>
-
     <footer class="blog-post-footer">
       <a class="btn" href="{{ route('blog.index') }}">← Volver</a>
     </footer>
