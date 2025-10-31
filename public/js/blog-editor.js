@@ -710,6 +710,9 @@
     if (this.handleBlockquoteKeydown(event)) {
       return true;
     }
+    if (this.handleBoxKeydown(event)) {
+      return true;
+    }
     return false;
   };
 
@@ -789,6 +792,40 @@
       }
     }
 
+    return false;
+  };
+
+  Editor.prototype.handleBoxKeydown = function (event) {
+    if (event.key === 'Enter' && !event.shiftKey && !event.ctrlKey && !event.metaKey) {
+      var range = getSelectionRange(this.canvas);
+      if (!range || !range.collapsed) {
+        return false;
+      }
+      var box = closestNode(range.startContainer, function (node) {
+        return node && node.nodeType === 1 && node.classList && node.classList.contains('blog-box');
+      }, this.canvas);
+      if (!box) {
+        return false;
+      }
+      var block = getBlockContainer(range.startContainer, box) || box;
+      if (block && isEmptyBlock(block) && isLastSibling(block)) {
+        event.preventDefault();
+        if (block !== box && block.parentNode === box) {
+          box.removeChild(block);
+        }
+        var paragraph = document.createElement('p');
+        paragraph.innerHTML = '<br>';
+        if (box.nextSibling) {
+          box.parentNode.insertBefore(paragraph, box.nextSibling);
+        } else {
+          box.parentNode.appendChild(paragraph);
+        }
+        setCaretAtStart(paragraph);
+        this.saveSelection();
+        this.commitHistorySoon();
+        return true;
+      }
+    }
     return false;
   };
 
