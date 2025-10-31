@@ -52,6 +52,10 @@
             <label for="content">Contenido</label>
             <div class="blog-editor" data-blog-editor data-target="content">
               <div class="blog-editor-toolbar" role="toolbar" aria-label="Herramientas de formato">
+                <div class="blog-editor-group" role="group" aria-label="Historial de edición">
+                  <button type="button" class="blog-editor-btn" data-history-action="undo" title="Deshacer">↺</button>
+                  <button type="button" class="blog-editor-btn" data-history-action="redo" title="Rehacer">↻</button>
+                </div>
                 <div class="blog-editor-group" role="group" aria-label="Formato de texto">
                   <button type="button" class="blog-editor-btn" data-command="bold" title="Negrita"><span>Negrita</span></button>
                   <button type="button" class="blog-editor-btn" data-command="italic" title="Cursiva"><span>Cursiva</span></button>
