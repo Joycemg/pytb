@@ -19,18 +19,37 @@
   @endphp
 
   <article class="page container blog-post blog-theme-{{ $theme }}" style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }};">
-    <header class="page-head">
+    <header class="page-head blog-post-head">
+      <a class="blog-post-back" href="{{ route('blog.index') }}">← Volver a las novedades</a>
+      <p class="blog-post-eyebrow">Publicación destacada</p>
       <h1 class="page-title">{{ $post->title }}</h1>
-      <p class="blog-card-meta">
+      <div class="blog-post-meta">
         @php $publishedAt = $post->published_at?->timezone(config('app.timezone', 'UTC')); @endphp
-        <span>Por {{ $post->author->name ?? 'Equipo de La Taberna' }}</span>
-        @if ($publishedAt)
-          <span>· {{ $publishedAt->translatedFormat('d \d\e F, Y H:i') }}</span>
-        @endif
-        @if ($wordCount > 0)
-          <span>· {{ $readingMinutes }} {{ \Illuminate\Support\Str::plural('minuto', $readingMinutes) }} de lectura</span>
-        @endif
-      </p>
+        <p class="blog-card-meta">
+          <span>Por {{ $post->author->name ?? 'Equipo de La Taberna' }}</span>
+          @if ($publishedAt)
+            <span aria-hidden="true" class="blog-post-meta-separator">•</span>
+            <time datetime="{{ $publishedAt->toIso8601String() }}">{{ $publishedAt->translatedFormat('d \d\e F, Y H:i') }}</time>
+          @endif
+          @if ($wordCount > 0)
+            <span aria-hidden="true" class="blog-post-meta-separator">•</span>
+            <span>{{ $readingMinutes }} {{ \Illuminate\Support\Str::plural('minuto', $readingMinutes) }} de lectura</span>
+          @endif
+        </p>
+
+        <div class="blog-post-actions">
+          <button type="button"
+                  class="blog-post-share"
+                  data-copy-url="{{ route('blog.show', ['post' => $post->slug]) }}"
+                  data-label-default="Copiar enlace"
+                  data-label-copied="Enlace copiado">
+            <span aria-hidden="true">🔗</span>
+            <span class="blog-post-share-text">Copiar enlace</span>
+          </button>
+          <a class="blog-post-history" href="{{ route('blog.index') }}#blog-history">Ver historial</a>
+          <span class="sr-only" data-copy-feedback aria-live="polite"></span>
+        </div>
+      </div>
     </header>
 
     @if ($post->tags->isNotEmpty())
@@ -80,6 +99,81 @@
 
     <footer class="blog-post-footer">
       <a class="btn" href="{{ route('blog.index') }}">← Volver</a>
+      <a class="btn btn-primary" href="{{ route('blog.rss') }}">Suscribirme al RSS</a>
     </footer>
   </article>
-  @endsection
+@endsection
+
+@push('scripts')
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const buttons = document.querySelectorAll('[data-copy-url]');
+
+      buttons.forEach(function (button) {
+        const defaultLabel = button.getAttribute('data-label-default') || button.textContent.trim();
+        const copiedLabel = button.getAttribute('data-label-copied') || 'Copiado';
+        const feedback = button.parentElement?.querySelector('[data-copy-feedback]');
+
+        button.addEventListener('click', async function () {
+          const url = button.getAttribute('data-copy-url');
+          if (!url) {
+            return;
+          }
+
+          let copied = false;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            try {
+              await navigator.clipboard.writeText(url);
+              copied = true;
+            } catch (error) {
+              copied = false;
+            }
+          }
+
+          if (!copied) {
+            const textarea = document.createElement('textarea');
+            textarea.value = url;
+            textarea.setAttribute('readonly', '');
+            textarea.style.position = 'absolute';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+              document.execCommand('copy');
+              copied = true;
+            } catch (error) {
+              copied = false;
+            }
+            document.body.removeChild(textarea);
+          }
+
+          if (copied) {
+            button.classList.add('is-copied');
+            const labelTarget = button.querySelector('.blog-post-share-text');
+            if (labelTarget) {
+              labelTarget.textContent = copiedLabel;
+            } else {
+              button.textContent = copiedLabel;
+            }
+
+            if (feedback) {
+              feedback.textContent = 'Enlace copiado al portapapeles';
+            }
+
+            window.setTimeout(function () {
+              button.classList.remove('is-copied');
+              if (labelTarget) {
+                labelTarget.textContent = defaultLabel;
+              } else {
+                button.textContent = defaultLabel;
+              }
+              if (feedback) {
+                feedback.textContent = '';
+              }
+            }, 2800);
+          }
+        });
+      });
+    });
+  </script>
+@endpush
