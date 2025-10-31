@@ -88,7 +88,7 @@
                 <label for="filter-search">Buscá por título, etiqueta o autor</label>
                 <div class="blog-filter-control">
                   <input id="filter-search" type="search" name="q" value="{{ $filters['input']['q'] ?? '' }}" placeholder="Escribí algo como torneo, #evento o Juan">
-                  <button type="submit" class="blog-filter-submit">Buscar</button>
+                  <button type="submit" class="btn sm blog-filter-submit">Buscar</button>
                 </div>
               </div>
 
@@ -106,11 +106,9 @@
                   <a class="blog-filter-reset" href="{{ route('blog.index') }}">Quitar filtro</a>
                 </div>
               @else
-                <div class="blog-filter-suggestion">
-                  <span>Tip: probá buscar por</span>
+                <div class="blog-filter-suggestion" aria-label="Búsquedas sugeridas">
                   <button type="submit" name="q" value="#liga" class="blog-filter-suggestion-btn">#liga</button>
                   <button type="submit" name="q" value="torneo" class="blog-filter-suggestion-btn">torneo</button>
-                  <span>o</span>
                   <button type="submit" name="q" value="equipo" class="blog-filter-suggestion-btn">equipo</button>
                 </div>
               @endif
