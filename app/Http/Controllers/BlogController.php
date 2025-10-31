@@ -7,7 +7,6 @@ use App\Http\Requests\BlogPostRequest;
 use App\Models\BlogAttachment;
 use App\Models\BlogPost;
 use App\Models\BlogTag;
-use App\Models\Usuario;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -25,13 +24,14 @@ final class BlogController extends Controller
     {
         $rawFilters = [
             'q' => trim((string) $request->query('q', '')),
-            'author' => $request->query('author', ''),
             'tag' => trim((string) $request->query('tag', '')),
-            'from' => trim((string) $request->query('from', '')),
-            'to' => trim((string) $request->query('to', '')),
         ];
 
         $normalizedFilters = $this->normalizeBlogFilters($rawFilters);
+        $displaySearch = $rawFilters['q'];
+        if ($displaySearch === '' && $rawFilters['tag'] !== '') {
+            $displaySearch = '#' . ltrim($rawFilters['tag'], '#');
+        }
 
         $query = BlogPost::query()
             ->published()
@@ -92,9 +92,6 @@ final class BlogController extends Controller
             ->values()
             ->all();
 
-        $authors = $this->availableAuthors();
-        $tags = $this->availableTags();
-
         $hasActiveFilters = $this->blogFiltersAreActive($normalizedFilters);
 
         if ($request->wantsJson()) {
@@ -132,13 +129,9 @@ final class BlogController extends Controller
                     'next' => $posts->nextPageUrl(),
                 ],
                 'filters' => [
-                    'input' => $rawFilters,
+                    'input' => ['q' => $displaySearch],
                     'applied' => [
                         'search' => $normalizedFilters['search'],
-                        'author_id' => $normalizedFilters['author_id'],
-                        'tag' => $normalizedFilters['tag_slug'],
-                        'from' => $normalizedFilters['from']?->toDateString(),
-                        'to' => $normalizedFilters['to']?->toDateString(),
                     ],
                     'active' => $this->blogFiltersAreActive($normalizedFilters),
                 ],
@@ -149,18 +142,12 @@ final class BlogController extends Controller
             'posts' => $posts,
             'history' => $history,
             'filters' => [
-                'input' => $rawFilters,
+                'input' => ['q' => $displaySearch],
                 'applied' => [
                     'search' => $normalizedFilters['search'],
-                    'author_id' => $normalizedFilters['author_id'],
-                    'tag_slug' => $normalizedFilters['tag_slug'],
-                    'from' => $normalizedFilters['from']?->toDateString(),
-                    'to' => $normalizedFilters['to']?->toDateString(),
                 ],
                 'active' => $hasActiveFilters,
             ],
-            'authors' => $authors,
-            'tags' => $tags,
         ]);
     }
 
@@ -299,49 +286,6 @@ final class BlogController extends Controller
         return redirect()
             ->route('blog.edit', $post)
             ->with('status', 'Archivo eliminado.');
-    }
-
-    /**
-     * @return Collection<int, array{id:int,name:string}>
-     */
-    private function availableAuthors(): Collection
-    {
-        $authorIds = BlogPost::query()
-            ->published()
-            ->select('user_id')
-            ->distinct()
-            ->pluck('user_id')
-            ->filter();
-
-        if ($authorIds->isEmpty()) {
-            return collect();
-        }
-
-        return Usuario::query()
-            ->whereIn('id', $authorIds->all())
-            ->orderBy('name')
-            ->get(['id', 'name'])
-            ->map(fn (Usuario $user) => ['id' => (int) $user->id, 'name' => $user->name ?? ''])
-            ->values();
-    }
-
-    /**
-     * @return Collection<int, array{id:int,name:string,slug:string}>
-     */
-    private function availableTags(): Collection
-    {
-        return BlogTag::query()
-            ->whereHas('posts', function ($query): void {
-                $query->published();
-            })
-            ->orderBy('name')
-            ->get(['id', 'name', 'slug'])
-            ->map(fn (BlogTag $tag) => [
-                'id' => (int) $tag->id,
-                'name' => $tag->name,
-                'slug' => $tag->slug,
-            ])
-            ->values();
     }
 
     /**
@@ -713,16 +657,6 @@ final class BlogController extends Controller
             : null;
         $data['hero_image_caption'] = isset($data['hero_image_caption']) && $data['hero_image_caption'] !== ''
             ? trim((string) $data['hero_image_caption'])
-            : null;
-
-        $data['meta_title'] = isset($data['meta_title']) && $data['meta_title'] !== ''
-            ? trim((string) $data['meta_title'])
-            : null;
-        $data['meta_description'] = isset($data['meta_description']) && $data['meta_description'] !== ''
-            ? trim((string) $data['meta_description'])
-            : null;
-        $data['meta_image_url'] = isset($data['meta_image_url']) && $data['meta_image_url'] !== ''
-            ? trim((string) $data['meta_image_url'])
             : null;
 
         return $data;

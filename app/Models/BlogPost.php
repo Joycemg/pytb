@@ -27,9 +27,6 @@ final class BlogPost extends Model
         'hero_image_url',
         'hero_image_caption',
         'published_at',
-        'meta_title',
-        'meta_description',
-        'meta_image_url',
     ];
 
     protected $casts = [
