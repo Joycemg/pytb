@@ -86,10 +86,7 @@
             <div class="blog-filter-grid">
               <div class="blog-filter-field blog-filter-field--search">
                 <label for="filter-search">Buscá por título, etiqueta o autor</label>
-                <div class="blog-filter-input">
-                  <span class="blog-filter-icon" aria-hidden="true">🔍</span>
-                  <input id="filter-search" type="search" name="q" value="{{ $filters['input']['q'] ?? '' }}" placeholder="Escribí algo como torneo, #evento o Juan">
-                </div>
+                <input id="filter-search" type="search" name="q" value="{{ $filters['input']['q'] ?? '' }}" placeholder="Escribí algo como torneo, #evento o Juan">
               </div>
             </div>
 

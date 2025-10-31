@@ -200,39 +200,39 @@
     color: #475569;
 }
 
-.blog-filter-input {
-    display: flex;
-    align-items: center;
-    gap: .65rem;
-    border-radius: 12px;
+.blog-filter-field input,
+.blog-filter-field select {
+    width: 100%;
+    border-radius: 6px;
     border: 1px solid #cbd5f5;
     background: #fff;
-    padding: .55rem .85rem;
-    box-shadow: inset 0 1px 2px rgba(148, 163, 184, .22);
+    padding: .45rem .75rem;
+    font-size: .875rem;
+    color: #1f2937;
+    box-shadow: inset 0 1px 2px rgba(148, 163, 184, .12);
     transition: border-color .2s ease, box-shadow .2s ease;
 }
 
-.blog-filter-field--search input {
-    border: none;
-    flex: 1;
-    font-size: 1rem;
-    background: transparent;
+.blog-filter-field input:focus,
+.blog-filter-field select:focus {
     outline: none;
-    color: #1f2937;
+    border-color: #475569;
+    box-shadow: 0 0 0 3px rgba(148, 163, 184, .18);
+}
+
+.blog-filter-field--search {
+    width: 100%;
+    max-width: 28rem;
+}
+
+.blog-filter-field--search input {
+    padding-top: .375rem;
+    padding-bottom: .375rem;
+    font-size: .875rem;
 }
 
 .blog-filter-field--search input::placeholder {
     color: #94a3b8;
-}
-
-.blog-filter-icon {
-    font-size: 1.1rem;
-    color: #94a3b8;
-}
-
-.blog-filter-input:focus-within {
-    border-color: #475569;
-    box-shadow: 0 0 0 4px rgba(148, 163, 184, .2);
 }
 
 .blog-filter-actions {
