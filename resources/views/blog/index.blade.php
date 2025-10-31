@@ -98,16 +98,24 @@
               </div>
             </div>
 
-            <p class="blog-filter-hint">¿Querés recibir novedades? Suscribite desde los accesos directos o guardá el blog como app.</p>
+            <div class="blog-filter-meta">
+              <p class="blog-filter-hint">¿Querés recibir novedades? Suscribite desde los accesos directos o guardá el blog como app.</p>
 
-            @if (!empty($filters['active']) && filled($filters['applied']['search'] ?? ''))
-              <div class="blog-filter-active" role="status" aria-live="polite">
-                <span class="blog-filter-chip">Mostrando resultados para <strong>{{ $filters['applied']['search'] }}</strong></span>
-                <a class="blog-filter-reset" href="{{ route('blog.index') }}">Quitar filtro</a>
-              </div>
-            @else
-              <p class="blog-filter-suggestion">Tip: probá buscar por <button type="submit" name="q" value="#liga" class="blog-filter-suggestion-btn">#liga</button>, <button type="submit" name="q" value="torneo" class="blog-filter-suggestion-btn">torneo</button> o <button type="submit" name="q" value="equipo" class="blog-filter-suggestion-btn">equipo</button>.</p>
-            @endif
+              @if (!empty($filters['active']) && filled($filters['applied']['search'] ?? ''))
+                <div class="blog-filter-active" role="status" aria-live="polite">
+                  <span class="blog-filter-chip">Mostrando resultados para <strong>{{ $filters['applied']['search'] }}</strong></span>
+                  <a class="blog-filter-reset" href="{{ route('blog.index') }}">Quitar filtro</a>
+                </div>
+              @else
+                <div class="blog-filter-suggestion">
+                  <span>Tip: probá buscar por</span>
+                  <button type="submit" name="q" value="#liga" class="blog-filter-suggestion-btn">#liga</button>
+                  <button type="submit" name="q" value="torneo" class="blog-filter-suggestion-btn">torneo</button>
+                  <span>o</span>
+                  <button type="submit" name="q" value="equipo" class="blog-filter-suggestion-btn">equipo</button>
+                </div>
+              @endif
+            </div>
           </form>
         </section>
 

@@ -20,40 +20,48 @@
     }
 
     .blog-filter-form {
-        @apply mb-6 flex flex-col gap-4 rounded-xl border border-slate-200/80 bg-white/80 p-4 md:gap-3 md:p-5;
+        @apply mb-6 flex flex-col gap-2 border-b border-slate-200 pb-4;
     }
 
     .blog-filter-grid {
-        @apply flex flex-col gap-3 md:flex-row md:items-end md:justify-between;
+        @apply flex flex-col gap-2 md:flex-row md:items-center md:gap-4;
     }
 
     .blog-filter-field {
-        @apply flex flex-col gap-1;
+        @apply flex flex-1 flex-col gap-1;
     }
 
     .blog-filter-field label {
-        @apply text-xs font-medium text-slate-500;
+        @apply text-[0.6875rem] font-semibold uppercase tracking-[0.25em] text-slate-400;
     }
 
     .blog-filter-field input,
     .blog-filter-field select {
-        @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 transition focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200;
+        @apply w-full border-0 border-b border-slate-300 bg-transparent px-0 pb-1 pt-2 text-sm text-slate-800 transition focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200;
     }
 
     .blog-filter-actions {
-        @apply flex flex-shrink-0 items-center gap-2 md:gap-3;
+        @apply flex flex-none items-center gap-3 md:self-center;
     }
 
     .blog-filter-reset {
-        @apply text-sm text-slate-600 underline underline-offset-2 transition hover:text-slate-900;
+        @apply text-xs font-medium text-slate-500 transition hover:text-slate-800;
     }
 
     .blog-filter-hint {
-        @apply text-xs text-slate-500 md:text-[0.8125rem];
+        @apply m-0 text-xs leading-snug text-slate-500;
     }
 
     .blog-filter-hint a {
-        @apply text-slate-600 underline underline-offset-2 hover:text-slate-900;
+        @apply font-medium text-slate-600 transition hover:text-slate-900;
+    }
+
+    .blog-filter-meta {
+        @apply mt-1 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-500;
+    }
+
+    .blog-filter-meta > * {
+        @apply m-0;
     }
 
     .blog-tag-selector {
@@ -125,11 +133,7 @@
     }
 
     .blog-filter-field--search {
-        @apply w-full md:max-w-xl;
-    }
-
-    .blog-filter-field--search input {
-        @apply py-2 text-sm;
+        @apply w-full md:max-w-lg;
     }
 
     .blog-filter-field--search input::placeholder {
@@ -137,19 +141,23 @@
     }
 
     .blog-filter-active {
-        @apply mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600;
+        @apply inline-flex flex-wrap items-center gap-2 rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-600;
     }
 
     .blog-filter-chip {
-        @apply inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-sm font-medium text-slate-700 shadow-sm;
+        @apply inline-flex items-center gap-1 text-xs font-medium text-slate-700;
     }
 
     .blog-filter-suggestion {
-        @apply mt-4 text-sm text-slate-500;
+        @apply inline-flex flex-wrap items-center gap-2 text-xs text-slate-500;
+    }
+
+    .blog-filter-suggestion span {
+        @apply text-slate-500;
     }
 
     .blog-filter-suggestion-btn {
-        @apply inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600 transition hover:border-slate-300 hover:text-slate-900;
+        @apply inline-flex items-center gap-1 rounded-full border border-slate-200 px-2 py-1 text-[0.6875rem] font-semibold uppercase tracking-[0.18em] text-slate-600 transition hover:border-slate-300 hover:text-slate-900;
     }
 
     .blog-feed {
