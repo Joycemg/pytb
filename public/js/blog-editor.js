@@ -158,6 +158,30 @@
     }
   }
 
+  function isCaretAtEnd(range, element) {
+    if (!range || !element || !range.collapsed) {
+      return false;
+    }
+    var reference = document.createRange();
+    reference.selectNodeContents(element);
+    reference.collapse(false);
+    return range.compareBoundaryPoints(Range.END_TO_END, reference) === 0;
+  }
+
+  function createParagraphAfter(element) {
+    if (!element || !element.parentNode) {
+      return null;
+    }
+    var paragraph = document.createElement('p');
+    paragraph.innerHTML = '<br>';
+    if (element.nextSibling) {
+      element.parentNode.insertBefore(paragraph, element.nextSibling);
+    } else {
+      element.parentNode.appendChild(paragraph);
+    }
+    return paragraph;
+  }
+
   function Editor(wrapper) {
     this.wrapper = wrapper;
     this.canvas = wrapper.querySelector('.blog-editor-canvas');
@@ -796,36 +820,77 @@
   };
 
   Editor.prototype.handleBoxKeydown = function (event) {
-    if (event.key === 'Enter' && !event.shiftKey && !event.ctrlKey && !event.metaKey) {
-      var range = getSelectionRange(this.canvas);
-      if (!range || !range.collapsed) {
+    if (event.key !== 'Enter' && event.key !== 'ArrowDown') {
+      return false;
+    }
+
+    var range = getSelectionRange(this.canvas);
+    if (!range || !range.collapsed) {
+      return false;
+    }
+
+    var box = closestNode(range.startContainer, function (node) {
+      return node && node.nodeType === 1 && node.classList && node.classList.contains('blog-box');
+    }, this.canvas);
+    if (!box) {
+      return false;
+    }
+
+    var block = getBlockContainer(range.startContainer, box) || box;
+    var caretContext = block === box ? box : block;
+    var atEnd = isCaretAtEnd(range, caretContext);
+    var lastSibling = isLastSibling(block);
+
+    if (event.key === 'Enter') {
+      if (event.shiftKey) {
         return false;
       }
-      var box = closestNode(range.startContainer, function (node) {
-        return node && node.nodeType === 1 && node.classList && node.classList.contains('blog-box');
-      }, this.canvas);
-      if (!box) {
-        return false;
+      if ((event.ctrlKey || event.metaKey) && lastSibling && atEnd) {
+        event.preventDefault();
+        var paragraphAfterCtrl = createParagraphAfter(box);
+        if (paragraphAfterCtrl) {
+          setCaretAtStart(paragraphAfterCtrl);
+          this.saveSelection();
+          this.commitHistorySoon();
+        }
+        return true;
       }
-      var block = getBlockContainer(range.startContainer, box) || box;
-      if (block && isEmptyBlock(block) && isLastSibling(block)) {
+      if (!event.ctrlKey && !event.metaKey && block && isEmptyBlock(block) && lastSibling) {
         event.preventDefault();
         if (block !== box && block.parentNode === box) {
           box.removeChild(block);
         }
-        var paragraph = document.createElement('p');
-        paragraph.innerHTML = '<br>';
-        if (box.nextSibling) {
-          box.parentNode.insertBefore(paragraph, box.nextSibling);
-        } else {
-          box.parentNode.appendChild(paragraph);
+        var paragraphAfter = createParagraphAfter(box);
+        if (paragraphAfter) {
+          setCaretAtStart(paragraphAfter);
+          this.saveSelection();
+          this.commitHistorySoon();
         }
-        setCaretAtStart(paragraph);
-        this.saveSelection();
-        this.commitHistorySoon();
         return true;
       }
+      return false;
     }
+
+    if (event.key === 'ArrowDown' && !event.shiftKey && !event.ctrlKey && !event.metaKey && lastSibling && atEnd) {
+      event.preventDefault();
+      var next = box.nextSibling;
+      while (next && ((next.nodeType === 3 && next.textContent.trim() === '') || (next.nodeType === 1 && next.nodeName === 'BR'))) {
+        next = next.nextSibling;
+      }
+      if (next && next.nodeType === 1) {
+        setCaretAtStart(next);
+        this.saveSelection();
+        return true;
+      }
+      var paragraphAfterArrow = createParagraphAfter(box);
+      if (paragraphAfterArrow) {
+        setCaretAtStart(paragraphAfterArrow);
+        this.saveSelection();
+        this.commitHistorySoon();
+      }
+      return true;
+    }
+
     return false;
   };
 
