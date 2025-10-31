@@ -11,6 +11,11 @@
     }
     $accent = $post->accent_color ?? ($themes[$theme]['accent'] ?? config('blog.default_accent'));
     $accentText = $post->accent_text_color ?? ($themes[$theme]['text'] ?? config('blog.default_text_color'));
+
+    $rawContent = $post->content ?? '';
+    $plainContent = trim(preg_replace('/\s+/', ' ', strip_tags((string) $rawContent)) ?? '');
+    $wordCount = max(0, str_word_count($plainContent));
+    $readingMinutes = max(1, (int) ceil($wordCount / 220));
   @endphp
   <article class="page container blog-post blog-theme-{{ $theme }}" style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }};">
     <header class="page-head">
@@ -20,6 +25,9 @@
         <span>Por {{ $post->author->name ?? 'Equipo de La Taberna' }}</span>
         @if ($publishedAt)
           <span>· {{ $publishedAt->translatedFormat('d \d\e F, Y H:i') }}</span>
+        @endif
+        @if ($wordCount > 0)
+          <span>· {{ $readingMinutes }} {{ \Illuminate\Support\Str::plural('minuto', $readingMinutes) }} de lectura</span>
         @endif
       </p>
     </header>
@@ -31,6 +39,10 @@
           <figcaption>{{ $post->hero_image_caption }}</figcaption>
         @endif
       </figure>
+    @endif
+
+    @if (filled($post->excerpt))
+      <p class="blog-post-lede">{{ $post->excerpt }}</p>
     @endif
 
     @php
@@ -61,39 +73,4 @@
       <a class="btn" href="{{ route('blog.index') }}">← Volver</a>
     </footer>
   </article>
-  @push('scripts')
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const boxes = document.querySelectorAll('.blog-post-content .blog-box');
-
-        boxes.forEach((box) => {
-          if (box.dataset.blogBoxHasConfirm === 'true' || box.querySelector('[data-blog-box-confirm]')) {
-            return;
-          }
-
-          const confirmBtn = document.createElement('button');
-          confirmBtn.type = 'button';
-          confirmBtn.className = 'blog-box-confirm';
-          confirmBtn.setAttribute('data-blog-box-confirm', 'true');
-          confirmBtn.innerHTML = '<span class="blog-box-confirm-icon" aria-hidden="true">✔</span><span>Confirmar</span>';
-
-          confirmBtn.addEventListener('click', () => {
-            const boxBottom = box.getBoundingClientRect().bottom + window.scrollY;
-
-            box.classList.add('blog-box-confirmed');
-            confirmBtn.disabled = true;
-            confirmBtn.setAttribute('aria-pressed', 'true');
-
-            window.scrollTo({
-              top: boxBottom + 16,
-              behavior: 'smooth'
-            });
-          });
-
-          box.dataset.blogBoxHasConfirm = 'true';
-          box.appendChild(confirmBtn);
-        });
-      });
-    </script>
-  @endpush
-@endsection
+  @endsection

@@ -9,3 +9,13 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+@layer components {
+    .blog-card-meta {
+        @apply flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-500;
+    }
+
+    .blog-post-lede {
+        @apply text-lg leading-relaxed text-slate-700 md:text-xl md:leading-relaxed;
+    }
+}
