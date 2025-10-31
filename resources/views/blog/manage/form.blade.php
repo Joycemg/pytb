@@ -332,26 +332,6 @@
             <input id="hero_image_caption" name="hero_image_caption" type="text" value="{{ old('hero_image_caption', $post->hero_image_caption) }}" maxlength="160" placeholder="Créditos o una breve descripción de la foto">
           </div>
 
-          <fieldset class="form-group">
-            <legend>SEO y redes sociales</legend>
-            <div class="form-group">
-              <label for="meta_title">Título para buscadores (opcional)</label>
-              <input id="meta_title" name="meta_title" type="text" value="{{ old('meta_title', $post->meta_title) }}" maxlength="255" placeholder="Se usa como título en redes y buscadores">
-            </div>
-
-            <div class="form-group">
-              <label for="meta_description">Descripción</label>
-              <textarea id="meta_description" name="meta_description" rows="3" maxlength="320" placeholder="Un resumen que aparecerá en Google y al compartir en redes">{{ old('meta_description', $post->meta_description) }}</textarea>
-              <small class="hint">Si no completás este campo se usará el resumen de la nota.</small>
-            </div>
-
-            <div class="form-group">
-              <label for="meta_image_url">Imagen social</label>
-              <input id="meta_image_url" name="meta_image_url" type="text" value="{{ old('meta_image_url', $post->meta_image_url ?? $post->hero_image_url) }}" placeholder="https://cdn.ejemplo.com/meta.jpg">
-              <small class="hint">Se recomienda una imagen horizontal (mínimo 1200 × 630). Si se deja vacío se usará la imagen de cabecera.</small>
-            </div>
-          </fieldset>
-
           <div class="form-group">
             <label for="attachments">Adjuntar archivos</label>
             <input id="attachments" name="attachments[]" type="file" multiple>

@@ -11,12 +11,10 @@
   @php
     $history = $history ?? [];
     $filters = $filters ?? [
-      'input' => ['q' => '', 'author' => '', 'tag' => '', 'from' => '', 'to' => ''],
-      'applied' => ['search' => '', 'author_id' => null, 'tag_slug' => '', 'from' => null, 'to' => null],
+      'input' => ['q' => ''],
+      'applied' => ['search' => ''],
       'active' => false,
     ];
-    $authors = $authors ?? collect();
-    $tags = $tags ?? collect();
   @endphp
 
   <div class="page container blog-list">
@@ -66,47 +64,15 @@
       </aside>
 
       <div id="blog-posts" class="blog-main">
-        <section class="blog-filters" aria-label="Filtrar publicaciones">
+        <section class="blog-filters" aria-label="Buscar publicaciones">
           <form method="get" action="{{ route('blog.index') }}" class="blog-filter-form">
-            <div class="blog-filter-grid">
-              <div class="blog-filter-field">
-                <label for="filter-search">Buscar</label>
-                <input id="filter-search" type="search" name="q" value="{{ $filters['input']['q'] ?? '' }}" placeholder="Título o contenido">
-              </div>
-
-              <div class="blog-filter-field">
-                <label for="filter-author">Autor</label>
-                <select id="filter-author" name="author">
-                  <option value="">Cualquier autor</option>
-                  @foreach ($authors as $author)
-                    <option value="{{ $author['id'] }}" {{ (string) ($filters['input']['author'] ?? '') === (string) $author['id'] ? 'selected' : '' }}>{{ $author['name'] }}</option>
-                  @endforeach
-                </select>
-              </div>
-
-              <div class="blog-filter-field">
-                <label for="filter-tag">Etiqueta</label>
-                <select id="filter-tag" name="tag">
-                  <option value="">Todas las etiquetas</option>
-                  @foreach ($tags as $tag)
-                    <option value="{{ $tag['slug'] }}" {{ ($filters['input']['tag'] ?? '') === $tag['slug'] ? 'selected' : '' }}>#{{ $tag['name'] }}</option>
-                  @endforeach
-                </select>
-              </div>
-
-              <div class="blog-filter-field">
-                <label for="filter-from">Desde</label>
-                <input id="filter-from" type="date" name="from" value="{{ $filters['input']['from'] ?? '' }}">
-              </div>
-
-              <div class="blog-filter-field">
-                <label for="filter-to">Hasta</label>
-                <input id="filter-to" type="date" name="to" value="{{ $filters['input']['to'] ?? '' }}">
-              </div>
+            <div class="blog-filter-field">
+              <label for="filter-search">Buscar</label>
+              <input id="filter-search" type="search" name="q" value="{{ $filters['input']['q'] ?? '' }}" placeholder="Título o etiqueta">
             </div>
 
             <div class="blog-filter-actions">
-              <button type="submit" class="btn btn-primary">Aplicar filtros</button>
+              <button type="submit" class="btn btn-primary">Buscar</button>
               @if (!empty($filters['active']))
                 <a class="blog-filter-reset" href="{{ route('blog.index') }}">Limpiar</a>
               @endif
@@ -164,7 +130,7 @@
                 @if ($post->tags->isNotEmpty())
                   <ul class="blog-card-tags" aria-label="Etiquetas">
                     @foreach ($post->tags as $tag)
-                      @php $tagQuery = array_merge(request()->except('page'), ['tag' => $tag->slug]); @endphp
+                      @php $tagQuery = ['q' => '#' . $tag->name]; @endphp
                       <li><a class="blog-card-tag" href="{{ route('blog.index', $tagQuery) }}">#{{ $tag->name }}</a></li>
                     @endforeach
                   </ul>
