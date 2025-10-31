@@ -2,11 +2,6 @@
 
 @section('title', 'Blog')
 
-@push('head')
-  <link rel="alternate" type="application/rss+xml" title="{{ config('app.name', 'La Taberna') }} · RSS" href="{{ route('blog.rss') }}">
-  <link rel="alternate" type="application/atom+xml" title="{{ config('app.name', 'La Taberna') }} · Atom" href="{{ route('blog.atom') }}">
-@endpush
-
 @section('content')
   @php
     $history = $history ?? [];
@@ -28,13 +23,7 @@
         <div class="blog-hero-copy">
           <p class="blog-hero-eyebrow">Blog de La Taberna</p>
           <h1 id="blog-hero-title" class="blog-hero-title">Novedades</h1>
-          <p class="blog-hero-subtitle">Enterate de lo último que sucede en la taberna, descubrí contenidos destacados y guardá lo que más te guste.</p>
-
-          <div class="blog-hero-actions" aria-label="Accesos directos">
-            <a class="blog-hero-action" href="{{ route('blog.rss') }}">RSS</a>
-            <a class="blog-hero-action" href="{{ route('blog.atom') }}">Atom</a>
-            <a class="blog-hero-action" href="{{ route('api.blog.posts') }}">API JSON</a>
-          </div>
+          <p class="blog-hero-subtitle">Lo último de la taberna, en un vistazo.</p>
         </div>
 
         <dl class="blog-hero-stats" aria-label="Indicadores del blog">
@@ -49,11 +38,6 @@
               <dd>{{ $latestPublishedAt->diffForHumans() }}</dd>
             </div>
           @endif
-
-          <div class="blog-hero-stat">
-            <dt>Feeds</dt>
-            <dd>RSS · Atom · JSON</dd>
-          </div>
         </dl>
       </div>
     </header>
@@ -211,7 +195,7 @@
                   <p class="blog-empty-text">Estamos preparando las primeras novedades. Guardá el blog como app para enterarte apenas publiquemos algo nuevo.</p>
                   <div class="blog-empty-actions">
                     <a class="btn btn-primary" href="#blog-history">Revisar historial</a>
-                    <a class="btn" href="{{ route('blog.rss') }}">Suscribirme al RSS</a>
+                    <a class="btn" href="{{ route('home') }}">Volver al inicio</a>
                   </div>
                 @endif
               </div>

@@ -85,57 +85,49 @@
     }
 
     .blog-hero {
-        @apply relative mb-12 overflow-hidden rounded-3xl bg-slate-900 px-6 py-12 text-white shadow-2xl md:px-10 lg:px-16;
+        @apply relative mb-10 overflow-hidden rounded-3xl bg-slate-900 px-5 py-10 text-white shadow-xl md:px-8 lg:px-12;
     }
 
     .blog-hero::before {
         content: "";
         @apply absolute inset-0;
-        background: radial-gradient(circle at top right, rgba(148, 163, 184, 0.32) 0%, rgba(15, 23, 42, 0.1) 35%, rgba(15, 23, 42, 0.85) 100%);
+        background: radial-gradient(circle at top right, rgba(148, 163, 184, 0.22) 0%, rgba(15, 23, 42, 0.08) 45%, rgba(15, 23, 42, 0.85) 100%);
     }
 
     .blog-hero-content {
-        @apply relative z-10 flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between;
+        @apply relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between;
     }
 
     .blog-hero-copy {
-        @apply max-w-2xl space-y-4;
+        @apply max-w-xl space-y-3;
     }
 
     .blog-hero-eyebrow {
-        @apply text-sm font-semibold uppercase tracking-[0.35em] text-slate-300;
+        @apply text-xs font-semibold uppercase tracking-[0.3em] text-slate-300/90;
     }
 
     .blog-hero-title {
-        @apply text-4xl font-bold tracking-tight text-white sm:text-5xl;
+        @apply text-3xl font-bold tracking-tight text-white sm:text-4xl;
     }
 
     .blog-hero-subtitle {
-        @apply text-base text-slate-200 sm:text-lg;
-    }
-
-    .blog-hero-actions {
-        @apply mt-6 flex flex-wrap items-center gap-3;
-    }
-
-    .blog-hero-action {
-        @apply inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur transition hover:border-white/60 hover:bg-white/15;
+        @apply text-sm text-slate-200/90;
     }
 
     .blog-hero-stats {
-        @apply grid gap-6 text-sm text-slate-200 sm:grid-cols-3;
+        @apply grid gap-4 text-sm text-slate-200 sm:grid-cols-2;
     }
 
     .blog-hero-stat {
-        @apply rounded-2xl border border-white/10 bg-white/5 p-5 text-left shadow-inner;
+        @apply rounded-2xl border border-white/10 bg-white/5 p-4 text-left shadow-inner;
     }
 
     .blog-hero-stat dt {
-        @apply text-xs font-medium uppercase tracking-[0.2em] text-slate-200/80;
+        @apply text-[0.625rem] font-medium uppercase tracking-[0.2em] text-slate-200/80;
     }
 
     .blog-hero-stat dd {
-        @apply mt-2 text-2xl font-semibold text-white;
+        @apply mt-1 text-xl font-semibold text-white;
     }
 
     .blog-filter-field--search .blog-filter-input {
