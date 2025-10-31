@@ -20,11 +20,11 @@
     }
 
     .blog-filter-form {
-        @apply mb-6 flex flex-col gap-2 border-b border-slate-200 pb-4;
+        @apply mb-4 flex flex-col gap-1 border-b border-slate-200 pb-3;
     }
 
     .blog-filter-grid {
-        @apply flex flex-col gap-2 md:flex-row md:items-center md:gap-4;
+        @apply flex flex-col gap-2 md:flex-row md:items-end md:gap-3;
     }
 
     .blog-filter-field {
@@ -40,12 +40,28 @@
         @apply w-full border-0 border-b border-slate-300 bg-transparent px-0 pb-1 pt-2 text-sm text-slate-800 transition focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200;
     }
 
+    .blog-filter-control {
+        @apply flex items-end gap-3;
+    }
+
     .blog-filter-actions {
-        @apply flex flex-none items-center gap-3 md:self-center;
+        @apply flex flex-none items-center gap-2 self-end text-xs text-slate-500;
     }
 
     .blog-filter-reset {
         @apply text-xs font-medium text-slate-500 transition hover:text-slate-800;
+    }
+
+    .blog-filter-submit {
+        @apply inline-flex items-center justify-center gap-2 rounded-full px-3 py-2 text-[0.6875rem] font-semibold uppercase tracking-[0.2em] text-white transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-200;
+        background: var(--brand, #8c2e2e);
+        border: 1px solid var(--brand, #8c2e2e);
+    }
+
+    @media (hover: hover) {
+        .blog-filter-submit:hover {
+            filter: brightness(.95);
+        }
     }
 
     .blog-filter-hint {

@@ -86,21 +86,20 @@
             <div class="blog-filter-grid">
               <div class="blog-filter-field blog-filter-field--search">
                 <label for="filter-search">Buscá por título, etiqueta o autor</label>
-                <input id="filter-search" type="search" name="q" value="{{ $filters['input']['q'] ?? '' }}" placeholder="Escribí algo como torneo, #evento o Juan">
+                <div class="blog-filter-control">
+                  <input id="filter-search" type="search" name="q" value="{{ $filters['input']['q'] ?? '' }}" placeholder="Escribí algo como torneo, #evento o Juan">
+                  <button type="submit" class="blog-filter-submit">Buscar</button>
+                </div>
               </div>
 
-              <div class="blog-filter-actions">
-                <button type="submit" class="btn btn-primary">Buscar</button>
-
-                @if (!empty($filters['active']))
+              @if (!empty($filters['active']))
+                <div class="blog-filter-actions">
                   <a class="blog-filter-reset" href="{{ route('blog.index') }}">Limpiar</a>
-                @endif
-              </div>
+                </div>
+              @endif
             </div>
 
             <div class="blog-filter-meta">
-              <p class="blog-filter-hint">¿Querés recibir novedades? Suscribite desde los accesos directos o guardá el blog como app.</p>
-
               @if (!empty($filters['active']) && filled($filters['applied']['search'] ?? ''))
                 <div class="blog-filter-active" role="status" aria-live="polite">
                   <span class="blog-filter-chip">Mostrando resultados para <strong>{{ $filters['applied']['search'] }}</strong></span>
