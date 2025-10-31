@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -26,6 +27,9 @@ final class BlogPost extends Model
         'hero_image_url',
         'hero_image_caption',
         'published_at',
+        'meta_title',
+        'meta_description',
+        'meta_image_url',
     ];
 
     protected $casts = [
@@ -69,6 +73,14 @@ final class BlogPost extends Model
     public function attachments(): HasMany
     {
         return $this->hasMany(BlogAttachment::class);
+    }
+
+    /**
+     * @return BelongsToMany<BlogTag>
+     */
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(BlogTag::class);
     }
 
     protected function excerptComputed(): Attribute
