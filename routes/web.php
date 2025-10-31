@@ -39,7 +39,6 @@ Route::pattern('apartado', '\d+');
 Route::get('/', [BlogController::class, 'home'])->name('home');
 Route::get('/blog', [BlogController::class, 'home'])->name('blog.index');
 Route::get('/blog/{post:slug}', [BlogController::class, 'show'])->name('blog.show');
-Route::get('/blog/rss', [BlogFeedController::class, 'rss'])->name('blog.rss');
 Route::get('/blog/atom', [BlogFeedController::class, 'atom'])->name('blog.atom');
 
 /* ---------------------------------- Auth -------------------------------- */

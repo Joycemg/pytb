@@ -99,7 +99,6 @@
 
     <footer class="blog-post-footer">
       <a class="btn" href="{{ route('blog.index') }}">← Volver</a>
-      <a class="btn btn-primary" href="{{ route('blog.rss') }}">Suscribirme al RSS</a>
     </footer>
   </article>
 @endsection
