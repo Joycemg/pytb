@@ -53,10 +53,13 @@
       <div class="card-body">
         <div class="blog-form-layout">
           <aside class="blog-form-sidebar" aria-label="Atajos y ayuda para editar">
-            <div class="blog-form-sidebar-card" role="status">
-              <p class="blog-form-sidebar-eyebrow">{{ $post->exists ? 'Entrada en edición' : 'Borrador inicial' }}</p>
-              <h2 class="blog-form-sidebar-heading">Tu progreso</h2>
-              <p class="blog-form-sidebar-status">
+            <div class="blog-form-sidebar-card blog-form-sidebar-card--status" role="status">
+              <p id="blog-entry-status" class="sr-only">Estado de la entrada</p>
+              <div class="blog-form-sidebar-chip" aria-hidden="true">
+                <span class="blog-form-sidebar-chip-icon">{{ $post->exists ? '✏️' : '✨' }}</span>
+                <span class="blog-form-sidebar-chip-text">{{ $post->exists ? 'Cambios en marcha' : 'Comenzá cuando quieras' }}</span>
+              </div>
+              <p class="blog-form-sidebar-status" aria-describedby="blog-entry-status">
                 @if ($post->exists && $post->updated_at)
                   Última edición {{ $post->updated_at->diffForHumans() }}.
                 @elseif ($post->exists)
@@ -69,7 +72,10 @@
 
             <div class="blog-form-sidebar-card blog-form-sidebar-card--nav">
               <nav class="blog-form-nav blog-form-nav--desktop" aria-label="Secciones del formulario">
-                <h2 class="blog-form-sidebar-heading">Editar secciones</h2>
+                <div class="blog-form-nav-label" aria-hidden="true">
+                  <span class="blog-form-nav-label-icon">🧭</span>
+                  <span class="blog-form-nav-label-text">Mapa del formulario</span>
+                </div>
                 <ol>
                   @foreach ($formSections as $index => $section)
                     <li>
@@ -86,20 +92,28 @@
               </nav>
             </div>
 
-            <div class="blog-form-sidebar-card" role="note" aria-label="Consejos rápidos para editar">
-              <h2 class="blog-form-sidebar-heading">Consejos rápidos</h2>
+            <div class="blog-form-sidebar-card" role="note" aria-label="Guía exprés para editar">
               <ul class="blog-form-tips">
                 <li>
-                  <span class="blog-form-tip-icon" aria-hidden="true">💾</span>
-                  <span>Guardá seguido para conservar los cambios mientras escribís desde el teléfono.</span>
+                  <div class="blog-form-tip-icon" aria-hidden="true">💾</div>
+                  <div class="blog-form-tip-body">
+                    <p class="blog-form-tip-title">Guardá tus avances</p>
+                    <p class="blog-form-tip-text">Conservá los cambios aunque edites desde el teléfono guardando cada pocos minutos.</p>
+                  </div>
                 </li>
                 <li>
-                  <span class="blog-form-tip-icon" aria-hidden="true">🧭</span>
-                  <span>Usá los accesos directos para saltar entre secciones sin perder el contexto.</span>
+                  <div class="blog-form-tip-icon" aria-hidden="true">🧭</div>
+                  <div class="blog-form-tip-body">
+                    <p class="blog-form-tip-title">Saltá entre secciones</p>
+                    <p class="blog-form-tip-text">Accedé a cualquier parte del formulario desde la barra lateral o la navegación móvil.</p>
+                  </div>
                 </li>
                 <li>
-                  <span class="blog-form-tip-icon" aria-hidden="true">👀</span>
-                  <span>Previsualizá la nota para comprobar cómo se ve en pantallas chicas antes de publicar.</span>
+                  <div class="blog-form-tip-icon" aria-hidden="true">👀</div>
+                  <div class="blog-form-tip-body">
+                    <p class="blog-form-tip-title">Previsualizá antes de publicar</p>
+                    <p class="blog-form-tip-text">Comprobá la vista previa en pantallas chicas para garantizar una lectura cómoda.</p>
+                  </div>
                 </li>
               </ul>
             </div>
@@ -107,7 +121,10 @@
 
           <div class="blog-form-main">
             <nav class="blog-form-nav blog-form-nav--mobile" aria-label="Navegación rápida del formulario">
-              <p class="blog-form-nav-heading">Accesos rápidos</p>
+              <div class="blog-form-nav-label" aria-hidden="true">
+                <span class="blog-form-nav-label-icon">⚡</span>
+                <span class="blog-form-nav-label-text">Ir directo a…</span>
+              </div>
               <ol>
                 @foreach ($formSections as $index => $section)
                   <li>
