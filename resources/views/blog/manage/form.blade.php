@@ -67,6 +67,10 @@
                     <label for="tags-group">Etiquetas</label>
                     <p class="hint">Marcá todas las etiquetas que representen el tema de la entrada. Servirán para organizar y encontrar la nota más rápido.</p>
                   </div>
+                  <div class="blog-tag-selector-summary" data-tag-summary hidden>
+                    <p class="blog-tag-selector-summary-title">Etiquetas nuevas</p>
+                    <ul class="blog-tag-selector-summary-list" data-tag-summary-list></ul>
+                  </div>
                   <div class="blog-tag-selector-wrapper" data-tag-selector data-tag-max="3">
                     <div id="tags-group" class="blog-tag-selector" role="group" aria-label="Seleccionar etiquetas">
                       @forelse ($availableTags as $tag)
@@ -84,19 +88,14 @@
                     <label for="new_tags_input">Seleccionar o crear etiquetas</label>
                     <div class="blog-tag-creator-control">
                       <input id="new_tags_input" type="text" value="" placeholder="Ej: Comunidad, Eventos" list="blog-tag-suggestions" autocomplete="off" data-tag-input>
-                      <button type="button" class="blog-tag-creator-apply" data-tag-apply>Agregar</button>
                     </div>
                     <input name="new_tags" type="hidden" value="{{ old('new_tags') }}" data-tag-storage>
-                    <small class="hint">Escribí para elegir etiquetas existentes o creá nuevas separándolas con comas, presionando Enter o usando el botón Agregar. Las etiquetas nuevas estarán disponibles para futuras entradas.</small>
+                    <small class="hint">Escribí para elegir etiquetas existentes o creá nuevas separándolas con comas o presionando Enter. Las etiquetas nuevas estarán disponibles para futuras entradas.</small>
                     <datalist id="blog-tag-suggestions">
                       @foreach ($availableTags as $tag)
                         <option value="{{ $tag['name'] }}"></option>
                       @endforeach
                     </datalist>
-                    <div class="blog-tag-selector-summary" data-tag-summary hidden>
-                      <p class="blog-tag-selector-summary-title">Etiquetas nuevas</p>
-                      <ul class="blog-tag-selector-summary-list" data-tag-summary-list></ul>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -369,7 +368,6 @@
         }
 
         var tagStorage = tagsField ? tagsField.querySelector('[data-tag-storage]') : null;
-        var applyButton = tagsField ? tagsField.querySelector('[data-tag-apply]') : null;
         var summaryBlock = tagsField ? tagsField.querySelector('[data-tag-summary]') : null;
         var summaryList = tagsField ? tagsField.querySelector('[data-tag-summary-list]') : null;
         var parentForm = tagsField ? tagsField.closest('form') : null;
@@ -493,11 +491,6 @@
             }
           }
 
-          if (applyButton) {
-            var disableApply = maxTags > 0 && totalSelected >= maxTags;
-            applyButton.disabled = disableApply;
-            applyButton.setAttribute('aria-disabled', disableApply ? 'true' : 'false');
-          }
         }
 
         function enforceLimit(changedCheckbox) {
@@ -645,14 +638,6 @@
             if (/[\n,;]/.test(tagInput.value)) {
               processTagInputValue();
             }
-          });
-        }
-
-        if (applyButton && tagInput) {
-          applyButton.addEventListener('click', function (event) {
-            event.preventDefault();
-            processTagInputValue();
-            tagInput.focus();
           });
         }
 
