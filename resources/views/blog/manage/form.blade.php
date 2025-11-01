@@ -61,21 +61,33 @@
                     ->all();
                 @endphp
 
-                <div class="form-group">
-                  <label for="tags-group">Etiquetas</label>
-                  <div id="tags-group" class="blog-tag-selector" role="group" aria-label="Seleccionar etiquetas">
-                    @forelse ($availableTags as $tag)
-                      <label class="blog-tag-option">
-                        <input type="checkbox" name="tags[]" value="{{ $tag['id'] }}" {{ in_array($tag['id'], $selectedTagIds, true) ? 'checked' : '' }}>
-                        <span>#{{ $tag['name'] }}</span>
-                      </label>
-                    @empty
-                      <p class="hint">Todavía no hay etiquetas creadas. Podés sumar nuevas abajo.</p>
-                    @endforelse
+                <div class="form-group blog-tags-field">
+                  <div class="blog-tags-field-header">
+                    <label for="tags-group">Etiquetas</label>
+                    <p class="hint">Marcá todas las etiquetas que representen el tema de la entrada. Servirán para organizar y encontrar la nota más rápido.</p>
                   </div>
-                  <label for="new_tags">Crear etiquetas nuevas</label>
-                  <input id="new_tags" name="new_tags" type="text" value="{{ old('new_tags') }}" placeholder="Ej: Comunidad, Eventos">
-                  <small class="hint">Separá múltiples etiquetas con comas. Las etiquetas nuevas estarán disponibles para futuras entradas.</small>
+                  <div class="blog-tag-selector-wrapper" data-tag-selector>
+                    <div id="tags-group" class="blog-tag-selector" role="group" aria-label="Seleccionar etiquetas">
+                      @forelse ($availableTags as $tag)
+                        <label class="blog-tag-option">
+                          <input type="checkbox" name="tags[]" value="{{ $tag['id'] }}" data-tag-name="{{ $tag['name'] }}" {{ in_array($tag['id'], $selectedTagIds, true) ? 'checked' : '' }}>
+                          <span>#{{ $tag['name'] }}</span>
+                        </label>
+                      @empty
+                        <p class="hint">Todavía no hay etiquetas creadas. Podés sumar nuevas abajo.</p>
+                      @endforelse
+                    </div>
+                    <div class="blog-tag-selector-summary" data-tag-summary aria-live="polite">
+                      <p class="blog-tag-selector-summary-title">Etiquetas seleccionadas</p>
+                      <p class="blog-tag-selector-summary-empty" data-tag-summary-empty>Ninguna por ahora. Podés combinarlas para resaltar distintos enfoques.</p>
+                      <ul class="blog-tag-selector-summary-list" data-tag-summary-list hidden></ul>
+                    </div>
+                  </div>
+                  <div class="blog-tag-creator">
+                    <label for="new_tags">Crear etiquetas nuevas</label>
+                    <input id="new_tags" name="new_tags" type="text" value="{{ old('new_tags') }}" placeholder="Ej: Comunidad, Eventos">
+                    <small class="hint">Separá múltiples etiquetas con comas. Las etiquetas nuevas estarán disponibles para futuras entradas.</small>
+                  </div>
                 </div>
               </div>
             </section>
@@ -314,4 +326,63 @@
 
 @push('scripts')
   <script src="{{ asset('js/blog-editor.js') }}" defer></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('[data-tag-selector]').forEach(function (block) {
+        var checkboxes = block.querySelectorAll('input[type="checkbox"][data-tag-name]');
+        if (!checkboxes.length) {
+          return;
+        }
+
+        var summary = block.querySelector('[data-tag-summary]');
+        if (!summary) {
+          return;
+        }
+
+        var list = summary.querySelector('[data-tag-summary-list]');
+        var emptyState = summary.querySelector('[data-tag-summary-empty]');
+
+        function refreshTagSummary() {
+          var selectedNames = [];
+
+          checkboxes.forEach(function (checkbox) {
+            var label = checkbox.closest('.blog-tag-option');
+            if (label) {
+              label.classList.toggle('is-selected', checkbox.checked);
+            }
+
+            if (checkbox.checked) {
+              selectedNames.push(checkbox.getAttribute('data-tag-name'));
+            }
+          });
+
+          if (list) {
+            list.innerHTML = '';
+
+            if (selectedNames.length > 0) {
+              selectedNames.forEach(function (name) {
+                var item = document.createElement('li');
+                item.className = 'blog-tag-selector-summary-chip';
+                item.textContent = '#' + name;
+                list.appendChild(item);
+              });
+              list.hidden = false;
+            } else {
+              list.hidden = true;
+            }
+          }
+
+          if (emptyState) {
+            emptyState.hidden = selectedNames.length > 0;
+          }
+        }
+
+        checkboxes.forEach(function (checkbox) {
+          checkbox.addEventListener('change', refreshTagSummary);
+        });
+
+        refreshTagSummary();
+      });
+    });
+  </script>
 @endpush

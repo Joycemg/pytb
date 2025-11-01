@@ -72,6 +72,18 @@
         @apply m-0;
     }
 
+    .blog-tags-field {
+        @apply flex flex-col gap-4;
+    }
+
+    .blog-tags-field-header {
+        @apply flex flex-col gap-1;
+    }
+
+    .blog-tag-selector-wrapper {
+        @apply flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50/60 p-4;
+    }
+
     .blog-tag-selector {
         @apply flex flex-wrap gap-2;
     }
@@ -80,8 +92,43 @@
         @apply inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-3 py-1 text-sm text-slate-600 shadow-sm transition hover:border-slate-400 hover:text-slate-800;
     }
 
+    .blog-tag-option.is-selected {
+        @apply border-slate-600 bg-slate-800 text-slate-100 shadow;
+    }
+
+    .blog-tag-option.is-selected span {
+        @apply text-white;
+    }
+
     .blog-tag-option input {
         @apply accent-slate-600;
+    }
+
+    .blog-tag-selector-summary {
+        @apply flex flex-col gap-2 rounded-xl border border-dashed border-slate-300 bg-white/80 p-3 text-sm text-slate-600;
+    }
+
+    .blog-tag-selector-summary-title {
+        @apply text-xs font-semibold uppercase tracking-[0.3em] text-slate-500;
+    }
+
+    .blog-tag-selector-summary-empty {
+        @apply m-0 text-xs text-slate-500;
+    }
+
+    .blog-tag-selector-summary-list {
+        @apply flex flex-wrap gap-2;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .blog-tag-selector-summary-chip {
+        @apply inline-flex items-center rounded-full bg-slate-200 px-3 py-1 text-xs font-medium text-slate-700;
+    }
+
+    .blog-tag-creator {
+        @apply flex flex-col gap-1;
     }
 
     .blog-card-tags {
