@@ -216,6 +216,9 @@
     this.boundScrollUpdate = this.handleScrollUpdate.bind(this);
     this.boundResizeMove = this.handleImageResizeMove.bind(this);
     this.boundResizeEnd = this.handleImageResizeEnd.bind(this);
+    this.toolbar = this.wrapper.querySelector('.blog-editor-toolbar');
+    this.toolbarFrame = null;
+    this.boundToolbarStateUpdate = this.requestToolbarScrollState.bind(this);
     this.history = [];
     this.historyIndex = -1;
     this.historyTimer = null;
@@ -259,6 +262,7 @@
 
     this.textarea.value = this.prepareContent(this.canvas.innerHTML);
     this.registerEvents();
+    this.initializeToolbar();
     this.createImageTools();
     this.recordHistory(true);
   };
@@ -488,6 +492,7 @@
         customPanel.hidden = true;
         customPanel.classList.remove('is-active');
         hideCustomError();
+        self.requestToolbarScrollState();
       }
 
       function openCustomPanel(initial) {
@@ -497,6 +502,7 @@
         customPanel.hidden = false;
         customPanel.classList.add('is-active');
         hideCustomError();
+        self.requestToolbarScrollState();
         var value = initial || palette.getAttribute('data-active-color') || '';
         syncCustomControls(value);
         window.setTimeout(function () {
@@ -674,6 +680,55 @@
     this.registerDialogEvents();
     window.addEventListener('resize', this.boundWindowUpdate);
     document.addEventListener('scroll', this.boundScrollUpdate, true);
+  };
+
+  Editor.prototype.initializeToolbar = function () {
+    if (!this.toolbar) {
+      return;
+    }
+
+    this.requestToolbarScrollState();
+    this.toolbar.addEventListener('scroll', this.boundToolbarStateUpdate, { passive: true });
+    window.addEventListener('resize', this.boundToolbarStateUpdate);
+  };
+
+  Editor.prototype.requestToolbarScrollState = function () {
+    var self = this;
+    if (!this.toolbar) {
+      return;
+    }
+    if (this.toolbarFrame) {
+      window.cancelAnimationFrame(this.toolbarFrame);
+    }
+    this.toolbarFrame = window.requestAnimationFrame(function () {
+      self.toolbarFrame = null;
+      self.updateToolbarScrollState();
+    });
+  };
+
+  Editor.prototype.updateToolbarScrollState = function () {
+    if (!this.toolbar) {
+      return;
+    }
+
+    var tolerance = 2;
+    var scrollWidth = this.toolbar.scrollWidth;
+    var clientWidth = this.toolbar.clientWidth;
+    var scrollLeft = this.toolbar.scrollLeft;
+    var hasOverflow = scrollWidth - clientWidth > tolerance;
+
+    this.toolbar.classList.toggle('is-scrollable', hasOverflow);
+
+    if (!hasOverflow) {
+      this.toolbar.classList.remove('has-left-shadow', 'has-right-shadow');
+      return;
+    }
+
+    var atStart = scrollLeft <= tolerance;
+    var atEnd = scrollLeft + clientWidth >= scrollWidth - tolerance;
+
+    this.toolbar.classList.toggle('has-left-shadow', !atStart);
+    this.toolbar.classList.toggle('has-right-shadow', !atEnd);
   };
 
   Editor.prototype.registerDialogEvents = function () {
