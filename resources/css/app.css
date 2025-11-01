@@ -106,12 +106,135 @@
         @apply sr-only;
     }
 
-    .blog-tag-selector-limit {
-        @apply m-0 text-xs font-semibold text-red-600;
-    }
-
     .blog-tag-creator {
         @apply flex flex-col gap-1;
+    }
+
+    .blog-tag-selector-limit {
+        margin: 0;
+        font-size: .75rem;
+        font-weight: 600;
+        color: #b91c1c;
+    }
+
+    .blog-tag-creator-control {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+    }
+
+    .blog-tag-creator-control input {
+        flex: 1;
+        min-width: 0;
+        padding: .5rem .75rem;
+        border-radius: .75rem;
+        border: 1px solid #cbd5f5;
+        background: #fff;
+        font-size: .9rem;
+        color: #1e293b;
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .blog-tag-creator-control input:focus {
+        outline: none;
+        border-color: #94a3b8;
+        box-shadow: 0 0 0 3px rgba(148, 163, 184, .25);
+    }
+
+    .blog-tag-creator-apply {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: .45rem 1rem;
+        border-radius: .75rem;
+        border: 1px solid #cbd5f5;
+        background: #f1f5f9;
+        font-weight: 600;
+        font-size: .85rem;
+        color: #334155;
+        cursor: pointer;
+        transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+    }
+
+    .blog-tag-creator-apply:hover,
+    .blog-tag-creator-apply:focus-visible {
+        border-color: #94a3b8;
+        background: #fff;
+        color: #0f172a;
+        outline: none;
+    }
+
+    .blog-tag-creator-apply[disabled] {
+        cursor: not-allowed;
+        border-color: #e2e8f0;
+        background: #f8fafc;
+        color: #94a3b8;
+        box-shadow: none;
+    }
+
+    .blog-tag-selector-summary {
+        margin-top: .75rem;
+        display: flex;
+        flex-direction: column;
+        gap: .6rem;
+        padding: .85rem;
+        border-radius: 1rem;
+        border: 1px solid #e2e8f0;
+        background: rgba(255, 255, 255, .75);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .65);
+    }
+
+    .blog-tag-selector-summary-title {
+        margin: 0;
+        font-size: .72rem;
+        font-weight: 600;
+        letter-spacing: .3em;
+        text-transform: uppercase;
+        color: #64748b;
+    }
+
+    .blog-tag-selector-summary-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .blog-tag-selector-summary-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        padding: .3rem .85rem;
+        border-radius: 999px;
+        background: #e2e8f0;
+        font-size: .82rem;
+        font-weight: 600;
+        color: #334155;
+    }
+
+    .blog-tag-selector-summary-remove {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 999px;
+        border: 0;
+        background: transparent;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #64748b;
+        cursor: pointer;
+        transition: background-color .2s ease, color .2s ease;
+    }
+
+    .blog-tag-selector-summary-remove:hover,
+    .blog-tag-selector-summary-remove:focus-visible {
+        background: #cbd5f5;
+        color: #0f172a;
+        outline: none;
     }
 
     .blog-card-tags {

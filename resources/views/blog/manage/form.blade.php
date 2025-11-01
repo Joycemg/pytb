@@ -81,14 +81,22 @@
                     <p class="blog-tag-selector-limit" data-tag-limit hidden>Podés elegir hasta 3 etiquetas.</p>
                   </div>
                   <div class="blog-tag-creator" data-tag-creator>
-                    <label for="new_tags">Seleccionar o crear etiquetas</label>
-                    <input id="new_tags" name="new_tags" type="text" value="{{ old('new_tags') }}" placeholder="Ej: Comunidad, Eventos" list="blog-tag-suggestions" autocomplete="off" data-tag-input>
-                    <small class="hint">Escribí para elegir etiquetas existentes o creá nuevas separándolas con comas. Las etiquetas nuevas estarán disponibles para futuras entradas.</small>
+                    <label for="new_tags_input">Seleccionar o crear etiquetas</label>
+                    <div class="blog-tag-creator-control">
+                      <input id="new_tags_input" type="text" value="" placeholder="Ej: Comunidad, Eventos" list="blog-tag-suggestions" autocomplete="off" data-tag-input>
+                      <button type="button" class="blog-tag-creator-apply" data-tag-apply>Agregar</button>
+                    </div>
+                    <input name="new_tags" type="hidden" value="{{ old('new_tags') }}" data-tag-storage>
+                    <small class="hint">Escribí para elegir etiquetas existentes o creá nuevas separándolas con comas, presionando Enter o usando el botón Agregar. Las etiquetas nuevas estarán disponibles para futuras entradas.</small>
                     <datalist id="blog-tag-suggestions">
                       @foreach ($availableTags as $tag)
                         <option value="{{ $tag['name'] }}"></option>
                       @endforeach
                     </datalist>
+                    <div class="blog-tag-selector-summary" data-tag-summary hidden>
+                      <p class="blog-tag-selector-summary-title">Etiquetas nuevas</p>
+                      <ul class="blog-tag-selector-summary-list" data-tag-summary-list></ul>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -360,26 +368,135 @@
           return null;
         }
 
-        function refreshTagStates() {
-          var selectedCount = 0;
+        var tagStorage = tagsField ? tagsField.querySelector('[data-tag-storage]') : null;
+        var applyButton = tagsField ? tagsField.querySelector('[data-tag-apply]') : null;
+        var summaryBlock = tagsField ? tagsField.querySelector('[data-tag-summary]') : null;
+        var summaryList = tagsField ? tagsField.querySelector('[data-tag-summary-list]') : null;
+        var parentForm = tagsField ? tagsField.closest('form') : null;
 
+        function parseTagList(value) {
+          return (value || '')
+            .split(/[\n,;]+/)
+            .map(function (token) {
+              return token.replace(/\s+/g, ' ').trim();
+            })
+            .filter(function (token) {
+              return token.length > 0;
+            });
+        }
+
+        function updateSummary(tags) {
+          if (!summaryBlock) {
+            return;
+          }
+
+          if (!tags.length) {
+            summaryBlock.hidden = true;
+            if (summaryList) {
+              summaryList.innerHTML = '';
+            }
+            return;
+          }
+
+          summaryBlock.hidden = false;
+
+          if (!summaryList) {
+            return;
+          }
+
+          summaryList.innerHTML = '';
+
+          tags.forEach(function (tag) {
+            var item = document.createElement('li');
+            item.className = 'blog-tag-selector-summary-chip';
+
+            var label = document.createElement('span');
+            label.textContent = '#' + tag;
+
+            var removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'blog-tag-selector-summary-remove';
+            removeButton.setAttribute('data-tag-remove', tag);
+            removeButton.setAttribute('aria-label', 'Quitar etiqueta "' + tag + '"');
+            removeButton.textContent = '×';
+
+            item.appendChild(label);
+            item.appendChild(removeButton);
+            summaryList.appendChild(item);
+          });
+        }
+
+        function getNewTags() {
+          if (!tagStorage) {
+            return [];
+          }
+
+          return parseTagList(tagStorage.value || '');
+        }
+
+        function setNewTags(tags) {
+          if (!tagStorage) {
+            return [];
+          }
+
+          var seen = [];
+          var normalized = [];
+
+          tags.forEach(function (tag) {
+            var normalizedTag = tag.replace(/\s+/g, ' ').trim();
+            if (!normalizedTag) {
+              return;
+            }
+
+            var key = normalizedTag.toLowerCase();
+            if (seen.indexOf(key) !== -1) {
+              return;
+            }
+
+            seen.push(key);
+            normalized.push(normalizedTag);
+          });
+
+          tagStorage.value = normalized.join(', ');
+          updateSummary(normalized);
+
+          return normalized;
+        }
+
+        function getSelectedCheckboxCount() {
+          var count = 0;
+
+          checkboxes.forEach(function (checkbox) {
+            if (checkbox.checked) {
+              count++;
+            }
+          });
+
+          return count;
+        }
+
+        function refreshTagStates() {
           checkboxes.forEach(function (checkbox) {
             var label = checkbox.closest('.blog-tag-option');
             if (label) {
               label.classList.toggle('is-selected', checkbox.checked);
             }
-
-            if (checkbox.checked) {
-              selectedCount++;
-            }
           });
 
+          var totalSelected = getSelectedCheckboxCount() + getNewTags().length;
+
           if (limitMessage) {
-            if (maxTags > 0 && selectedCount >= maxTags) {
+            if (maxTags > 0 && totalSelected >= maxTags) {
               limitMessage.hidden = false;
             } else {
               limitMessage.hidden = true;
             }
+          }
+
+          if (applyButton) {
+            var disableApply = maxTags > 0 && totalSelected >= maxTags;
+            applyButton.disabled = disableApply;
+            applyButton.setAttribute('aria-disabled', disableApply ? 'true' : 'false');
           }
         }
 
@@ -388,14 +505,9 @@
             return;
           }
 
-          var selectedCount = 0;
-          checkboxes.forEach(function (checkbox) {
-            if (checkbox.checked) {
-              selectedCount++;
-            }
-          });
+          var totalSelected = getSelectedCheckboxCount() + getNewTags().length;
 
-          if (selectedCount > maxTags && changedCheckbox && changedCheckbox.checked) {
+          if (totalSelected > maxTags && changedCheckbox && changedCheckbox.checked) {
             changedCheckbox.checked = false;
           }
         }
@@ -410,7 +522,7 @@
             .replace(/[\n;]+/g, ',')
             .split(',')
             .map(function (token) {
-              return token.trim();
+              return token.replace(/\s+/g, ' ').trim();
             })
             .filter(function (token) {
               return token.length > 0;
@@ -422,41 +534,85 @@
           }
 
           var remaining = [];
+          var updated = getNewTags().slice();
+          var seenNew = updated.map(function (tag) {
+            return tag.toLowerCase();
+          });
           var shouldRefresh = false;
 
           tokens.forEach(function (token) {
             var checkbox = findCheckboxByName(token);
 
-            if (!checkbox) {
-              remaining.push(token);
-              return;
-            }
+            if (checkbox) {
+              var wasChecked = checkbox.checked;
 
-            var wasChecked = checkbox.checked;
+              if (!checkbox.checked) {
+                checkbox.checked = true;
+              }
 
-            if (!checkbox.checked) {
-              checkbox.checked = true;
-            }
+              enforceLimit(checkbox);
 
-            enforceLimit(checkbox);
+              if (checkbox.checked) {
+                shouldRefresh = true;
+                return;
+              }
 
-            if (checkbox.checked) {
+              if (!wasChecked) {
+                remaining.push(token);
+              }
+
               shouldRefresh = true;
               return;
             }
 
-            if (!wasChecked) {
-              remaining.push(token);
+            var normalizedToken = token.toLowerCase();
+            if (seenNew.indexOf(normalizedToken) !== -1) {
+              return;
             }
 
+            var availableSlots = maxTags > 0
+              ? maxTags - (getSelectedCheckboxCount() + updated.length)
+              : Number.POSITIVE_INFINITY;
+
+            if (availableSlots <= 0) {
+              remaining.push(token);
+              return;
+            }
+
+            updated.push(token);
+            seenNew.push(normalizedToken);
             shouldRefresh = true;
           });
 
+          setNewTags(updated);
           tagInput.value = remaining.join(', ');
 
           if (shouldRefresh) {
             refreshTagStates();
           }
+        }
+
+        if (summaryList) {
+          summaryList.addEventListener('click', function (event) {
+            var removeButton = event.target.closest('[data-tag-remove]');
+            if (!removeButton) {
+              return;
+            }
+
+            event.preventDefault();
+
+            var tagName = removeButton.getAttribute('data-tag-remove') || '';
+            if (!tagName) {
+              return;
+            }
+
+            var next = getNewTags().filter(function (tag) {
+              return tag.toLowerCase() !== tagName.toLowerCase();
+            });
+
+            setNewTags(next);
+            refreshTagStates();
+          });
         }
 
         checkboxes.forEach(function (checkbox) {
@@ -472,6 +628,12 @@
               event.preventDefault();
               event.stopPropagation();
               processTagInputValue();
+              return;
+            }
+
+            if (event.key === ',' || event.key === 'Comma') {
+              event.preventDefault();
+              processTagInputValue();
             }
           });
 
@@ -486,8 +648,22 @@
           });
         }
 
+        if (applyButton && tagInput) {
+          applyButton.addEventListener('click', function (event) {
+            event.preventDefault();
+            processTagInputValue();
+            tagInput.focus();
+          });
+        }
+
+        if (parentForm && tagInput) {
+          parentForm.addEventListener('submit', function () {
+            processTagInputValue();
+          });
+        }
+
+        setNewTags(getNewTags());
         refreshTagStates();
-        processTagInputValue();
       });
     });
   </script>
