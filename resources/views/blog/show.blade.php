@@ -69,10 +69,6 @@
       </figure>
     @endif
 
-    @if (filled($post->excerpt))
-      <p class="blog-post-lede">{{ $post->excerpt }}</p>
-    @endif
-
     @php
       $rawContent = $post->content ?? '';
       $hasMarkup = str_contains((string) $rawContent, '<');
