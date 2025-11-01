@@ -68,18 +68,6 @@
                     <p class="hint">Marcá todas las etiquetas que representen el tema de la entrada. Servirán para organizar y encontrar la nota más rápido.</p>
                   </div>
                   <div class="blog-tag-selector-wrapper" data-tag-selector data-tag-max="3">
-                    @if ($popularTags->isNotEmpty())
-                      <div class="blog-tag-quick-picks" data-tag-quick-picks>
-                        <p class="blog-tag-quick-picks-title">Selección rápida</p>
-                        <div class="blog-tag-quick-picks-options">
-                          @foreach ($popularTags as $tag)
-                            <button type="button" class="blog-tag-quick-pick" data-tag-quick-pick data-tag-id="{{ $tag['id'] }}">
-                              #{{ $tag['name'] }}
-                            </button>
-                          @endforeach
-                        </div>
-                      </div>
-                    @endif
                     <div id="tags-group" class="blog-tag-selector" role="group" aria-label="Seleccionar etiquetas">
                       @forelse ($availableTags as $tag)
                         <label class="blog-tag-option{{ in_array($tag['id'], $selectedTagIds, true) ? ' is-selected' : '' }}">
@@ -90,12 +78,7 @@
                         <p class="hint">Todavía no hay etiquetas creadas. Podés sumar nuevas abajo.</p>
                       @endforelse
                     </div>
-                    <div class="blog-tag-selector-summary" data-tag-summary aria-live="polite">
-                      <p class="blog-tag-selector-summary-title">Etiquetas seleccionadas</p>
-                      <p class="blog-tag-selector-summary-empty" data-tag-summary-empty>Ninguna por ahora. Podés combinarlas para resaltar distintos enfoques.</p>
-                      <ul class="blog-tag-selector-summary-list" data-tag-summary-list hidden></ul>
-                      <p class="blog-tag-selector-limit" data-tag-limit hidden>Podés elegir hasta 3 etiquetas.</p>
-                    </div>
+                    <p class="blog-tag-selector-limit" data-tag-limit hidden>Podés elegir hasta 3 etiquetas.</p>
                   </div>
                   <div class="blog-tag-creator">
                     <label for="new_tags">Crear etiquetas nuevas</label>
@@ -348,20 +331,11 @@
           return;
         }
 
-        var summary = block.querySelector('[data-tag-summary]');
-        if (!summary) {
-          return;
-        }
-
-        var list = summary.querySelector('[data-tag-summary-list]');
-        var emptyState = summary.querySelector('[data-tag-summary-empty]');
-        var limitMessage = summary.querySelector('[data-tag-limit]');
-        var quickPickButtons = block.querySelectorAll('[data-tag-quick-pick]');
+        var limitMessage = block.querySelector('[data-tag-limit]');
         var maxTags = parseInt(block.getAttribute('data-tag-max') || '0', 10);
 
-        function refreshTagSummary() {
-          var selectedNames = [];
-          var selectedIds = [];
+        function refreshTagStates() {
+          var selectedCount = 0;
 
           checkboxes.forEach(function (checkbox) {
             var label = checkbox.closest('.blog-tag-option');
@@ -370,45 +344,16 @@
             }
 
             if (checkbox.checked) {
-              selectedNames.push(checkbox.getAttribute('data-tag-name'));
-              selectedIds.push(checkbox.getAttribute('data-tag-id'));
+              selectedCount++;
             }
           });
 
-          if (list) {
-            list.innerHTML = '';
-
-            if (selectedNames.length > 0) {
-              selectedNames.forEach(function (name) {
-                var item = document.createElement('li');
-                item.className = 'blog-tag-selector-summary-chip';
-                item.textContent = '#' + name;
-                list.appendChild(item);
-              });
-              list.hidden = false;
-            } else {
-              list.hidden = true;
-            }
-          }
-
-          if (emptyState) {
-            emptyState.hidden = selectedNames.length > 0;
-          }
-
           if (limitMessage) {
-            if (maxTags > 0 && selectedNames.length >= maxTags) {
+            if (maxTags > 0 && selectedCount >= maxTags) {
               limitMessage.hidden = false;
             } else {
               limitMessage.hidden = true;
             }
-          }
-
-          if (quickPickButtons.length) {
-            quickPickButtons.forEach(function (button) {
-              var tagId = button.getAttribute('data-tag-id');
-              var isSelected = selectedIds.indexOf(tagId) !== -1;
-              button.classList.toggle('is-selected', isSelected);
-            });
           }
         }
 
@@ -432,30 +377,11 @@
         checkboxes.forEach(function (checkbox) {
           checkbox.addEventListener('change', function () {
             enforceLimit(checkbox);
-            refreshTagSummary();
+            refreshTagStates();
           });
         });
 
-        if (quickPickButtons.length) {
-          quickPickButtons.forEach(function (button) {
-            button.addEventListener('click', function () {
-              var tagId = button.getAttribute('data-tag-id');
-              var target = Array.prototype.find.call(checkboxes, function (checkbox) {
-                return checkbox.getAttribute('data-tag-id') === tagId;
-              });
-
-              if (!target) {
-                return;
-              }
-
-              target.checked = !target.checked;
-              enforceLimit(target);
-              refreshTagSummary();
-            });
-          });
-        }
-
-        refreshTagSummary();
+        refreshTagStates();
       });
     });
   </script>
