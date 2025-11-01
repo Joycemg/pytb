@@ -5,28 +5,6 @@
 @section('content')
   @php
     $availableTags = $availableTags ?? collect();
-    $formSections = [
-      [
-        'id' => 'blog-form-basics',
-        'label' => 'Datos principales',
-        'hint' => 'Título, resumen y etiquetas',
-      ],
-      [
-        'id' => 'blog-form-content',
-        'label' => 'Contenido',
-        'hint' => 'Editor enriquecido',
-      ],
-      [
-        'id' => 'blog-form-style',
-        'label' => 'Personalización visual',
-        'hint' => 'Temas y colores',
-      ],
-      [
-        'id' => 'blog-form-media',
-        'label' => 'Recursos y archivos',
-        'hint' => 'Imágenes y adjuntos',
-      ],
-    ];
   @endphp
   <div class="page container blog-form">
     <header class="page-head">
@@ -52,33 +30,12 @@
     <div class="card">
       <div class="card-body">
         <div class="blog-form-layout">
-          <aside class="blog-form-sidebar" aria-label="Atajos y ayuda para editar">
-            <div class="blog-form-sidebar-card blog-form-sidebar-card--nav">
-              <nav class="blog-form-nav blog-form-nav--desktop" aria-label="Secciones del formulario">
-                <ol>
-                  @foreach ($formSections as $index => $section)
-                    <li>
-                      <a href="#{{ $section['id'] }}">
-                        <span class="blog-form-nav-index">{{ sprintf('%02d', $index + 1) }}</span>
-                        <span class="blog-form-nav-text">
-                          <span class="blog-form-nav-title">{{ $section['label'] }}</span>
-                          <span class="blog-form-nav-description">{{ $section['hint'] }}</span>
-                        </span>
-                      </a>
-                    </li>
-                  @endforeach
-                </ol>
-              </nav>
-            </div>
-
-          </aside>
-
           <div class="blog-form-main">
             <form id="blog-entry-form" method="post" action="{{ $post->exists ? route('blog.update', $post) : route('blog.store') }}" enctype="multipart/form-data" class="form blog-form-body">
-          @csrf
-          @if ($post->exists)
-            @method('put')
-          @endif
+              @csrf
+              @if ($post->exists)
+                @method('put')
+              @endif
 
             <section id="blog-form-basics" class="blog-form-section" aria-labelledby="blog-form-basics-title">
               <div class="blog-form-section-header">
