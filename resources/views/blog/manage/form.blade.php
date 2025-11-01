@@ -479,13 +479,35 @@
         }
 
         function refreshTagStates() {
+          var hasExtraSelected = false;
+
+          checkboxes.forEach(function (checkbox) {
+            if (!checkbox.checked) {
+              return;
+            }
+
+            var label = checkbox.closest('.blog-tag-option');
+            if (!label) {
+              return;
+            }
+
+            if (label.getAttribute('data-tag-popular') !== 'true') {
+              hasExtraSelected = true;
+            }
+          });
+
           checkboxes.forEach(function (checkbox) {
             var label = checkbox.closest('.blog-tag-option');
-            if (label) {
-              label.classList.toggle('is-selected', checkbox.checked);
-              if (label.getAttribute('data-tag-popular') !== 'true') {
-                label.classList.toggle('is-hidden', !checkbox.checked);
-              }
+            if (!label) {
+              return;
+            }
+
+            var isPopular = label.getAttribute('data-tag-popular') === 'true';
+            label.classList.toggle('is-selected', checkbox.checked);
+
+            if (!isPopular) {
+              var shouldHide = !checkbox.checked && !hasExtraSelected;
+              label.classList.toggle('is-hidden', shouldHide);
             }
           });
 

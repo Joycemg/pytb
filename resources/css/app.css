@@ -11,6 +11,10 @@
 }
 
 @layer components {
+    .is-hidden {
+        display: none !important;
+    }
+
     .blog-card-meta {
         @apply flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-500;
     }
