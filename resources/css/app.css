@@ -424,6 +424,10 @@
     .blog-form-actions .btn {
         min-width: 9rem;
     }
+
+    .blog-form-actions .btn + .btn {
+        margin-left: 1rem;
+    }
 }
 
 @media (min-width: 1024px) {
