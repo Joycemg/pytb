@@ -77,7 +77,7 @@
     }
 
     .blog-tags-field {
-        @apply flex flex-col gap-2;
+        @apply flex flex-col gap-3;
     }
 
     .blog-tags-field-header {
@@ -85,7 +85,7 @@
     }
 
     .blog-tag-selector-wrapper {
-        @apply flex flex-col gap-2 rounded-2xl border border-slate-200 bg-white/80 px-4 py-3;
+        @apply flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white/80 px-3 py-2.5;
     }
 
     .blog-tag-selector {
