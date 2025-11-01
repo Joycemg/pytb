@@ -5,6 +5,28 @@
 @section('content')
   @php
     $availableTags = $availableTags ?? collect();
+    $formSections = [
+      [
+        'id' => 'blog-form-basics',
+        'label' => 'Datos principales',
+        'hint' => 'Título, resumen y etiquetas',
+      ],
+      [
+        'id' => 'blog-form-content',
+        'label' => 'Contenido',
+        'hint' => 'Editor enriquecido',
+      ],
+      [
+        'id' => 'blog-form-style',
+        'label' => 'Personalización visual',
+        'hint' => 'Temas y colores',
+      ],
+      [
+        'id' => 'blog-form-media',
+        'label' => 'Recursos y archivos',
+        'hint' => 'Imágenes y adjuntos',
+      ],
+    ];
   @endphp
   <div class="page container blog-form">
     <header class="page-head">
@@ -44,9 +66,62 @@
                 @endif
               </p>
             </div>
+
+            <div class="blog-form-sidebar-card blog-form-sidebar-card--nav">
+              <nav class="blog-form-nav blog-form-nav--desktop" aria-label="Secciones del formulario">
+                <h2 class="blog-form-sidebar-heading">Editar secciones</h2>
+                <ol>
+                  @foreach ($formSections as $index => $section)
+                    <li>
+                      <a href="#{{ $section['id'] }}">
+                        <span class="blog-form-nav-index">{{ sprintf('%02d', $index + 1) }}</span>
+                        <span class="blog-form-nav-text">
+                          <span class="blog-form-nav-title">{{ $section['label'] }}</span>
+                          <span class="blog-form-nav-description">{{ $section['hint'] }}</span>
+                        </span>
+                      </a>
+                    </li>
+                  @endforeach
+                </ol>
+              </nav>
+            </div>
+
+            <div class="blog-form-sidebar-card" role="note" aria-label="Consejos rápidos para editar">
+              <h2 class="blog-form-sidebar-heading">Consejos rápidos</h2>
+              <ul class="blog-form-tips">
+                <li>
+                  <span class="blog-form-tip-icon" aria-hidden="true">💾</span>
+                  <span>Guardá seguido para conservar los cambios mientras escribís desde el teléfono.</span>
+                </li>
+                <li>
+                  <span class="blog-form-tip-icon" aria-hidden="true">🧭</span>
+                  <span>Usá los accesos directos para saltar entre secciones sin perder el contexto.</span>
+                </li>
+                <li>
+                  <span class="blog-form-tip-icon" aria-hidden="true">👀</span>
+                  <span>Previsualizá la nota para comprobar cómo se ve en pantallas chicas antes de publicar.</span>
+                </li>
+              </ul>
+            </div>
           </aside>
 
           <div class="blog-form-main">
+            <nav class="blog-form-nav blog-form-nav--mobile" aria-label="Navegación rápida del formulario">
+              <p class="blog-form-nav-heading">Accesos rápidos</p>
+              <ol>
+                @foreach ($formSections as $index => $section)
+                  <li>
+                    <a href="#{{ $section['id'] }}">
+                      <span class="blog-form-nav-index">{{ sprintf('%02d', $index + 1) }}</span>
+                      <span class="blog-form-nav-text">
+                        <span class="blog-form-nav-title">{{ $section['label'] }}</span>
+                        <span class="blog-form-nav-description">{{ $section['hint'] }}</span>
+                      </span>
+                    </a>
+                  </li>
+                @endforeach
+              </ol>
+            </nav>
             <form id="blog-entry-form" method="post" action="{{ $post->exists ? route('blog.update', $post) : route('blog.store') }}" enctype="multipart/form-data" class="form blog-form-body">
           @csrf
           @if ($post->exists)
