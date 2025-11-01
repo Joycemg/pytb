@@ -66,7 +66,6 @@
                 <div class="form-group blog-tags-field">
                   <div class="blog-tags-field-header">
                     <label for="tags-group">Etiquetas</label>
-                    <p class="hint">Marcá todas las etiquetas que representen el tema de la entrada. Servirán para organizar y encontrar la nota más rápido.</p>
                   </div>
                   <div class="blog-tag-selector-summary" data-tag-summary hidden>
                     <p class="blog-tag-selector-summary-title">Etiquetas nuevas</p>
@@ -87,6 +86,7 @@
                         <p class="hint">Todavía no hay etiquetas creadas. Podés sumar nuevas abajo.</p>
                       @endforelse
                     </div>
+                    <p class="hint">Marcá todas las etiquetas que representen el tema de la entrada. Servirán para organizar y encontrar la nota más rápido.</p>
                     <p class="blog-tag-selector-limit" data-tag-limit hidden>Podés elegir hasta 3 etiquetas.</p>
                   </div>
                   <div class="blog-tag-creator" data-tag-creator>
