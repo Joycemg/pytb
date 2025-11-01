@@ -632,25 +632,53 @@ final class BlogController extends Controller
     {
         $themes = (array) config('blog.themes', []);
         $defaultTheme = (string) config('blog.default_theme', 'classic');
-        $theme = (string) ($data['theme'] ?? ($post?->theme ?? $defaultTheme));
-        if (!array_key_exists($theme, $themes)) {
-            $theme = $defaultTheme;
-        }
 
-        $data['theme'] = $theme;
+        $resolveTheme = static function () use ($themes, $defaultTheme): string {
+            if ($themes === []) {
+                return $defaultTheme;
+            }
 
-        $accent = $this->normalizeHexColor($data['accent_color'] ?? null);
-        if ($accent === null) {
+            $keys = array_keys($themes);
+            if ($keys === []) {
+                return $defaultTheme;
+            }
+
+            $randomKey = $keys[array_rand($keys)];
+            if (!array_key_exists($randomKey, $themes)) {
+                return $defaultTheme;
+            }
+
+            return $randomKey;
+        };
+
+        if ($post !== null && $post->exists) {
+            $theme = (string) ($post->theme ?? $defaultTheme);
+            if (!array_key_exists($theme, $themes)) {
+                $theme = $defaultTheme;
+            }
+
+            $accent = $this->normalizeHexColor($post->accent_color)
+                ?? $this->normalizeHexColor($themes[$theme]['accent'] ?? null)
+                ?? $this->normalizeHexColor((string) config('blog.default_accent', '#2563EB'));
+
+            $textAccent = $this->normalizeHexColor($post->accent_text_color)
+                ?? $this->normalizeHexColor($themes[$theme]['text'] ?? null)
+                ?? $this->normalizeHexColor((string) config('blog.default_text_color', '#0F172A'));
+        } else {
+            $theme = $resolveTheme();
+
+            if (!array_key_exists($theme, $themes)) {
+                $theme = $defaultTheme;
+            }
+
             $accent = $this->normalizeHexColor($themes[$theme]['accent'] ?? null)
                 ?? $this->normalizeHexColor((string) config('blog.default_accent', '#2563EB'));
-        }
 
-        $textAccent = $this->normalizeHexColor($data['accent_text_color'] ?? null);
-        if ($textAccent === null) {
             $textAccent = $this->normalizeHexColor($themes[$theme]['text'] ?? null)
                 ?? $this->normalizeHexColor((string) config('blog.default_text_color', '#0F172A'));
         }
 
+        $data['theme'] = $theme;
         $data['accent_color'] = $accent;
         $data['accent_text_color'] = $textAccent;
         $data['hero_image_url'] = isset($data['hero_image_url']) && $data['hero_image_url'] !== ''
