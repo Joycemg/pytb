@@ -55,7 +55,6 @@
           <aside class="blog-form-sidebar" aria-label="Atajos y ayuda para editar">
             <div class="blog-form-sidebar-card blog-form-sidebar-card--nav">
               <nav class="blog-form-nav blog-form-nav--desktop" aria-label="Secciones del formulario">
-                <h2 class="blog-form-sidebar-heading">Editar secciones</h2>
                 <ol>
                   @foreach ($formSections as $index => $section)
                     <li>
@@ -72,28 +71,10 @@
               </nav>
             </div>
 
-            <div class="blog-form-sidebar-card" role="note" aria-label="Consejos rápidos para editar">
-              <h2 class="blog-form-sidebar-heading">Consejos rápidos</h2>
-              <ul class="blog-form-tips">
-                <li>
-                  <span class="blog-form-tip-icon" aria-hidden="true">💾</span>
-                  <span>Guardá seguido para conservar los cambios mientras escribís desde el teléfono.</span>
-                </li>
-                <li>
-                  <span class="blog-form-tip-icon" aria-hidden="true">🧭</span>
-                  <span>Usá los accesos directos para saltar entre secciones sin perder el contexto.</span>
-                </li>
-                <li>
-                  <span class="blog-form-tip-icon" aria-hidden="true">👀</span>
-                  <span>Previsualizá la nota para comprobar cómo se ve en pantallas chicas antes de publicar.</span>
-                </li>
-              </ul>
-            </div>
           </aside>
 
           <div class="blog-form-main">
             <nav class="blog-form-nav blog-form-nav--mobile" aria-label="Navegación rápida del formulario">
-              <p class="blog-form-nav-heading">Accesos rápidos</p>
               <ol>
                 @foreach ($formSections as $index => $section)
                   <li>
