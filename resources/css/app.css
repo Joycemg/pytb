@@ -106,6 +106,10 @@
         @apply sr-only;
     }
 
+    .blog-tag-option.is-hidden {
+        display: none;
+    }
+
     .blog-tag-creator {
         @apply flex flex-col gap-1;
     }
