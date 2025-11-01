@@ -29,11 +29,13 @@
       <div class="flash flash-success">{{ session('status') }}</div>
     @endif
 
+    <div class="flash flash-info" data-draft-notice hidden></div>
+
     <div class="card">
       <div class="card-body">
         <div class="blog-form-layout">
           <div class="blog-form-main">
-            <form id="blog-entry-form" method="post" action="{{ $post->exists ? route('blog.update', $post) : route('blog.store') }}" enctype="multipart/form-data" class="form blog-form-body">
+            <form id="blog-entry-form" method="post" action="{{ $post->exists ? route('blog.update', $post) : route('blog.store') }}" enctype="multipart/form-data" class="form blog-form-body" data-draft-key="{{ $post->exists ? 'post-'.$post->id : 'new-'.(auth()->id() ?? 'guest') }}">
               @csrf
               @if ($post->exists)
                 @method('put')
@@ -321,6 +323,7 @@
             </section>
 
             <div class="form-actions blog-form-actions">
+              <button type="button" class="btn" data-draft-clear hidden>Descartar borrador guardado</button>
               <button type="submit" class="btn btn-primary">{{ $post->exists ? 'Guardar cambios' : 'Guardar entrada' }}</button>
               @if ($post->exists)
                 <a class="btn" href="{{ route('blog.show', ['post' => $post->slug]) }}" target="_blank" rel="noopener">Ver publicación</a>
@@ -342,6 +345,28 @@
   <script src="{{ asset('js/blog-editor.js') }}" defer></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
+      var form = document.getElementById('blog-entry-form');
+      var draftNotice = document.querySelector('[data-draft-notice]');
+      var clearDraftButton = form ? form.querySelector('[data-draft-clear]') : null;
+      var storageEnabled = isStorageAvailable();
+      var rawDraftKey = form && storageEnabled ? form.getAttribute('data-draft-key') : null;
+      var storageKey = rawDraftKey ? 'blog:entry:draft:' + rawDraftKey : null;
+      var restoredDraft = storageKey ? readDraft(storageKey) : null;
+      var transientTimer = null;
+      var saveTimer = null;
+
+      if (restoredDraft && !hasMeaningfulData(restoredDraft)) {
+        restoredDraft = null;
+        removeStoredDraft();
+      }
+
+      var hasDraftTags = restoredDraft ? Object.prototype.hasOwnProperty.call(restoredDraft, 'tags') : false;
+      var restoredTags = hasDraftTags && Array.isArray(restoredDraft.tags)
+        ? restoredDraft.tags.map(function (value) { return String(value); })
+        : [];
+      var restoredFields = restoredDraft && restoredDraft.fields ? restoredDraft.fields : {};
+      var hasDraftNewTags = restoredFields && Object.prototype.hasOwnProperty.call(restoredFields, 'new_tags');
+
       document.querySelectorAll('[data-tag-selector]').forEach(function (block) {
         var checkboxes = block.querySelectorAll('input[type="checkbox"][data-tag-name]');
         if (!checkboxes.length) {
@@ -521,18 +546,27 @@
             }
           }
 
+          if (tagInput) {
+            var availableSlots = maxTags > 0 ? Math.max(maxTags - getSelectedCheckboxCount(), 0) : Number.POSITIVE_INFINITY;
+            tagInput.disabled = availableSlots <= 0;
+          }
         }
 
         function enforceLimit(changedCheckbox) {
-          if (!(maxTags > 0)) {
+          if (!changedCheckbox || !changedCheckbox.checked) {
+            return;
+          }
+
+          if (maxTags <= 0) {
             return;
           }
 
           var totalSelected = getSelectedCheckboxCount() + getNewTags().length;
-
-          if (totalSelected > maxTags && changedCheckbox && changedCheckbox.checked) {
-            changedCheckbox.checked = false;
+          if (totalSelected <= maxTags) {
+            return;
           }
+
+          changedCheckbox.checked = false;
         }
 
         function processTagInputValue() {
@@ -540,24 +574,14 @@
             return;
           }
 
-          var rawValue = tagInput.value || '';
-          var tokens = rawValue
-            .replace(/[\n;]+/g, ',')
-            .split(',')
-            .map(function (token) {
-              return token.replace(/\s+/g, ' ').trim();
-            })
-            .filter(function (token) {
-              return token.length > 0;
-            });
-
+          var tokens = parseTagList(tagInput.value);
           if (!tokens.length) {
             tagInput.value = '';
             return;
           }
 
+          var updated = getNewTags();
           var remaining = [];
-          var updated = getNewTags().slice();
           var seenNew = updated.map(function (tag) {
             return tag.toLowerCase();
           });
@@ -677,9 +701,349 @@
           });
         }
 
+        if (hasDraftTags) {
+          var tagValues = restoredTags;
+          checkboxes.forEach(function (checkbox) {
+            var value = String(checkbox.value || '');
+            checkbox.checked = tagValues.indexOf(value) !== -1;
+          });
+        }
+
+        if (hasDraftNewTags && tagStorage) {
+          tagStorage.value = restoredFields.new_tags || '';
+        }
+
         setNewTags(getNewTags());
         refreshTagStates();
       });
+
+      if (restoredDraft) {
+        applyDraftToForm(restoredDraft);
+        showRestoredNotice(restoredDraft);
+        updateClearButton(true);
+      } else {
+        updateClearButton(false);
+      }
+
+      if (form && storageKey) {
+        initializeDraftPersistence();
+      }
+
+      function initializeDraftPersistence() {
+        form.addEventListener('input', scheduleSave);
+        form.addEventListener('change', scheduleSave);
+        form.addEventListener('submit', function () {
+          if (saveTimer) {
+            window.clearTimeout(saveTimer);
+            saveTimer = null;
+          }
+          clearDraft(false);
+        });
+
+        if (clearDraftButton) {
+          clearDraftButton.addEventListener('click', function () {
+            clearDraft(true);
+          });
+        }
+      }
+
+      function scheduleSave() {
+        if (!storageKey) {
+          return;
+        }
+        if (saveTimer) {
+          window.clearTimeout(saveTimer);
+        }
+        saveTimer = window.setTimeout(persistDraft, 400);
+      }
+
+      function persistDraft() {
+        saveTimer = null;
+        if (!storageKey) {
+          return;
+        }
+
+        var state = collectFormState();
+        if (!state) {
+          return;
+        }
+
+        if (!hasMeaningfulData(state)) {
+          removeStoredDraft();
+          restoredDraft = null;
+          updateClearButton(false);
+          return;
+        }
+
+        state.updatedAt = Date.now();
+
+        try {
+          window.localStorage.setItem(storageKey, JSON.stringify(state));
+          restoredDraft = state;
+          updateClearButton(true);
+        } catch (error) {
+          // Si hay un error (por ejemplo, almacenamiento lleno) lo ignoramos silenciosamente.
+        }
+      }
+
+      function collectFormState() {
+        if (!form) {
+          return null;
+        }
+
+        var state = { fields: {}, tags: [] };
+        var elements = form.querySelectorAll('input[name], textarea[name], select[name]');
+
+        elements.forEach(function (element) {
+          var name = element.name;
+          if (!name || name === '_token' || name === '_method') {
+            return;
+          }
+
+          if (element.type === 'file') {
+            return;
+          }
+
+          if (name === 'tags[]') {
+            if (element.checked) {
+              state.tags.push(String(element.value || ''));
+            }
+            return;
+          }
+
+          if (element.type === 'checkbox') {
+            state.fields[name] = element.checked ? (element.value || 'on') : '';
+            return;
+          }
+
+          if (element.type === 'radio') {
+            if (element.checked) {
+              state.fields[name] = element.value;
+            } else if (state.fields[name] === undefined) {
+              state.fields[name] = '';
+            }
+            return;
+          }
+
+          state.fields[name] = element.value;
+        });
+
+        return state;
+      }
+
+      function hasMeaningfulData(state) {
+        if (!state) {
+          return false;
+        }
+
+        if (state.tags && state.tags.length > 0) {
+          return true;
+        }
+
+        var fields = state.fields || {};
+        var keys = Object.keys(fields);
+
+        for (var i = 0; i < keys.length; i++) {
+          var key = keys[i];
+          if (key === '_token' || key === '_method') {
+            continue;
+          }
+
+          var value = fields[key];
+          if (key === 'content') {
+            var text = String(value || '')
+              .replace(/<[^>]*>/g, ' ')
+              .replace(/&nbsp;/gi, ' ')
+              .trim();
+            if (text.length > 0) {
+              return true;
+            }
+            continue;
+          }
+
+          if (String(value || '').trim() !== '') {
+            return true;
+          }
+        }
+
+        return false;
+      }
+
+      function isStorageAvailable() {
+        if (!window || !window.localStorage) {
+          return false;
+        }
+
+        var testKey = '__blog_draft_test__';
+
+        try {
+          window.localStorage.setItem(testKey, '1');
+          window.localStorage.removeItem(testKey);
+          return true;
+        } catch (error) {
+          return false;
+        }
+      }
+
+      function readDraft(key) {
+        if (!key || !storageEnabled) {
+          return null;
+        }
+
+        try {
+          var raw = window.localStorage.getItem(key);
+          if (!raw) {
+            return null;
+          }
+
+          var parsed = JSON.parse(raw);
+          if (!parsed || typeof parsed !== 'object') {
+            return null;
+          }
+
+          return parsed;
+        } catch (error) {
+          return null;
+        }
+      }
+
+      function removeStoredDraft() {
+        if (!storageKey) {
+          return;
+        }
+
+        try {
+          window.localStorage.removeItem(storageKey);
+        } catch (error) {
+          // Ignorar errores de almacenamiento.
+        }
+      }
+
+      function clearDraft(showMessage) {
+        removeStoredDraft();
+        restoredDraft = null;
+        updateClearButton(false);
+
+        if (showMessage) {
+          showTransientNotice('Se descartó el borrador guardado.');
+        }
+      }
+
+      function updateClearButton(hasDraft) {
+        if (!clearDraftButton) {
+          return;
+        }
+
+        if (!storageKey) {
+          clearDraftButton.hidden = true;
+          clearDraftButton.disabled = true;
+          return;
+        }
+
+        clearDraftButton.hidden = !hasDraft;
+        clearDraftButton.disabled = !hasDraft;
+      }
+
+      function showRestoredNotice(draft) {
+        if (!draftNotice) {
+          return;
+        }
+
+        if (transientTimer) {
+          window.clearTimeout(transientTimer);
+          transientTimer = null;
+        }
+
+        var message = 'Se restauró un borrador guardado automáticamente.';
+
+        if (draft && draft.updatedAt) {
+          var restoredAt = new Date(draft.updatedAt);
+          if (!isNaN(restoredAt.getTime())) {
+            message += ' Última edición: ' + restoredAt.toLocaleString('es-AR');
+          }
+        }
+
+        draftNotice.textContent = message;
+        draftNotice.hidden = false;
+      }
+
+      function showTransientNotice(message) {
+        if (!draftNotice) {
+          return;
+        }
+
+        draftNotice.textContent = message;
+        draftNotice.hidden = false;
+
+        if (transientTimer) {
+          window.clearTimeout(transientTimer);
+        }
+
+        transientTimer = window.setTimeout(function () {
+          if (draftNotice.textContent === message) {
+            draftNotice.hidden = true;
+          }
+        }, 4000);
+      }
+
+      function applyDraftToForm(draft) {
+        if (!form || !draft || !draft.fields) {
+          return;
+        }
+
+        var fields = draft.fields;
+        var keys = Object.keys(fields);
+
+        keys.forEach(function (name) {
+          if (name === '_token' || name === '_method' || name === 'content' || name === 'new_tags') {
+            return;
+          }
+
+          var selector = '[name="' + escapeFieldName(name) + '"]';
+          var elements = form.querySelectorAll(selector);
+
+          if (!elements.length) {
+            return;
+          }
+
+          elements.forEach(function (element) {
+            if (element.type === 'checkbox') {
+              var onValue = element.value || 'on';
+              element.checked = fields[name] === onValue;
+              return;
+            }
+
+            if (element.type === 'radio') {
+              element.checked = fields[name] === element.value;
+              return;
+            }
+
+            element.value = fields[name];
+          });
+        });
+
+        if (Object.prototype.hasOwnProperty.call(fields, 'content')) {
+          var textarea = form.querySelector('#content');
+          if (textarea) {
+            textarea.value = fields.content || '';
+          }
+
+          var editorCanvas = form.querySelector('[data-blog-editor] .blog-editor-canvas');
+          if (editorCanvas) {
+            var html = fields.content && fields.content.trim() !== '' ? fields.content : '<p></p>';
+            editorCanvas.innerHTML = html;
+            editorCanvas.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+        }
+      }
+
+      function escapeFieldName(name) {
+        if (window.CSS && typeof window.CSS.escape === 'function') {
+          return window.CSS.escape(name);
+        }
+
+        return String(name || '').replace(/([\:[\].])/g, '\$1');
+      }
     });
   </script>
 @endpush
