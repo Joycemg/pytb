@@ -407,6 +407,7 @@
 
           var rawValue = tagInput.value || '';
           var tokens = rawValue
+            .replace(/[\n;]+/g, ',')
             .split(',')
             .map(function (token) {
               return token.trim();
@@ -467,8 +468,9 @@
 
         if (tagInput) {
           tagInput.addEventListener('keydown', function (event) {
-            if (event.key === 'Enter') {
+            if (event.key === 'Enter' || event.key === 'NumpadEnter') {
               event.preventDefault();
+              event.stopPropagation();
               processTagInputValue();
             }
           });
@@ -478,7 +480,7 @@
           });
 
           tagInput.addEventListener('input', function () {
-            if (tagInput.value.indexOf(',') !== -1) {
+            if (/[\n,;]/.test(tagInput.value)) {
               processTagInputValue();
             }
           });

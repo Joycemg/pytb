@@ -332,7 +332,7 @@ final class BlogController extends Controller
             ->filter(fn ($value) => is_numeric($value))
             ->map(fn ($value) => (int) $value);
 
-        $rawNewTags = preg_split('/[,;]+/', (string) $request->input('new_tags', ''));
+        $rawNewTags = preg_split('/[\n,;]+/', (string) $request->input('new_tags', ''));
         $newTags = collect($rawNewTags ?: [])
             ->map(fn ($value) => Str::of((string) $value)->squish()->toString())
             ->filter(fn ($value) => $value !== '')

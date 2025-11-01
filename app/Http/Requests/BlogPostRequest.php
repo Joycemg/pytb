@@ -53,7 +53,7 @@ final class BlogPostRequest extends FormRequest
                 ->map(fn ($value) => (int) $value)
                 ->unique();
 
-            $rawNewTags = preg_split('/[,;]+/', (string) $this->input('new_tags', '')) ?: [];
+            $rawNewTags = preg_split('/[\n,;]+/', (string) $this->input('new_tags', '')) ?: [];
             $newTags = collect($rawNewTags)
                 ->map(fn ($value) => Str::of((string) $value)->squish()->toString())
                 ->filter(fn ($value) => $value !== '')
