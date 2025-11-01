@@ -55,12 +55,6 @@
                   <small class="hint">Se usará en la URL. Si se deja vacío se generará automáticamente.</small>
                 </div>
 
-                <div class="form-group">
-                  <label for="excerpt">Resumen</label>
-                  <textarea id="excerpt" name="excerpt" rows="3" maxlength="500">{{ old('excerpt', $post->excerpt) }}</textarea>
-                  <small class="hint">El resumen aparece en la lista del blog y en redes sociales. Mantenelo breve y directo.</small>
-                </div>
-
                 @php
                   $selectedTagIds = collect(old('tags', $post->tags->pluck('id')->all()))
                     ->map(fn ($id) => (int) $id)
