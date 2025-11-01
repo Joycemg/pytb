@@ -86,9 +86,9 @@
                         <p class="hint">Todavía no hay etiquetas creadas. Podés sumar nuevas abajo.</p>
                       @endforelse
                     </div>
-                    <p class="hint">Marcá todas las etiquetas que representen el tema de la entrada. Servirán para organizar y encontrar la nota más rápido.</p>
                     <p class="blog-tag-selector-limit" data-tag-limit hidden>Podés elegir hasta 3 etiquetas.</p>
                   </div>
+                  <p class="hint">Marcá todas las etiquetas que representen el tema de la entrada. Servirán para organizar y encontrar la nota más rápido.</p>
                   <div class="blog-tag-creator" data-tag-creator>
                     <label for="new_tags_input">Seleccionar o crear etiquetas</label>
                     <div class="blog-tag-creator-control">
