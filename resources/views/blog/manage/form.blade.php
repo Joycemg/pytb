@@ -241,110 +241,41 @@
             </section>
 
             @php
-            $themes = (array) config('blog.themes', []);
-            $defaultTheme = (string) config('blog.default_theme', 'classic');
-            $currentTheme = old('theme', $post->theme ?? $defaultTheme);
-            if (!array_key_exists($currentTheme, $themes)) {
-                $currentTheme = $defaultTheme;
-            }
-            $accentPalette = (array) config('blog.accent_palette', []);
-            $textPalette = (array) config('blog.text_palette', []);
-            $currentAccent = old('accent_color', $post->accent_color ?? ($themes[$currentTheme]['accent'] ?? config('blog.default_accent')));
-            $currentTextAccent = old('accent_text_color', $post->accent_text_color ?? ($themes[$currentTheme]['text'] ?? config('blog.default_text_color')));
-            $accentPickerDefault = $currentAccent ?? '#2563EB';
-            if (!preg_match('/^#[0-9a-fA-F]{6}$/', $accentPickerDefault)) {
-                $accentPickerDefault = '#2563EB';
-            }
-            $accentPickerDefault = strtolower($accentPickerDefault);
-
-            $textPickerDefault = $currentTextAccent ?? '#0F172A';
-            if (!preg_match('/^#[0-9a-fA-F]{6}$/', $textPickerDefault)) {
-                $textPickerDefault = '#0F172A';
-            }
-            $textPickerDefault = strtolower($textPickerDefault);
-          @endphp
+              $themes = (array) config('blog.themes', []);
+              $defaultTheme = (string) config('blog.default_theme', 'classic');
+              $storedTheme = $post->theme ?? $defaultTheme;
+              $currentTheme = array_key_exists($storedTheme, $themes) ? $storedTheme : $defaultTheme;
+              $themeConfig = $themes[$currentTheme] ?? [];
+              $currentAccent = $post->accent_color ?? ($themeConfig['accent'] ?? config('blog.default_accent'));
+              $currentTextAccent = $post->accent_text_color ?? ($themeConfig['text'] ?? config('blog.default_text_color'));
+            @endphp
 
             <section id="blog-form-style" class="blog-form-section" aria-labelledby="blog-form-style-title">
               <div class="blog-form-section-header">
                 <h2 id="blog-form-style-title" class="blog-form-section-title">Personalización visual</h2>
-                <p class="blog-form-section-description">Elegí el estilo de la portada y afiná los colores que se verán en tarjetas, botones y titulares.</p>
+                <p class="blog-form-section-description">El estilo se asigna automáticamente de forma aleatoria al crear una entrada.</p>
               </div>
 
               <div class="blog-form-section-body">
                 <div class="form-group">
-                  <label>Personalización visual</label>
-                  <div class="blog-customizer" data-blog-customizer data-theme-input="#theme" data-accent-input="#accent_color" data-text-input="#accent_text_color">
-                    <div class="blog-theme-selector" data-blog-theme-picker>
-                      @foreach ($themes as $value => $theme)
-                        <button type="button" class="blog-theme-option{{ $value === $currentTheme ? ' is-active' : '' }}" data-theme-value="{{ $value }}" data-theme-accent="{{ $theme['accent'] ?? '#2563EB' }}" data-theme-text="{{ $theme['text'] ?? '#0F172A' }}" style="--blog-theme-preview: {{ $theme['preview'] ?? 'linear-gradient(135deg, rgba(37,99,235,.12) 0%, rgba(255,255,255,.9) 100%)' }}">
-                          <span class="blog-theme-option-accent" style="background: {{ $theme['accent'] ?? '#2563EB' }}"></span>
-                          <span class="blog-theme-option-name">{{ $theme['label'] ?? ucfirst($value) }}</span>
-                        </button>
-                      @endforeach
+                  <p>Ya no es necesario elegir un tema manualmente: cada nueva publicación obtendrá un estilo aleatorio.</p>
+                  @if ($post->exists)
+                    <div class="blog-style-summary">
+                      <p><strong>Estilo actual:</strong> {{ $themeConfig['label'] ?? ucfirst($currentTheme) }}</p>
+                      <ul class="blog-style-summary-list">
+                        <li>
+                          <span class="blog-style-summary-swatch" aria-hidden="true" style="display:inline-block;width:1rem;height:1rem;border-radius:999px;background: {{ $currentAccent }};"></span>
+                          <span>Color de acento: {{ strtoupper($currentAccent ?? '') }}</span>
+                        </li>
+                        <li>
+                          <span class="blog-style-summary-swatch" aria-hidden="true" style="display:inline-block;width:1rem;height:1rem;border-radius:999px;background: {{ $currentTextAccent }};"></span>
+                          <span>Color de titulares y botones: {{ strtoupper($currentTextAccent ?? '') }}</span>
+                        </li>
+                      </ul>
                     </div>
-
-                    <div class="blog-customizer-row">
-                      <div class="blog-color-picker" data-blog-color-picker data-input="#accent_color" data-role="accent">
-                      <p class="blog-color-picker-title">Color de acento</p>
-                      <div class="blog-color-swatches">
-                        @foreach ($accentPalette as $color => $label)
-                          <button type="button" class="blog-color-swatch{{ strtoupper($color) === strtoupper($currentAccent) ? ' is-active' : '' }}" data-color-value="{{ $color }}" style="--swatch-color: {{ $color }}" title="{{ $label }}">
-                            <span class="sr-only">{{ $label }}</span>
-                          </button>
-                        @endforeach
-                        <button type="button" class="blog-color-swatch is-custom" data-color-custom title="Elegir otro color">✦</button>
-                      </div>
-                      <div class="blog-color-custom" data-color-custom-panel hidden>
-                    <p class="blog-color-custom-title">Elegí un color en formato hex (#RRGGBB)</p>
-                    <div class="blog-color-custom-row">
-                      <input type="color" class="blog-color-custom-picker" data-color-custom-picker value="{{ $accentPickerDefault }}" aria-label="Elegir color" />
-                      <input type="text" class="blog-color-custom-input" data-color-custom-input placeholder="#2563EB" maxlength="7" autocomplete="off">
-                      <span class="blog-color-custom-preview" data-color-custom-preview aria-hidden="true"></span>
-                    </div>
-                    <p class="blog-color-custom-error" data-color-custom-error hidden>Ingresá un color válido. Ejemplo: #2563EB</p>
-                    <div class="blog-color-custom-actions">
-                      <button type="button" class="blog-color-custom-btn" data-color-custom-action="cancel">Cancelar</button>
-                      <button type="button" class="blog-color-custom-btn is-primary" data-color-custom-action="apply">Aplicar color</button>
-                    </div>
-                  </div>
-                </div>
-
-                      <div class="blog-color-picker" data-blog-color-picker data-input="#accent_text_color" data-role="text">
-                      <p class="blog-color-picker-title">Color de titulares y botones</p>
-                      <div class="blog-color-swatches">
-                        @foreach ($textPalette as $color => $label)
-                          <button type="button" class="blog-color-swatch{{ strtoupper($color) === strtoupper($currentTextAccent) ? ' is-active' : '' }}" data-color-value="{{ $color }}" style="--swatch-color: {{ $color }}" title="{{ $label }}">
-                            <span class="sr-only">{{ $label }}</span>
-                      </button>
-                    @endforeach
-                    <button type="button" class="blog-color-swatch is-custom" data-color-custom title="Elegir otro color">✦</button>
-                  </div>
-                      <div class="blog-color-custom" data-color-custom-panel hidden>
-                        <p class="blog-color-custom-title">Elegí un color en formato hex (#RRGGBB)</p>
-                        <div class="blog-color-custom-row">
-                          <input type="color" class="blog-color-custom-picker" data-color-custom-picker value="{{ $textPickerDefault }}" aria-label="Elegir color" />
-                          <input type="text" class="blog-color-custom-input" data-color-custom-input placeholder="#0F172A" maxlength="7" autocomplete="off">
-                          <span class="blog-color-custom-preview" data-color-custom-preview aria-hidden="true"></span>
-                        </div>
-                        <p class="blog-color-custom-error" data-color-custom-error hidden>Ingresá un color válido. Ejemplo: #0F172A</p>
-                        <div class="blog-color-custom-actions">
-                          <button type="button" class="blog-color-custom-btn" data-color-custom-action="cancel">Cancelar</button>
-                          <button type="button" class="blog-color-custom-btn is-primary" data-color-custom-action="apply">Aplicar color</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="blog-customizer-preview" data-blog-customizer-preview>
-                    <div class="blog-customizer-preview-card">
-                      <span class="blog-customizer-pill">Vista previa</span>
-                      <h3>Así se verá tu entrada</h3>
-                      <p>Los títulos, botones y acentos usan tus colores seleccionados. Podés probar diferentes combinaciones antes de publicar.</p>
-                    </div>
-                  </div>
-                  <input type="hidden" id="theme" name="theme" value="{{ $currentTheme }}">
-                  <input type="hidden" id="accent_color" name="accent_color" value="{{ strtoupper($currentAccent ?? '') }}">
-                  <input type="hidden" id="accent_text_color" name="accent_text_color" value="{{ strtoupper($currentTextAccent ?? '') }}">
-                  <small class="hint">Elegí un estilo distintivo para la portada y el contenido. Los colores personalizados también aplican en la lista del blog.</small>
+                  @else
+                    <small class="hint">Cuando publiques esta entrada se asignará automáticamente un conjunto de colores.</small>
+                  @endif
                 </div>
               </div>
             </section>
@@ -413,5 +344,4 @@
 
 @push('scripts')
   <script src="{{ asset('js/blog-editor.js') }}" defer></script>
-  <script src="{{ asset('js/blog-customizer.js') }}" defer></script>
 @endpush
