@@ -43,47 +43,6 @@
                   Completá los campos principales y guardá para ver la vista previa pública.
                 @endif
               </p>
-              <div class="blog-form-sidebar-actions">
-                <button type="submit" class="btn btn-primary blog-form-sidebar-btn" form="blog-entry-form">
-                  {{ $post->exists ? 'Guardar cambios' : 'Guardar entrada' }}
-                </button>
-                @if ($post->exists)
-                  <a class="btn blog-form-sidebar-btn" href="{{ route('blog.show', ['post' => $post->slug]) }}" target="_blank" rel="noopener">
-                    Ver publicación
-                  </a>
-                @endif
-              </div>
-            </div>
-
-            <div class="blog-form-sidebar-card" role="navigation" aria-label="Secciones del formulario">
-              <h2 class="blog-form-sidebar-heading">Secciones</h2>
-              <p class="blog-form-sidebar-description">Saltá directo a la parte que necesitás editar.</p>
-              <nav class="blog-form-nav" aria-label="Índice del formulario">
-                <ol>
-                  <li><a href="#blog-form-basics"><span class="blog-form-nav-index" aria-hidden="true">1</span><span>Datos principales</span></a></li>
-                  <li><a href="#blog-form-content"><span class="blog-form-nav-index" aria-hidden="true">2</span><span>Contenido</span></a></li>
-                  <li><a href="#blog-form-style"><span class="blog-form-nav-index" aria-hidden="true">3</span><span>Personalización visual</span></a></li>
-                  <li><a href="#blog-form-media"><span class="blog-form-nav-index" aria-hidden="true">4</span><span>Recursos y archivos</span></a></li>
-                </ol>
-              </nav>
-            </div>
-
-            <div class="blog-form-sidebar-card" aria-label="Consejos rápidos para editar">
-              <h2 class="blog-form-sidebar-heading">Consejos rápidos</h2>
-              <ul class="blog-form-tips">
-                <li>
-                  <span class="blog-form-tip-icon" aria-hidden="true">✍️</span>
-                  <span>Usá un título descriptivo de hasta 70 caracteres para que destaque en la portada.</span>
-                </li>
-                <li>
-                  <span class="blog-form-tip-icon" aria-hidden="true">🔖</span>
-                  <span>Combiná etiquetas nuevas y existentes para agrupar temas y mejorar las búsquedas.</span>
-                </li>
-                <li>
-                  <span class="blog-form-tip-icon" aria-hidden="true">🖼️</span>
-                  <span>Elegí una imagen de cabecera en formato horizontal para obtener la mejor vista previa.</span>
-                </li>
-              </ul>
             </div>
           </aside>
 
