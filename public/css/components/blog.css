@@ -1433,8 +1433,8 @@
 }
 
 .blog-tag-option.is-selected {
-    border-color: #0f172a;
-    background: #0f172a;
+    border-color: var(--brand, #8c2e2e);
+    background: var(--brand, #8c2e2e);
     color: #f8fafc;
     box-shadow: 0 6px 18px rgba(15, 23, 42, .18);
 }

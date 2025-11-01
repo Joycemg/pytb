@@ -80,10 +80,15 @@
                     </div>
                     <p class="blog-tag-selector-limit" data-tag-limit hidden>Podés elegir hasta 3 etiquetas.</p>
                   </div>
-                  <div class="blog-tag-creator">
-                    <label for="new_tags">Crear etiquetas nuevas</label>
-                    <input id="new_tags" name="new_tags" type="text" value="{{ old('new_tags') }}" placeholder="Ej: Comunidad, Eventos">
-                    <small class="hint">Separá múltiples etiquetas con comas. Las etiquetas nuevas estarán disponibles para futuras entradas.</small>
+                  <div class="blog-tag-creator" data-tag-creator>
+                    <label for="new_tags">Seleccionar o crear etiquetas</label>
+                    <input id="new_tags" name="new_tags" type="text" value="{{ old('new_tags') }}" placeholder="Ej: Comunidad, Eventos" list="blog-tag-suggestions" autocomplete="off" data-tag-input>
+                    <small class="hint">Escribí para elegir etiquetas existentes o creá nuevas separándolas con comas. Las etiquetas nuevas estarán disponibles para futuras entradas.</small>
+                    <datalist id="blog-tag-suggestions">
+                      @foreach ($availableTags as $tag)
+                        <option value="{{ $tag['name'] }}"></option>
+                      @endforeach
+                    </datalist>
                   </div>
                 </div>
               </div>
@@ -333,6 +338,27 @@
 
         var limitMessage = block.querySelector('[data-tag-limit]');
         var maxTags = parseInt(block.getAttribute('data-tag-max') || '0', 10);
+        var tagsField = block.closest('.blog-tags-field');
+        var tagInput = tagsField ? tagsField.querySelector('[data-tag-input]') : null;
+
+        function findCheckboxByName(tagName) {
+          var normalized = (tagName || '').trim().toLowerCase();
+
+          if (!normalized) {
+            return null;
+          }
+
+          for (var i = 0; i < checkboxes.length; i++) {
+            var checkbox = checkboxes[i];
+            var checkboxName = (checkbox.getAttribute('data-tag-name') || '').trim().toLowerCase();
+
+            if (checkboxName === normalized) {
+              return checkbox;
+            }
+          }
+
+          return null;
+        }
 
         function refreshTagStates() {
           var selectedCount = 0;
@@ -374,6 +400,64 @@
           }
         }
 
+        function processTagInputValue() {
+          if (!tagInput) {
+            return;
+          }
+
+          var rawValue = tagInput.value || '';
+          var tokens = rawValue
+            .split(',')
+            .map(function (token) {
+              return token.trim();
+            })
+            .filter(function (token) {
+              return token.length > 0;
+            });
+
+          if (!tokens.length) {
+            tagInput.value = '';
+            return;
+          }
+
+          var remaining = [];
+          var shouldRefresh = false;
+
+          tokens.forEach(function (token) {
+            var checkbox = findCheckboxByName(token);
+
+            if (!checkbox) {
+              remaining.push(token);
+              return;
+            }
+
+            var wasChecked = checkbox.checked;
+
+            if (!checkbox.checked) {
+              checkbox.checked = true;
+            }
+
+            enforceLimit(checkbox);
+
+            if (checkbox.checked) {
+              shouldRefresh = true;
+              return;
+            }
+
+            if (!wasChecked) {
+              remaining.push(token);
+            }
+
+            shouldRefresh = true;
+          });
+
+          tagInput.value = remaining.join(', ');
+
+          if (shouldRefresh) {
+            refreshTagStates();
+          }
+        }
+
         checkboxes.forEach(function (checkbox) {
           checkbox.addEventListener('change', function () {
             enforceLimit(checkbox);
@@ -381,7 +465,27 @@
           });
         });
 
+        if (tagInput) {
+          tagInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              processTagInputValue();
+            }
+          });
+
+          tagInput.addEventListener('blur', function () {
+            processTagInputValue();
+          });
+
+          tagInput.addEventListener('input', function () {
+            if (tagInput.value.indexOf(',') !== -1) {
+              processTagInputValue();
+            }
+          });
+        }
+
         refreshTagStates();
+        processTagInputValue();
       });
     });
   </script>
