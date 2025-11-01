@@ -11,8 +11,9 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -194,7 +195,7 @@ final class BlogController extends Controller
     {
         $this->authorize('create', BlogPost::class);
 
-        $data = $request->validated();
+        $data = Arr::except($request->validated(), ['tags', 'new_tags']);
         if (!empty($data['slug'])) {
             $data['slug'] = Str::slug($data['slug']);
         }
@@ -230,7 +231,7 @@ final class BlogController extends Controller
     {
         $this->authorize('update', $post);
 
-        $data = $request->validated();
+        $data = Arr::except($request->validated(), ['tags', 'new_tags']);
         if (!empty($data['slug'])) {
             $data['slug'] = Str::slug($data['slug']);
         }
