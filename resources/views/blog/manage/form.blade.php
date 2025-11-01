@@ -240,45 +240,21 @@
               </div>
             </section>
 
-            @php
-              $themes = (array) config('blog.themes', []);
-              $defaultTheme = (string) config('blog.default_theme', 'classic');
-              $storedTheme = $post->theme ?? $defaultTheme;
-              $currentTheme = array_key_exists($storedTheme, $themes) ? $storedTheme : $defaultTheme;
-              $themeConfig = $themes[$currentTheme] ?? [];
-              $currentAccent = $post->accent_color ?? ($themeConfig['accent'] ?? config('blog.default_accent'));
-              $currentTextAccent = $post->accent_text_color ?? ($themeConfig['text'] ?? config('blog.default_text_color'));
-            @endphp
-
-            <section id="blog-form-style" class="blog-form-section" aria-labelledby="blog-form-style-title">
-              <div class="blog-form-section-header">
-                <h2 id="blog-form-style-title" class="blog-form-section-title">Personalización visual</h2>
-                <p class="blog-form-section-description">El estilo se asigna automáticamente de forma aleatoria al crear una entrada.</p>
-              </div>
-
-              <div class="blog-form-section-body">
-                <div class="form-group">
-                  <p>Ya no es necesario elegir un tema manualmente: cada nueva publicación obtendrá un estilo aleatorio.</p>
-                  @if ($post->exists)
-                    <div class="blog-style-summary">
-                      <p><strong>Estilo actual:</strong> {{ $themeConfig['label'] ?? ucfirst($currentTheme) }}</p>
-                      <ul class="blog-style-summary-list">
-                        <li>
-                          <span class="blog-style-summary-swatch" aria-hidden="true" style="display:inline-block;width:1rem;height:1rem;border-radius:999px;background: {{ $currentAccent }};"></span>
-                          <span>Color de acento: {{ strtoupper($currentAccent ?? '') }}</span>
-                        </li>
-                        <li>
-                          <span class="blog-style-summary-swatch" aria-hidden="true" style="display:inline-block;width:1rem;height:1rem;border-radius:999px;background: {{ $currentTextAccent }};"></span>
-                          <span>Color de titulares y botones: {{ strtoupper($currentTextAccent ?? '') }}</span>
-                        </li>
-                      </ul>
-                    </div>
-                  @else
-                    <small class="hint">Cuando publiques esta entrada se asignará automáticamente un conjunto de colores.</small>
-                  @endif
+            @if (! $post->exists)
+              <section id="blog-form-style" class="blog-form-section" aria-labelledby="blog-form-style-title">
+                <div class="blog-form-section-header">
+                  <h2 id="blog-form-style-title" class="blog-form-section-title">Personalización visual</h2>
+                  <p class="blog-form-section-description">El estilo se asigna automáticamente de forma aleatoria al crear una entrada.</p>
                 </div>
-              </div>
-            </section>
+
+                <div class="blog-form-section-body">
+                  <div class="form-group">
+                    <p>Ya no es necesario elegir un tema manualmente: cada nueva publicación obtendrá un estilo aleatorio.</p>
+                    <small class="hint">Cuando publiques esta entrada se asignará automáticamente un conjunto de colores.</small>
+                  </div>
+                </div>
+              </section>
+            @endif
 
             <section id="blog-form-media" class="blog-form-section" aria-labelledby="blog-form-media-title">
               <div class="blog-form-section-header">
