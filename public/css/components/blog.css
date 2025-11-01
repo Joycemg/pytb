@@ -1458,6 +1458,10 @@
     border: 0;
 }
 
+.blog-tag-option.is-hidden {
+    display: none;
+}
+
 .blog-tag-selector-summary {
     margin-top: .75rem;
     display: flex;

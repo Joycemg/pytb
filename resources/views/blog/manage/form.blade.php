@@ -6,6 +6,7 @@
   @php
     $availableTags = $availableTags ?? collect();
     $popularTags = $popularTags ?? collect();
+    $popularTagIds = $popularTags->pluck('id')->all();
   @endphp
   <div class="page container blog-form">
     <header class="page-head">
@@ -74,7 +75,11 @@
                   <div class="blog-tag-selector-wrapper" data-tag-selector data-tag-max="3">
                     <div id="tags-group" class="blog-tag-selector" role="group" aria-label="Seleccionar etiquetas">
                       @forelse ($availableTags as $tag)
-                        <label class="blog-tag-option{{ in_array($tag['id'], $selectedTagIds, true) ? ' is-selected' : '' }}">
+                        @php
+                          $isSelected = in_array($tag['id'], $selectedTagIds, true);
+                          $isPopular = in_array($tag['id'], $popularTagIds, true);
+                        @endphp
+                        <label class="blog-tag-option{{ $isSelected ? ' is-selected' : '' }}{{ $isPopular ? ' is-popular' : ' is-extra' }}{{ ! $isPopular && ! $isSelected ? ' is-hidden' : '' }}" data-tag-option data-tag-popular="{{ $isPopular ? 'true' : 'false' }}">
                           <input type="checkbox" name="tags[]" value="{{ $tag['id'] }}" data-tag-name="{{ $tag['name'] }}" data-tag-id="{{ $tag['id'] }}" {{ in_array($tag['id'], $selectedTagIds, true) ? 'checked' : '' }}>
                           <span>#{{ $tag['name'] }}</span>
                         </label>
@@ -478,6 +483,9 @@
             var label = checkbox.closest('.blog-tag-option');
             if (label) {
               label.classList.toggle('is-selected', checkbox.checked);
+              if (label.getAttribute('data-tag-popular') !== 'true') {
+                label.classList.toggle('is-hidden', !checkbox.checked);
+              }
             }
           });
 
