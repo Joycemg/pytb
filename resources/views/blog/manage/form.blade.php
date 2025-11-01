@@ -74,21 +74,6 @@
           </aside>
 
           <div class="blog-form-main">
-            <nav class="blog-form-nav blog-form-nav--mobile" aria-label="Navegación rápida del formulario">
-              <ol>
-                @foreach ($formSections as $index => $section)
-                  <li>
-                    <a href="#{{ $section['id'] }}">
-                      <span class="blog-form-nav-index">{{ sprintf('%02d', $index + 1) }}</span>
-                      <span class="blog-form-nav-text">
-                        <span class="blog-form-nav-title">{{ $section['label'] }}</span>
-                        <span class="blog-form-nav-description">{{ $section['hint'] }}</span>
-                      </span>
-                    </a>
-                  </li>
-                @endforeach
-              </ol>
-            </nav>
             <form id="blog-entry-form" method="post" action="{{ $post->exists ? route('blog.update', $post) : route('blog.store') }}" enctype="multipart/form-data" class="form blog-form-body">
           @csrf
           @if ($post->exists)
