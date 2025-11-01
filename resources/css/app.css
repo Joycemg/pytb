@@ -98,8 +98,8 @@
 
     .blog-tag-option.is-selected {
         @apply text-white shadow;
-        border-color: #7b2d26;
-        background-color: #7b2d26;
+        border-color: var(--brand, #8c2e2e);
+        background-color: var(--brand, #8c2e2e);
     }
 
     .blog-tag-option input {
