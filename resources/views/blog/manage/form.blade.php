@@ -69,7 +69,7 @@
                   <div class="blog-tag-selector-wrapper" data-tag-selector>
                     <div id="tags-group" class="blog-tag-selector" role="group" aria-label="Seleccionar etiquetas">
                       @forelse ($availableTags as $tag)
-                        <label class="blog-tag-option">
+                        <label class="blog-tag-option{{ in_array($tag['id'], $selectedTagIds, true) ? ' is-selected' : '' }}">
                           <input type="checkbox" name="tags[]" value="{{ $tag['id'] }}" data-tag-name="{{ $tag['name'] }}" {{ in_array($tag['id'], $selectedTagIds, true) ? 'checked' : '' }}>
                           <span>#{{ $tag['name'] }}</span>
                         </label>
