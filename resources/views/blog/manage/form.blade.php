@@ -29,54 +29,130 @@
 
     <div class="card">
       <div class="card-body">
-        <form method="post" action="{{ $post->exists ? route('blog.update', $post) : route('blog.store') }}" enctype="multipart/form-data" class="form">
+        <div class="blog-form-layout">
+          <aside class="blog-form-sidebar" aria-label="Atajos y ayuda para editar">
+            <div class="blog-form-sidebar-card" role="status">
+              <p class="blog-form-sidebar-eyebrow">{{ $post->exists ? 'Entrada en edición' : 'Borrador inicial' }}</p>
+              <h2 class="blog-form-sidebar-heading">Tu progreso</h2>
+              <p class="blog-form-sidebar-status">
+                @if ($post->exists && $post->updated_at)
+                  Última edición {{ $post->updated_at->diffForHumans() }}.
+                @elseif ($post->exists)
+                  Guardá para publicar los cambios en el acto.
+                @else
+                  Completá los campos principales y guardá para ver la vista previa pública.
+                @endif
+              </p>
+              <div class="blog-form-sidebar-actions">
+                <button type="submit" class="btn btn-primary blog-form-sidebar-btn" form="blog-entry-form">
+                  {{ $post->exists ? 'Guardar cambios' : 'Guardar entrada' }}
+                </button>
+                @if ($post->exists)
+                  <a class="btn blog-form-sidebar-btn" href="{{ route('blog.show', ['post' => $post->slug]) }}" target="_blank" rel="noopener">
+                    Ver publicación
+                  </a>
+                @endif
+              </div>
+            </div>
+
+            <div class="blog-form-sidebar-card" role="navigation" aria-label="Secciones del formulario">
+              <h2 class="blog-form-sidebar-heading">Secciones</h2>
+              <p class="blog-form-sidebar-description">Saltá directo a la parte que necesitás editar.</p>
+              <nav class="blog-form-nav" aria-label="Índice del formulario">
+                <ol>
+                  <li><a href="#blog-form-basics"><span class="blog-form-nav-index" aria-hidden="true">1</span><span>Datos principales</span></a></li>
+                  <li><a href="#blog-form-content"><span class="blog-form-nav-index" aria-hidden="true">2</span><span>Contenido</span></a></li>
+                  <li><a href="#blog-form-style"><span class="blog-form-nav-index" aria-hidden="true">3</span><span>Personalización visual</span></a></li>
+                  <li><a href="#blog-form-media"><span class="blog-form-nav-index" aria-hidden="true">4</span><span>Recursos y archivos</span></a></li>
+                </ol>
+              </nav>
+            </div>
+
+            <div class="blog-form-sidebar-card" aria-label="Consejos rápidos para editar">
+              <h2 class="blog-form-sidebar-heading">Consejos rápidos</h2>
+              <ul class="blog-form-tips">
+                <li>
+                  <span class="blog-form-tip-icon" aria-hidden="true">✍️</span>
+                  <span>Usá un título descriptivo de hasta 70 caracteres para que destaque en la portada.</span>
+                </li>
+                <li>
+                  <span class="blog-form-tip-icon" aria-hidden="true">🔖</span>
+                  <span>Combiná etiquetas nuevas y existentes para agrupar temas y mejorar las búsquedas.</span>
+                </li>
+                <li>
+                  <span class="blog-form-tip-icon" aria-hidden="true">🖼️</span>
+                  <span>Elegí una imagen de cabecera en formato horizontal para obtener la mejor vista previa.</span>
+                </li>
+              </ul>
+            </div>
+          </aside>
+
+          <div class="blog-form-main">
+            <form id="blog-entry-form" method="post" action="{{ $post->exists ? route('blog.update', $post) : route('blog.store') }}" enctype="multipart/form-data" class="form blog-form-body">
           @csrf
           @if ($post->exists)
             @method('put')
           @endif
 
-          <div class="form-group">
-            <label for="title">Título</label>
-            <input id="title" name="title" type="text" value="{{ old('title', $post->title) }}" required>
-          </div>
+            <section id="blog-form-basics" class="blog-form-section" aria-labelledby="blog-form-basics-title">
+              <div class="blog-form-section-header">
+                <h2 id="blog-form-basics-title" class="blog-form-section-title">Datos principales</h2>
+                <p class="blog-form-section-description">Definí la información base que se mostrará en la portada y en los buscadores.</p>
+              </div>
 
-          <div class="form-group">
-            <label for="slug">Slug (opcional)</label>
-            <input id="slug" name="slug" type="text" value="{{ old('slug', $post->slug) }}" placeholder="mi-entrada-super-epica">
-            <small class="hint">Se usará en la URL. Si se deja vacío se generará automáticamente.</small>
-          </div>
+              <div class="blog-form-section-body">
+                <div class="form-group">
+                  <label for="title">Título</label>
+                  <input id="title" name="title" type="text" value="{{ old('title', $post->title) }}" required>
+                </div>
 
-          <div class="form-group">
-            <label for="excerpt">Resumen</label>
-            <textarea id="excerpt" name="excerpt" rows="3" maxlength="500">{{ old('excerpt', $post->excerpt) }}</textarea>
-          </div>
+                <div class="form-group">
+                  <label for="slug">Slug (opcional)</label>
+                  <input id="slug" name="slug" type="text" value="{{ old('slug', $post->slug) }}" placeholder="mi-entrada-super-epica">
+                  <small class="hint">Se usará en la URL. Si se deja vacío se generará automáticamente.</small>
+                </div>
 
-          @php
-            $selectedTagIds = collect(old('tags', $post->tags->pluck('id')->all()))
-              ->map(fn ($id) => (int) $id)
-              ->all();
-          @endphp
+                <div class="form-group">
+                  <label for="excerpt">Resumen</label>
+                  <textarea id="excerpt" name="excerpt" rows="3" maxlength="500">{{ old('excerpt', $post->excerpt) }}</textarea>
+                  <small class="hint">El resumen aparece en la lista del blog y en redes sociales. Mantenelo breve y directo.</small>
+                </div>
 
-          <div class="form-group">
-            <label for="tags-group">Etiquetas</label>
-            <div id="tags-group" class="blog-tag-selector" role="group" aria-label="Seleccionar etiquetas">
-              @forelse ($availableTags as $tag)
-                <label class="blog-tag-option">
-                  <input type="checkbox" name="tags[]" value="{{ $tag['id'] }}" {{ in_array($tag['id'], $selectedTagIds, true) ? 'checked' : '' }}>
-                  <span>#{{ $tag['name'] }}</span>
-                </label>
-              @empty
-                <p class="hint">Todavía no hay etiquetas creadas. Podés sumar nuevas abajo.</p>
-              @endforelse
-            </div>
-            <label for="new_tags">Crear etiquetas nuevas</label>
-            <input id="new_tags" name="new_tags" type="text" value="{{ old('new_tags') }}" placeholder="Ej: Comunidad, Eventos">
-            <small class="hint">Separá múltiples etiquetas con comas. Las etiquetas nuevas estarán disponibles para futuras entradas.</small>
-          </div>
+                @php
+                  $selectedTagIds = collect(old('tags', $post->tags->pluck('id')->all()))
+                    ->map(fn ($id) => (int) $id)
+                    ->all();
+                @endphp
 
-          <div class="form-group">
-            <label for="content">Contenido</label>
-            <div class="blog-editor" data-blog-editor data-target="content">
+                <div class="form-group">
+                  <label for="tags-group">Etiquetas</label>
+                  <div id="tags-group" class="blog-tag-selector" role="group" aria-label="Seleccionar etiquetas">
+                    @forelse ($availableTags as $tag)
+                      <label class="blog-tag-option">
+                        <input type="checkbox" name="tags[]" value="{{ $tag['id'] }}" {{ in_array($tag['id'], $selectedTagIds, true) ? 'checked' : '' }}>
+                        <span>#{{ $tag['name'] }}</span>
+                      </label>
+                    @empty
+                      <p class="hint">Todavía no hay etiquetas creadas. Podés sumar nuevas abajo.</p>
+                    @endforelse
+                  </div>
+                  <label for="new_tags">Crear etiquetas nuevas</label>
+                  <input id="new_tags" name="new_tags" type="text" value="{{ old('new_tags') }}" placeholder="Ej: Comunidad, Eventos">
+                  <small class="hint">Separá múltiples etiquetas con comas. Las etiquetas nuevas estarán disponibles para futuras entradas.</small>
+                </div>
+              </div>
+            </section>
+
+            <section id="blog-form-content" class="blog-form-section" aria-labelledby="blog-form-content-title">
+              <div class="blog-form-section-header">
+                <h2 id="blog-form-content-title" class="blog-form-section-title">Contenido</h2>
+                <p class="blog-form-section-description">Escribí y dale estilo a la nota con el editor enriquecido. Podés insertar imágenes, enlaces y cajas destacadas.</p>
+              </div>
+
+              <div class="blog-form-section-body">
+                <div class="form-group">
+                  <label for="content">Contenido</label>
+                  <div class="blog-editor" data-blog-editor data-target="content">
               <div class="blog-editor-toolbar" role="toolbar" aria-label="Herramientas de formato">
                 <div class="blog-editor-group" role="group" aria-label="Historial de edición">
                   <button type="button" class="blog-editor-btn" data-history-action="undo" title="Deshacer">↺</button>
@@ -215,11 +291,13 @@
               </div>
               <div id="content-editor" class="blog-editor-canvas" contenteditable="true" aria-label="Editor de contenido enriquecido"></div>
             </div>
-            <textarea id="content" name="content" rows="12" required>@php echo old('content', $post->content); @endphp</textarea>
-            <small class="hint">Escribí libremente, podés aplicar colores, encabezados, imágenes remotas y cajas resaltadas. Si desactivás JavaScript, el área inferior funciona como editor plano.</small>
-          </div>
+                  <textarea id="content" name="content" rows="12" required>@php echo old('content', $post->content); @endphp</textarea>
+                  <small class="hint">Escribí libremente, podés aplicar colores, encabezados, imágenes remotas y cajas resaltadas. Si desactivás JavaScript, el área inferior funciona como editor plano.</small>
+                </div>
+              </div>
+            </section>
 
-          @php
+            @php
             $themes = (array) config('blog.themes', []);
             $defaultTheme = (string) config('blog.default_theme', 'classic');
             $currentTheme = old('theme', $post->theme ?? $defaultTheme);
@@ -243,30 +321,37 @@
             $textPickerDefault = strtolower($textPickerDefault);
           @endphp
 
-          <div class="form-group">
-            <label>Personalización visual</label>
-            <div class="blog-customizer" data-blog-customizer data-theme-input="#theme" data-accent-input="#accent_color" data-text-input="#accent_text_color">
-              <div class="blog-theme-selector" data-blog-theme-picker>
-                @foreach ($themes as $value => $theme)
-                  <button type="button" class="blog-theme-option{{ $value === $currentTheme ? ' is-active' : '' }}" data-theme-value="{{ $value }}" data-theme-accent="{{ $theme['accent'] ?? '#2563EB' }}" data-theme-text="{{ $theme['text'] ?? '#0F172A' }}" style="--blog-theme-preview: {{ $theme['preview'] ?? 'linear-gradient(135deg, rgba(37,99,235,.12) 0%, rgba(255,255,255,.9) 100%)' }}">
-                    <span class="blog-theme-option-accent" style="background: {{ $theme['accent'] ?? '#2563EB' }}"></span>
-                    <span class="blog-theme-option-name">{{ $theme['label'] ?? ucfirst($value) }}</span>
-                  </button>
-                @endforeach
+            <section id="blog-form-style" class="blog-form-section" aria-labelledby="blog-form-style-title">
+              <div class="blog-form-section-header">
+                <h2 id="blog-form-style-title" class="blog-form-section-title">Personalización visual</h2>
+                <p class="blog-form-section-description">Elegí el estilo de la portada y afiná los colores que se verán en tarjetas, botones y titulares.</p>
               </div>
 
-              <div class="blog-customizer-row">
-                <div class="blog-color-picker" data-blog-color-picker data-input="#accent_color" data-role="accent">
-                  <p class="blog-color-picker-title">Color de acento</p>
-                  <div class="blog-color-swatches">
-                    @foreach ($accentPalette as $color => $label)
-                      <button type="button" class="blog-color-swatch{{ strtoupper($color) === strtoupper($currentAccent) ? ' is-active' : '' }}" data-color-value="{{ $color }}" style="--swatch-color: {{ $color }}" title="{{ $label }}">
-                        <span class="sr-only">{{ $label }}</span>
-                      </button>
-                    @endforeach
-                    <button type="button" class="blog-color-swatch is-custom" data-color-custom title="Elegir otro color">✦</button>
-                  </div>
-                  <div class="blog-color-custom" data-color-custom-panel hidden>
+              <div class="blog-form-section-body">
+                <div class="form-group">
+                  <label>Personalización visual</label>
+                  <div class="blog-customizer" data-blog-customizer data-theme-input="#theme" data-accent-input="#accent_color" data-text-input="#accent_text_color">
+                    <div class="blog-theme-selector" data-blog-theme-picker>
+                      @foreach ($themes as $value => $theme)
+                        <button type="button" class="blog-theme-option{{ $value === $currentTheme ? ' is-active' : '' }}" data-theme-value="{{ $value }}" data-theme-accent="{{ $theme['accent'] ?? '#2563EB' }}" data-theme-text="{{ $theme['text'] ?? '#0F172A' }}" style="--blog-theme-preview: {{ $theme['preview'] ?? 'linear-gradient(135deg, rgba(37,99,235,.12) 0%, rgba(255,255,255,.9) 100%)' }}">
+                          <span class="blog-theme-option-accent" style="background: {{ $theme['accent'] ?? '#2563EB' }}"></span>
+                          <span class="blog-theme-option-name">{{ $theme['label'] ?? ucfirst($value) }}</span>
+                        </button>
+                      @endforeach
+                    </div>
+
+                    <div class="blog-customizer-row">
+                      <div class="blog-color-picker" data-blog-color-picker data-input="#accent_color" data-role="accent">
+                      <p class="blog-color-picker-title">Color de acento</p>
+                      <div class="blog-color-swatches">
+                        @foreach ($accentPalette as $color => $label)
+                          <button type="button" class="blog-color-swatch{{ strtoupper($color) === strtoupper($currentAccent) ? ' is-active' : '' }}" data-color-value="{{ $color }}" style="--swatch-color: {{ $color }}" title="{{ $label }}">
+                            <span class="sr-only">{{ $label }}</span>
+                          </button>
+                        @endforeach
+                        <button type="button" class="blog-color-swatch is-custom" data-color-custom title="Elegir otro color">✦</button>
+                      </div>
+                      <div class="blog-color-custom" data-color-custom-panel hidden>
                     <p class="blog-color-custom-title">Elegí un color en formato hex (#RRGGBB)</p>
                     <div class="blog-color-custom-row">
                       <input type="color" class="blog-color-custom-picker" data-color-custom-picker value="{{ $accentPickerDefault }}" aria-label="Elegir color" />
@@ -281,85 +366,99 @@
                   </div>
                 </div>
 
-                <div class="blog-color-picker" data-blog-color-picker data-input="#accent_text_color" data-role="text">
-                  <p class="blog-color-picker-title">Color de titulares y botones</p>
-                  <div class="blog-color-swatches">
-                    @foreach ($textPalette as $color => $label)
-                      <button type="button" class="blog-color-swatch{{ strtoupper($color) === strtoupper($currentTextAccent) ? ' is-active' : '' }}" data-color-value="{{ $color }}" style="--swatch-color: {{ $color }}" title="{{ $label }}">
-                        <span class="sr-only">{{ $label }}</span>
+                      <div class="blog-color-picker" data-blog-color-picker data-input="#accent_text_color" data-role="text">
+                      <p class="blog-color-picker-title">Color de titulares y botones</p>
+                      <div class="blog-color-swatches">
+                        @foreach ($textPalette as $color => $label)
+                          <button type="button" class="blog-color-swatch{{ strtoupper($color) === strtoupper($currentTextAccent) ? ' is-active' : '' }}" data-color-value="{{ $color }}" style="--swatch-color: {{ $color }}" title="{{ $label }}">
+                            <span class="sr-only">{{ $label }}</span>
                       </button>
                     @endforeach
                     <button type="button" class="blog-color-swatch is-custom" data-color-custom title="Elegir otro color">✦</button>
                   </div>
-                  <div class="blog-color-custom" data-color-custom-panel hidden>
-                    <p class="blog-color-custom-title">Elegí un color en formato hex (#RRGGBB)</p>
-                    <div class="blog-color-custom-row">
-                      <input type="color" class="blog-color-custom-picker" data-color-custom-picker value="{{ $textPickerDefault }}" aria-label="Elegir color" />
-                      <input type="text" class="blog-color-custom-input" data-color-custom-input placeholder="#0F172A" maxlength="7" autocomplete="off">
-                      <span class="blog-color-custom-preview" data-color-custom-preview aria-hidden="true"></span>
-                    </div>
-                    <p class="blog-color-custom-error" data-color-custom-error hidden>Ingresá un color válido. Ejemplo: #0F172A</p>
-                    <div class="blog-color-custom-actions">
-                      <button type="button" class="blog-color-custom-btn" data-color-custom-action="cancel">Cancelar</button>
-                      <button type="button" class="blog-color-custom-btn is-primary" data-color-custom-action="apply">Aplicar color</button>
+                      <div class="blog-color-custom" data-color-custom-panel hidden>
+                        <p class="blog-color-custom-title">Elegí un color en formato hex (#RRGGBB)</p>
+                        <div class="blog-color-custom-row">
+                          <input type="color" class="blog-color-custom-picker" data-color-custom-picker value="{{ $textPickerDefault }}" aria-label="Elegir color" />
+                          <input type="text" class="blog-color-custom-input" data-color-custom-input placeholder="#0F172A" maxlength="7" autocomplete="off">
+                          <span class="blog-color-custom-preview" data-color-custom-preview aria-hidden="true"></span>
+                        </div>
+                        <p class="blog-color-custom-error" data-color-custom-error hidden>Ingresá un color válido. Ejemplo: #0F172A</p>
+                        <div class="blog-color-custom-actions">
+                          <button type="button" class="blog-color-custom-btn" data-color-custom-action="cancel">Cancelar</button>
+                          <button type="button" class="blog-color-custom-btn is-primary" data-color-custom-action="apply">Aplicar color</button>
+                        </div>
+                      </div>
                     </div>
                   </div>
+                  <div class="blog-customizer-preview" data-blog-customizer-preview>
+                    <div class="blog-customizer-preview-card">
+                      <span class="blog-customizer-pill">Vista previa</span>
+                      <h3>Así se verá tu entrada</h3>
+                      <p>Los títulos, botones y acentos usan tus colores seleccionados. Podés probar diferentes combinaciones antes de publicar.</p>
+                    </div>
+                  </div>
+                  <input type="hidden" id="theme" name="theme" value="{{ $currentTheme }}">
+                  <input type="hidden" id="accent_color" name="accent_color" value="{{ strtoupper($currentAccent ?? '') }}">
+                  <input type="hidden" id="accent_text_color" name="accent_text_color" value="{{ strtoupper($currentTextAccent ?? '') }}">
+                  <small class="hint">Elegí un estilo distintivo para la portada y el contenido. Los colores personalizados también aplican en la lista del blog.</small>
                 </div>
               </div>
+            </section>
 
-              <div class="blog-customizer-preview" data-blog-customizer-preview>
-                <div class="blog-customizer-preview-card">
-                  <span class="blog-customizer-pill">Vista previa</span>
-                  <h3>Así se verá tu entrada</h3>
-                  <p>Los títulos, botones y acentos usan tus colores seleccionados. Podés probar diferentes combinaciones antes de publicar.</p>
-                </div>
+            <section id="blog-form-media" class="blog-form-section" aria-labelledby="blog-form-media-title">
+              <div class="blog-form-section-header">
+                <h2 id="blog-form-media-title" class="blog-form-section-title">Recursos y archivos</h2>
+                <p class="blog-form-section-description">Complementá la entrada con imágenes destacadas y materiales adicionales para descargar.</p>
               </div>
+
+              <div class="blog-form-section-body">
+                <div class="form-group">
+                  <label for="hero_image_url">Imagen de cabecera (opcional)</label>
+                  <input id="hero_image_url" name="hero_image_url" type="text" value="{{ old('hero_image_url', $post->hero_image_url) }}" placeholder="https://cdn.ejemplo.com/imagen.jpg">
+                  <small class="hint">La imagen se mostrará en la parte superior de la entrada. Debe ser una URL absoluta.</small>
+                </div>
+
+                <div class="form-group">
+                  <label for="hero_image_caption">Texto descriptivo de la imagen</label>
+                  <input id="hero_image_caption" name="hero_image_caption" type="text" value="{{ old('hero_image_caption', $post->hero_image_caption) }}" maxlength="160" placeholder="Créditos o una breve descripción de la foto">
+                </div>
+
+                <div class="form-group">
+                  <label for="attachments">Adjuntar archivos</label>
+                  <input id="attachments" name="attachments[]" type="file" multiple>
+                  <small class="hint">Podés subir imágenes, PDF, archivos comprimidos y más (hasta 50MB cada uno).</small>
+                </div>
+
+                @if ($post->exists && $post->attachments->isNotEmpty())
+                  <div class="form-group">
+                    <label>Archivos actuales</label>
+                    <ul class="attachment-list">
+                      @foreach ($post->attachments as $attachment)
+                        <li>
+                          <a href="{{ Storage::disk('public')->url($attachment->path) }}" target="_blank" rel="noopener">{{ $attachment->original_name }}</a>
+                          <form method="post" action="{{ route('blog.attachments.destroy', [$post, $attachment]) }}" onsubmit="return confirm('¿Eliminar este archivo?');">
+                            @csrf
+                            @method('delete')
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                          </form>
+                        </li>
+                      @endforeach
+                    </ul>
+                  </div>
+                @endif
+              </div>
+            </section>
+
+            <div class="form-actions blog-form-actions">
+              <button type="submit" class="btn btn-primary">{{ $post->exists ? 'Guardar cambios' : 'Guardar entrada' }}</button>
+              @if ($post->exists)
+                <a class="btn" href="{{ route('blog.show', ['post' => $post->slug]) }}" target="_blank" rel="noopener">Ver publicación</a>
+              @endif
             </div>
-            <input type="hidden" id="theme" name="theme" value="{{ $currentTheme }}">
-            <input type="hidden" id="accent_color" name="accent_color" value="{{ strtoupper($currentAccent ?? '') }}">
-            <input type="hidden" id="accent_text_color" name="accent_text_color" value="{{ strtoupper($currentTextAccent ?? '') }}">
-            <small class="hint">Elegí un estilo distintivo para la portada y el contenido. Los colores personalizados también aplican en la lista del blog.</small>
+          </form>
           </div>
-
-          <div class="form-group">
-            <label for="hero_image_url">Imagen de cabecera (opcional)</label>
-            <input id="hero_image_url" name="hero_image_url" type="text" value="{{ old('hero_image_url', $post->hero_image_url) }}" placeholder="https://cdn.ejemplo.com/imagen.jpg">
-            <small class="hint">La imagen se mostrará en la parte superior de la entrada. Debe ser una URL absoluta.</small>
-          </div>
-
-          <div class="form-group">
-            <label for="hero_image_caption">Texto descriptivo de la imagen</label>
-            <input id="hero_image_caption" name="hero_image_caption" type="text" value="{{ old('hero_image_caption', $post->hero_image_caption) }}" maxlength="160" placeholder="Créditos o una breve descripción de la foto">
-          </div>
-
-          <div class="form-group">
-            <label for="attachments">Adjuntar archivos</label>
-            <input id="attachments" name="attachments[]" type="file" multiple>
-            <small class="hint">Podés subir imágenes, PDF, archivos comprimidos y más (hasta 50MB cada uno).</small>
-          </div>
-
-          @if ($post->exists && $post->attachments->isNotEmpty())
-            <div class="form-group">
-              <label>Archivos actuales</label>
-              <ul class="attachment-list">
-                @foreach ($post->attachments as $attachment)
-                  <li>
-                    <a href="{{ Storage::disk('public')->url($attachment->path) }}" target="_blank" rel="noopener">{{ $attachment->original_name }}</a>
-                    <form method="post" action="{{ route('blog.attachments.destroy', [$post, $attachment]) }}" onsubmit="return confirm('¿Eliminar este archivo?');">
-                      @csrf
-                      @method('delete')
-                      <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                    </form>
-                  </li>
-                @endforeach
-              </ul>
-            </div>
-          @endif
-
-          <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Guardar</button>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>
