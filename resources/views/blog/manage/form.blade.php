@@ -53,20 +53,6 @@
       <div class="card-body">
         <div class="blog-form-layout">
           <aside class="blog-form-sidebar" aria-label="Atajos y ayuda para editar">
-            <div class="blog-form-sidebar-card" role="status">
-              <p class="blog-form-sidebar-eyebrow">{{ $post->exists ? 'Entrada en edición' : 'Borrador inicial' }}</p>
-              <h2 class="blog-form-sidebar-heading">Tu progreso</h2>
-              <p class="blog-form-sidebar-status">
-                @if ($post->exists && $post->updated_at)
-                  Última edición {{ $post->updated_at->diffForHumans() }}.
-                @elseif ($post->exists)
-                  Guardá para publicar los cambios en el acto.
-                @else
-                  Completá los campos principales y guardá para ver la vista previa pública.
-                @endif
-              </p>
-            </div>
-
             <div class="blog-form-sidebar-card blog-form-sidebar-card--nav">
               <nav class="blog-form-nav blog-form-nav--desktop" aria-label="Secciones del formulario">
                 <h2 class="blog-form-sidebar-heading">Editar secciones</h2>
