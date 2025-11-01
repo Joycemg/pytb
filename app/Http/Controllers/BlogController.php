@@ -188,6 +188,7 @@ final class BlogController extends Controller
         return view('blog.manage.form', [
             'post' => new BlogPost(),
             'availableTags' => $this->availableTagsForForm(),
+            'popularTags' => $this->popularTagsForForm(),
         ]);
     }
 
@@ -224,6 +225,7 @@ final class BlogController extends Controller
         return view('blog.manage.form', [
             'post' => $post->load(['attachments', 'tags']),
             'availableTags' => $this->availableTagsForForm(),
+            'popularTags' => $this->popularTagsForForm(),
         ]);
     }
 
@@ -296,6 +298,25 @@ final class BlogController extends Controller
     {
         return BlogTag::query()
             ->orderBy('name')
+            ->get(['id', 'name', 'slug'])
+            ->map(fn (BlogTag $tag) => [
+                'id' => (int) $tag->id,
+                'name' => $tag->name,
+                'slug' => $tag->slug,
+            ])
+            ->values();
+    }
+
+    /**
+     * @return Collection<int, array{id:int,name:string,slug:string}>
+     */
+    private function popularTagsForForm(): Collection
+    {
+        return BlogTag::query()
+            ->withCount('posts')
+            ->orderByDesc('posts_count')
+            ->orderBy('name')
+            ->take(4)
             ->get(['id', 'name', 'slug'])
             ->map(fn (BlogTag $tag) => [
                 'id' => (int) $tag->id,
