@@ -252,37 +252,51 @@
     .blog-form-sidebar-card {
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
+        gap: 1rem;
         border: 1px solid #e2e8f0;
         border-radius: 24px;
         background: linear-gradient(135deg, rgba(248, 250, 252, 0.95), #ffffff);
-        padding: 20px;
+        padding: 22px;
         box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08);
+    }
+
+    .blog-form-sidebar-card--status {
+        gap: 1.25rem;
+        padding-block: 24px;
+        background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.08), transparent 65%),
+            linear-gradient(135deg, rgba(248, 250, 252, 0.95), #ffffff);
     }
 
     .blog-form-sidebar-card--nav {
         display: none;
     }
 
-    .blog-form-sidebar-eyebrow {
-        font-size: 0.7rem;
-        letter-spacing: 0.3em;
-        text-transform: uppercase;
+    .blog-form-sidebar-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.65rem;
+        border-radius: 999px;
+        padding: 0.45rem 0.9rem;
+        background: rgba(37, 99, 235, 0.08);
+        border: 1px solid rgba(37, 99, 235, 0.18);
+        color: #1d4ed8;
         font-weight: 600;
-        color: #94a3b8;
+        font-size: 0.95rem;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
     }
 
-    .blog-form-sidebar-heading {
-        font-size: 1rem;
-        font-weight: 600;
-        color: #0f172a;
-        margin: 0;
+    .blog-form-sidebar-chip-icon {
+        font-size: 1.1rem;
+    }
+
+    .blog-form-sidebar-chip-text {
+        line-height: 1.2;
     }
 
     .blog-form-sidebar-status,
     .blog-form-sidebar-description {
         font-size: 0.95rem;
-        line-height: 1.5;
+        line-height: 1.6;
         color: #475569;
         margin: 0;
     }
@@ -301,7 +315,7 @@
 
     .blog-form-nav {
         margin: 0;
-        padding: 0.75rem 0.5rem;
+        padding: 1rem 0.75rem;
         list-style: none;
         border-radius: 22px;
         border: 1px solid #e2e8f0;
@@ -309,13 +323,29 @@
         box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
     }
 
-    .blog-form-nav-heading {
-        margin: 0 0 0.5rem;
-        font-size: 0.75rem;
+    .blog-form-nav-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+        padding: 0.4rem 0.75rem;
+        border-radius: 999px;
+        background: rgba(14, 116, 144, 0.1);
+        border: 1px solid rgba(14, 116, 144, 0.2);
+        color: #0e7490;
+        font-size: 0.78rem;
         font-weight: 700;
-        letter-spacing: 0.18em;
+        letter-spacing: 0.05em;
         text-transform: uppercase;
-        color: #94a3b8;
+        width: fit-content;
+    }
+
+    .blog-form-nav-label-icon {
+        font-size: 1rem;
+    }
+
+    .blog-form-nav-label-text {
+        line-height: 1;
     }
 
     .blog-form-nav ol {
@@ -419,26 +449,54 @@
     }
 
     .blog-form-tips {
-        margin: 0.5rem 0 0;
+        margin: 0;
         padding: 0;
         list-style: none;
         display: flex;
         flex-direction: column;
-        gap: 0.65rem;
-        font-size: 0.9rem;
-        color: #475569;
+        gap: 1rem;
     }
 
     .blog-form-tips li {
         display: flex;
         align-items: flex-start;
-        gap: 0.5rem;
-        line-height: 1.45;
+        gap: 0.75rem;
+        padding: 0.85rem 1rem;
+        border-radius: 18px;
+        background: rgba(248, 250, 252, 0.9);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
     }
 
     .blog-form-tip-icon {
-        margin-top: 0.15rem;
-        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 999px;
+        background: rgba(37, 99, 235, 0.12);
+        font-size: 1.1rem;
+    }
+
+    .blog-form-tip-body {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .blog-form-tip-title {
+        margin: 0;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #0f172a;
+    }
+
+    .blog-form-tip-text {
+        margin: 0;
+        font-size: 0.85rem;
+        color: #475569;
+        line-height: 1.5;
     }
 
     .blog-form-body {
@@ -537,12 +595,6 @@
         order: 2;
     }
 
-    .blog-form-nav-heading {
-        font-size: 0.8rem;
-        color: #64748b;
-        letter-spacing: 0.2em;
-    }
-
     .blog-form-nav ol {
         flex-direction: column;
         overflow: visible;
@@ -560,6 +612,13 @@
         padding: 0.6rem 0.85rem;
         background: rgba(248, 250, 252, 0.9);
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6), 0 12px 26px rgba(15, 23, 42, 0.1);
+    }
+
+    .blog-form-nav-label {
+        margin-bottom: 1rem;
+        font-size: 0.75rem;
+        color: #0e7490;
+        letter-spacing: 0.12em;
     }
 
     .blog-form-nav-description {
