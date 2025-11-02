@@ -68,14 +68,17 @@
       <a class="blog-hero-highlight" href="{{ route('blog.show', ['post' => $latestPost->slug]) }}" aria-label="Última publicación: {{ $latestPost->title }}">
         <div class="blog-hero-highlight-body">
           <span class="blog-hero-highlight-label">Última publicación</span>
-          <span class="blog-hero-highlight-title">{{ $latestPost->title }}</span>
-        </div>
 
-        <div class="blog-hero-highlight-meta">
-          <span>{{ $highlightAuthor }}</span>
-          @if ($highlightPublishedAt)
-            <time datetime="{{ $highlightPublishedAt->toIso8601String() }}">{{ $highlightPublishedAt->translatedFormat('d \d\e F, Y H:i') }}</time>
-          @endif
+          <div class="blog-hero-highlight-header">
+            <span class="blog-hero-highlight-title">{{ $latestPost->title }}</span>
+
+            <div class="blog-hero-highlight-meta">
+              <span>{{ $highlightAuthor }}</span>
+              @if ($highlightPublishedAt)
+                <time datetime="{{ $highlightPublishedAt->toIso8601String() }}">{{ $highlightPublishedAt->translatedFormat('d \d\e F, Y H:i') }}</time>
+              @endif
+            </div>
+          </div>
         </div>
 
         <span class="blog-hero-highlight-cta">Leer ahora</span>
