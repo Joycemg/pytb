@@ -223,6 +223,14 @@
     margin: 0;
 }
 
+.blog-hero-highlight-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .75rem;
+    justify-content: space-between;
+}
+
 .blog-hero-highlight-meta {
     display: flex;
     flex-direction: column;

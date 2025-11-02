@@ -307,6 +307,10 @@
         @apply flex-1 space-y-1;
     }
 
+    .blog-hero-highlight-header {
+        @apply flex flex-wrap items-center gap-x-4 gap-y-1.5 md:justify-between;
+    }
+
     .blog-hero-highlight-label {
         @apply inline-flex items-center gap-1 rounded-full bg-[#f7e8ed] px-2 py-0.5 text-[0.625rem] font-semibold uppercase tracking-[0.18em] text-[#7b1e3a];
     }
@@ -316,7 +320,7 @@
     }
 
     .blog-hero-highlight-meta {
-        @apply flex flex-col gap-0.5 text-xs text-slate-500 md:text-right;
+        @apply flex flex-col gap-0.5 text-xs text-slate-500 md:items-end md:text-right;
     }
 
     .blog-hero-highlight-meta time {
