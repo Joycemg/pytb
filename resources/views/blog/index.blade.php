@@ -40,6 +40,32 @@
           @endif
         </dl>
       </div>
+
+      <form method="get" action="{{ route('blog.index') }}" class="blog-hero-search" aria-label="Buscar publicaciones">
+        <div class="blog-filter-field blog-filter-field--search">
+          <label for="filter-search">Buscá por título, etiqueta o autor</label>
+
+          <div class="blog-filter-control">
+            <input id="filter-search" type="search" name="q" value="{{ $filters['input']['q'] ?? '' }}" placeholder="Escribí algo como torneo, #evento o Juan">
+            <button type="submit" class="btn sm blog-filter-submit">Buscar</button>
+          </div>
+        </div>
+
+        @if (!empty($filters['active']))
+          <div class="blog-filter-actions">
+            <a class="blog-filter-reset" href="{{ route('blog.index') }}">Limpiar</a>
+          </div>
+        @endif
+      </form>
+
+      @if (!empty($filters['active']) && filled($filters['applied']['search'] ?? ''))
+        <div class="blog-filter-meta">
+          <div class="blog-filter-active" role="status" aria-live="polite">
+            <span class="blog-filter-chip">Mostrando resultados para <strong>{{ $filters['applied']['search'] }}</strong></span>
+            <a class="blog-filter-reset" href="{{ route('blog.index') }}">Quitar filtro</a>
+          </div>
+        </div>
+      @endif
     </header>
 
     <div class="blog-layout">
@@ -81,35 +107,6 @@
       </aside>
 
       <div id="blog-posts" class="blog-main">
-        <section class="blog-filters" aria-label="Buscar publicaciones">
-          <form method="get" action="{{ route('blog.index') }}" class="blog-filter-form">
-            <div class="blog-filter-grid">
-              <div class="blog-filter-field blog-filter-field--search">
-                <label for="filter-search">Buscá por título, etiqueta o autor</label>
-                <div class="blog-filter-control">
-                  <input id="filter-search" type="search" name="q" value="{{ $filters['input']['q'] ?? '' }}" placeholder="Escribí algo como torneo, #evento o Juan">
-                  <button type="submit" class="btn sm blog-filter-submit">Buscar</button>
-                </div>
-              </div>
-
-              @if (!empty($filters['active']))
-                <div class="blog-filter-actions">
-                  <a class="blog-filter-reset" href="{{ route('blog.index') }}">Limpiar</a>
-                </div>
-              @endif
-            </div>
-
-            @if (!empty($filters['active']) && filled($filters['applied']['search'] ?? ''))
-              <div class="blog-filter-meta">
-                <div class="blog-filter-active" role="status" aria-live="polite">
-                  <span class="blog-filter-chip">Mostrando resultados para <strong>{{ $filters['applied']['search'] }}</strong></span>
-                  <a class="blog-filter-reset" href="{{ route('blog.index') }}">Quitar filtro</a>
-                </div>
-              </div>
-            @endif
-          </form>
-        </section>
-
         <section class="blog-cta blog-cta--compact" aria-label="Usá La Taberna como app">
           <div class="blog-cta-icon" aria-hidden="true">📲</div>
           <div class="blog-cta-body">
