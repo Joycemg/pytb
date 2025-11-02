@@ -70,14 +70,16 @@
           <span class="blog-hero-highlight-label">Última publicación</span>
 
           <div class="blog-hero-highlight-header">
-            <span class="blog-hero-highlight-title">{{ $latestPost->title }}</span>
-
-            <div class="blog-hero-highlight-meta">
-              <span>{{ $highlightAuthor }}</span>
-              @if ($highlightPublishedAt)
-                <time datetime="{{ $highlightPublishedAt->toIso8601String() }}">{{ $highlightPublishedAt->translatedFormat('d \d\e F, Y H:i') }}</time>
-              @endif
-            </div>
+            <span class="blog-hero-highlight-title">
+              {{ $latestPost->title }}
+              <span class="blog-hero-highlight-title-meta">
+                por {{ $highlightAuthor }}
+                @if ($highlightPublishedAt)
+                  <span class="blog-hero-highlight-title-sep" aria-hidden="true">-</span>
+                  <time datetime="{{ $highlightPublishedAt->toIso8601String() }}">{{ $highlightPublishedAt->format('d/m/y, H:i') }}</time>
+                @endif
+              </span>
+            </span>
           </div>
         </div>
 
@@ -174,16 +176,18 @@
 
                 <div class="card-body">
                   <header class="blog-card-header">
-                  <p class="blog-card-meta">
-                    @php $publishedAt = $post->published_at?->timezone(config('app.timezone', 'UTC')); @endphp
-                    <span class="blog-card-author">Por {{ $post->author->name ?? 'Equipo de La Taberna' }}</span>
-                    @if ($publishedAt)
-                      <span class="blog-card-separator" aria-hidden="true">•</span>
-                      <time datetime="{{ $publishedAt->toIso8601String() }}">{{ $publishedAt->translatedFormat('d \d\e F, Y H:i') }}</time>
-                    @endif
-                  </p>
+                  @php $publishedAt = $post->published_at?->timezone(config('app.timezone', 'UTC')); @endphp
 
-                  <h2 class="blog-card-title">{{ $post->title }}</h2>
+                  <h2 class="blog-card-title">
+                    {{ $post->title }}
+                    <span class="blog-card-title-meta">
+                      por {{ $post->author->name ?? 'Equipo de La Taberna' }}
+                      @if ($publishedAt)
+                        <span class="blog-card-title-sep" aria-hidden="true">-</span>
+                        <time datetime="{{ $publishedAt->toIso8601String() }}">{{ $publishedAt->format('d/m/y, H:i') }}</time>
+                      @endif
+                    </span>
+                  </h2>
                 </header>
 
                 <p class="blog-card-excerpt">{{ $post->excerpt_computed }}</p>

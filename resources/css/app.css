@@ -19,6 +19,22 @@
         @apply flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-500;
     }
 
+    .blog-card-title {
+        @apply text-lg font-semibold leading-snug text-slate-900;
+    }
+
+    .blog-card-title-meta {
+        @apply inline-flex flex-wrap items-center gap-1 text-sm font-normal text-slate-500;
+    }
+
+    .blog-card-title-meta time {
+        @apply text-inherit;
+    }
+
+    .blog-card-title-sep {
+        @apply text-slate-400;
+    }
+
     .blog-post-lede {
         @apply text-lg leading-relaxed text-slate-700 md:text-xl md:leading-relaxed;
     }
@@ -319,12 +335,16 @@
         @apply text-base font-semibold text-slate-900;
     }
 
-    .blog-hero-highlight-meta {
-        @apply flex flex-col gap-0.5 text-xs text-slate-500 md:items-end md:text-right;
+    .blog-hero-highlight-title-meta {
+        @apply inline-flex flex-wrap items-center gap-1 text-xs font-medium text-slate-500;
     }
 
-    .blog-hero-highlight-meta time {
-        @apply text-[0.6875rem] uppercase tracking-[0.18em] text-slate-400;
+    .blog-hero-highlight-title-meta time {
+        @apply text-inherit;
+    }
+
+    .blog-hero-highlight-title-sep {
+        @apply text-slate-400;
     }
 
     .blog-hero-highlight-cta {
