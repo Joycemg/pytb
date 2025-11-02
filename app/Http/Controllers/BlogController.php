@@ -95,6 +95,8 @@ final class BlogController extends Controller
 
         $hasActiveFilters = $this->blogFiltersAreActive($normalizedFilters);
 
+        $suggestedTags = $this->heroSuggestedTags();
+
         if ($request->wantsJson()) {
             return response()->json([
                 'data' => $posts->getCollection()->map(function (BlogPost $post) {
@@ -136,6 +138,7 @@ final class BlogController extends Controller
                     ],
                     'active' => $this->blogFiltersAreActive($normalizedFilters),
                 ],
+                'suggested_tags' => $suggestedTags->all(),
             ]);
         }
 
@@ -149,6 +152,7 @@ final class BlogController extends Controller
                 ],
                 'active' => $hasActiveFilters,
             ],
+            'suggestedTags' => $suggestedTags,
         ]);
     }
 
@@ -315,6 +319,28 @@ final class BlogController extends Controller
         return BlogTag::query()
             ->withCount('posts')
             ->orderByDesc('posts_count')
+            ->orderBy('name')
+            ->take(4)
+            ->get(['id', 'name', 'slug'])
+            ->map(fn (BlogTag $tag) => [
+                'id' => (int) $tag->id,
+                'name' => $tag->name,
+                'slug' => $tag->slug,
+            ])
+            ->values();
+    }
+
+    /**
+     * @return Collection<int, array{id:int,name:string,slug:string}>
+     */
+    private function heroSuggestedTags(): Collection
+    {
+        return BlogTag::query()
+            ->whereHas('posts', fn ($query) => $query->published())
+            ->withCount([
+                'posts as published_posts_count' => fn ($query) => $query->published(),
+            ])
+            ->orderByDesc('published_posts_count')
             ->orderBy('name')
             ->take(4)
             ->get(['id', 'name', 'slug'])

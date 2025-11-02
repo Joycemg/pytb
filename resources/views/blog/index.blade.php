@@ -15,6 +15,7 @@
   @php
     $latestPost = $posts->first();
     $latestPublishedAt = optional(optional($latestPost)->published_at)?->timezone(config('app.timezone', 'UTC'));
+    $suggestedTags = ($suggestedTags ?? collect())->filter(fn ($tag) => !empty($tag['name'] ?? ''));
   @endphp
 
   <div class="page container blog-list">
@@ -41,7 +42,35 @@
         </dl>
       </div>
 
-      <form method="get" action="{{ route('blog.index') }}" class="blog-hero-search" aria-label="Buscar publicaciones">
+    @if (!$filters['active'] && $latestPost)
+      @php
+        $highlightPublishedAt = optional($latestPost->published_at)?->timezone(config('app.timezone', 'UTC'));
+        $highlightExcerpt = strip_tags((string) $latestPost->excerpt_computed);
+        $highlightExcerpt = $highlightExcerpt !== '' ? \Illuminate\Support\Str::limit($highlightExcerpt, 120) : '';
+        $highlightAuthor = $latestPost->author->name ?? 'Equipo de La Taberna';
+      @endphp
+
+      <a class="blog-hero-highlight" href="{{ route('blog.show', ['post' => $latestPost->slug]) }}" aria-label="Última publicación: {{ $latestPost->title }}">
+        <div class="blog-hero-highlight-body">
+          <span class="blog-hero-highlight-label">Última publicación</span>
+          <span class="blog-hero-highlight-title">{{ $latestPost->title }}</span>
+          @if ($highlightExcerpt !== '')
+            <span class="blog-hero-highlight-excerpt">{{ $highlightExcerpt }}</span>
+          @endif
+        </div>
+
+        <div class="blog-hero-highlight-meta">
+          <span>{{ $highlightAuthor }}</span>
+          @if ($highlightPublishedAt)
+            <time datetime="{{ $highlightPublishedAt->toIso8601String() }}">{{ $highlightPublishedAt->translatedFormat('d \d\e F, Y H:i') }}</time>
+          @endif
+        </div>
+
+        <span class="blog-hero-highlight-cta">Leer ahora</span>
+      </a>
+    @endif
+
+    <form method="get" action="{{ route('blog.index') }}" class="blog-hero-search" aria-label="Buscar publicaciones">
         <div class="blog-filter-field blog-filter-field--search">
           <label for="filter-search">Buscá por título, etiqueta o autor</label>
 
@@ -64,6 +93,14 @@
             <span class="blog-filter-chip">Mostrando resultados para <strong>{{ $filters['applied']['search'] }}</strong></span>
             <a class="blog-filter-reset" href="{{ route('blog.index') }}">Quitar filtro</a>
           </div>
+        </div>
+      @elseif ($suggestedTags->isNotEmpty())
+        <div class="blog-filter-suggestion" aria-label="Búsquedas sugeridas">
+          <span class="blog-filter-suggestion-label">Tendencias</span>
+          @foreach ($suggestedTags as $tag)
+            @php $tagQuery = ['q' => '#' . ltrim($tag['name'], '#')]; @endphp
+            <a class="blog-filter-suggestion-btn" href="{{ route('blog.index', $tagQuery) }}">#{{ $tag['name'] }}</a>
+          @endforeach
         </div>
       @endif
     </header>
