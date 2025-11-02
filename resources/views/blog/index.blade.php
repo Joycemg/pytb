@@ -69,8 +69,6 @@
         <div class="blog-hero-highlight-body">
           <span class="blog-hero-highlight-label">Última publicación</span>
 
-          <span class="blog-hero-highlight-cta">Leer más</span>
-
           <div class="blog-hero-highlight-header">
             <span class="blog-hero-highlight-title">
               {{ $latestPost->title }}
