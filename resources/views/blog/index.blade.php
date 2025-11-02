@@ -25,21 +25,38 @@
           <p class="blog-hero-eyebrow">Blog de La Taberna</p>
           <h1 id="blog-hero-title" class="blog-hero-title">Novedades</h1>
           <p class="blog-hero-subtitle">Lo último de la taberna, en un vistazo.</p>
+
+          <dl class="blog-hero-stats" aria-label="Indicadores del blog">
+            <div class="blog-hero-stat">
+              <dt>Publicaciones</dt>
+              <dd>{{ number_format($posts->total()) }}</dd>
+            </div>
+
+            @if ($latestPublishedAt)
+              <div class="blog-hero-stat">
+                <dt>Última actualización</dt>
+                <dd>{{ $latestPublishedAt->diffForHumans() }}</dd>
+              </div>
+            @endif
+          </dl>
         </div>
 
-        <dl class="blog-hero-stats" aria-label="Indicadores del blog">
-          <div class="blog-hero-stat">
-            <dt>Publicaciones</dt>
-            <dd>{{ number_format($posts->total()) }}</dd>
+        <form method="get" action="{{ route('blog.index') }}" class="blog-hero-search" aria-label="Buscar publicaciones">
+          <div class="blog-filter-field blog-filter-field--search">
+            <label for="filter-search">Buscá por título, etiqueta o autor</label>
+
+            <div class="blog-filter-control">
+              <input id="filter-search" type="search" name="q" value="{{ $filters['input']['q'] ?? '' }}" placeholder="Escribí algo como torneo, #evento o Juan">
+              <button type="submit" class="btn sm blog-filter-submit">Buscar</button>
+            </div>
           </div>
 
-          @if ($latestPublishedAt)
-            <div class="blog-hero-stat">
-              <dt>Última actualización</dt>
-              <dd>{{ $latestPublishedAt->diffForHumans() }}</dd>
+          @if (!empty($filters['active']))
+            <div class="blog-filter-actions">
+              <a class="blog-filter-reset" href="{{ route('blog.index') }}">Limpiar</a>
             </div>
           @endif
-        </dl>
+        </form>
       </div>
 
     @if (!$filters['active'] && $latestPost)
@@ -69,23 +86,6 @@
         <span class="blog-hero-highlight-cta">Leer ahora</span>
       </a>
     @endif
-
-    <form method="get" action="{{ route('blog.index') }}" class="blog-hero-search" aria-label="Buscar publicaciones">
-        <div class="blog-filter-field blog-filter-field--search">
-          <label for="filter-search">Buscá por título, etiqueta o autor</label>
-
-          <div class="blog-filter-control">
-            <input id="filter-search" type="search" name="q" value="{{ $filters['input']['q'] ?? '' }}" placeholder="Escribí algo como torneo, #evento o Juan">
-            <button type="submit" class="btn sm blog-filter-submit">Buscar</button>
-          </div>
-        </div>
-
-        @if (!empty($filters['active']))
-          <div class="blog-filter-actions">
-            <a class="blog-filter-reset" href="{{ route('blog.index') }}">Limpiar</a>
-          </div>
-        @endif
-      </form>
 
       @if (!empty($filters['active']) && filled($filters['applied']['search'] ?? ''))
         <div class="blog-filter-meta">
