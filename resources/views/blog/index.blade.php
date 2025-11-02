@@ -62,8 +62,6 @@
     @if (!$filters['active'] && $latestPost)
       @php
         $highlightPublishedAt = optional($latestPost->published_at)?->timezone(config('app.timezone', 'UTC'));
-        $highlightExcerpt = strip_tags((string) $latestPost->excerpt_computed);
-        $highlightExcerpt = $highlightExcerpt !== '' ? \Illuminate\Support\Str::limit($highlightExcerpt, 120) : '';
         $highlightAuthor = $latestPost->author->name ?? 'Equipo de La Taberna';
       @endphp
 
@@ -71,9 +69,6 @@
         <div class="blog-hero-highlight-body">
           <span class="blog-hero-highlight-label">Última publicación</span>
           <span class="blog-hero-highlight-title">{{ $latestPost->title }}</span>
-          @if ($highlightExcerpt !== '')
-            <span class="blog-hero-highlight-excerpt">{{ $highlightExcerpt }}</span>
-          @endif
         </div>
 
         <div class="blog-hero-highlight-meta">

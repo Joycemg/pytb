@@ -300,7 +300,7 @@
     }
 
     .blog-hero-highlight {
-        @apply mt-3 flex flex-col gap-3 rounded-xl border border-slate-200 bg-slate-50/80 p-3 text-slate-900 transition hover:border-slate-300 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2 md:flex-row md:items-center md:justify-between;
+        @apply mt-3 flex flex-col gap-2 rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-2.5 text-slate-900 transition hover:border-slate-300 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 focus-visible:ring-offset-2 md:flex-row md:items-center md:justify-between;
     }
 
     .blog-hero-highlight-body {
@@ -308,19 +308,15 @@
     }
 
     .blog-hero-highlight-label {
-        @apply inline-flex items-center gap-1 rounded-full bg-slate-900/5 px-2 py-0.5 text-[0.625rem] font-semibold uppercase tracking-[0.18em] text-slate-500;
+        @apply inline-flex items-center gap-1 rounded-full bg-[#f7e8ed] px-2 py-0.5 text-[0.625rem] font-semibold uppercase tracking-[0.18em] text-[#7b1e3a];
     }
 
     .blog-hero-highlight-title {
         @apply text-base font-semibold text-slate-900;
     }
 
-    .blog-hero-highlight-excerpt {
-        @apply text-sm text-slate-600;
-    }
-
     .blog-hero-highlight-meta {
-        @apply flex flex-col gap-1 text-xs text-slate-500 md:text-right;
+        @apply flex flex-col gap-0.5 text-xs text-slate-500 md:text-right;
     }
 
     .blog-hero-highlight-meta time {
