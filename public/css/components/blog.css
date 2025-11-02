@@ -86,8 +86,6 @@
 .blog-hero-eyebrow {
     margin: 0;
     font-size: .75rem;
-    letter-spacing: .35em;
-    text-transform: uppercase;
     color: #64748b;
     font-weight: 600;
 }
@@ -97,7 +95,6 @@
     font-size: clamp(1.9rem, 4vw, 2.5rem);
     line-height: 1.1;
     font-weight: 600;
-    letter-spacing: -.01em;
     color: #0f172a;
 }
 
@@ -158,8 +155,6 @@
 .blog-hero-stat dt {
     margin: 0;
     font-size: .7rem;
-    letter-spacing: .3em;
-    text-transform: uppercase;
     color: #94a3b8;
     font-weight: 600;
 }
@@ -169,6 +164,26 @@
     font-size: 1rem;
     font-weight: 600;
     color: #1f2937;
+}
+
+.blog-hero-search {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+}
+
+.blog-hero-search .blog-filter-field {
+    flex: 1 1 auto;
+    width: 100%;
+}
+
+@media (min-width: 48em) {
+    .blog-hero-search {
+        flex-direction: row;
+        align-items: flex-end;
+        gap: 1rem;
+    }
 }
 
 .blog-filter-form {

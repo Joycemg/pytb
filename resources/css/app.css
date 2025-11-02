@@ -36,7 +36,7 @@
     }
 
     .blog-filter-field label {
-        @apply text-[0.6875rem] font-semibold uppercase tracking-[0.25em] text-slate-400;
+        @apply text-[0.6875rem] font-semibold text-slate-500;
     }
 
     .blog-filter-field input,
@@ -272,7 +272,7 @@
     }
 
     .blog-hero-eyebrow {
-        @apply text-xs font-semibold uppercase tracking-[0.3em] text-slate-500;
+        @apply text-xs font-semibold text-slate-500;
     }
 
     .blog-hero-title {
@@ -292,11 +292,19 @@
     }
 
     .blog-hero-stat dt {
-        @apply text-xs font-medium uppercase tracking-[0.2em] text-slate-400;
+        @apply text-xs font-medium text-slate-400;
     }
 
     .blog-hero-stat dd {
         @apply text-base font-semibold text-slate-700;
+    }
+
+    .blog-hero-search {
+        @apply mt-6 flex flex-col gap-3 md:flex-row md:items-end md:gap-4;
+    }
+
+    .blog-hero-search .blog-filter-field {
+        @apply w-full flex-1;
     }
 
     .blog-filter-field--search {
