@@ -49,8 +49,8 @@
 
 
 .blog-hero {
-    margin: 2rem 0 1.5rem;
-    padding: clamp(1.75rem, 4vw, 2.75rem);
+    margin: 1.5rem 0 1.25rem;
+    padding: clamp(1.25rem, 3vw, 2rem);
     border-radius: 24px;
     border: 1px solid #e2e8f0;
     background: #fff;
@@ -65,7 +65,7 @@
 .blog-hero-content {
     display: flex;
     flex-direction: column;
-    gap: 1.75rem;
+    gap: 1.25rem;
 }
 
 @media (min-width: 62em) {
@@ -79,7 +79,7 @@
 .blog-hero-copy {
     display: flex;
     flex-direction: column;
-    gap: .75rem;
+    gap: .5rem;
     max-width: 720px;
 }
 
@@ -137,7 +137,7 @@
 .blog-hero-stats {
     display: flex;
     flex-wrap: wrap;
-    gap: .75rem 1.5rem;
+    gap: .5rem 1rem;
     margin: 0;
     padding: 0;
 }
@@ -167,10 +167,10 @@
 }
 
 .blog-hero-search {
-    margin-top: 1.5rem;
+    margin-top: 1rem;
     display: flex;
     flex-direction: column;
-    gap: .75rem;
+    gap: .625rem;
 }
 
 .blog-hero-search .blog-filter-field {
@@ -182,7 +182,7 @@
     .blog-hero-search {
         flex-direction: row;
         align-items: flex-end;
-        gap: 1rem;
+        gap: .75rem;
     }
 }
 
