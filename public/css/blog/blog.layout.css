@@ -191,19 +191,6 @@
         display: none;
     }
 
-    .blog-history-month-summary::after {
-        content: '▾';
-        font-size: .8rem;
-        line-height: 1;
-        margin-left: .35rem;
-        color: color-mix(in srgb, var(--ink, #2b2a28) 55%, transparent);
-        transition: transform .18s ease;
-    }
-
-    .blog-history-month[open] .blog-history-month-summary::after {
-        transform: rotate(180deg);
-    }
-
     .blog-history-list {
         list-style: none;
         margin: 0 0 .5rem;

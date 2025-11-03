@@ -870,17 +870,6 @@
     display: none;
 }
 
-.blog-history-month-summary::after {
-    content: '▾';
-    font-size: .75rem;
-    color: color-mix(in srgb, var(--ink, #2b2a28) 45%, transparent);
-    transition: transform .2s ease;
-}
-
-.blog-history-month[open] .blog-history-month-summary::after {
-    transform: rotate(180deg);
-}
-
 .blog-history-list {
     list-style: none;
     margin: 0 0 .5rem;
