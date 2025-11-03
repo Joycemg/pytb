@@ -283,11 +283,11 @@ final class BlogController extends Controller
     {
         $this->authorize('createCommunity', BlogPost::class);
 
-        return view('blog.community.form', [
-            'post' => new BlogPost(['is_community' => true]),
-            'availableTags' => $this->availableTagsForForm(),
-            'mode' => 'create',
+        $post = new BlogPost([
+            'is_community' => true,
         ]);
+
+        return $this->communityForm($post, 'create');
     }
 
     public function communityStore(CommunityBlogPostRequest $request): RedirectResponse
@@ -341,11 +341,7 @@ final class BlogController extends Controller
             abort(403, 'El aporte ya fue aprobado.');
         }
 
-        return view('blog.community.form', [
-            'post' => $post->load(['tags']),
-            'availableTags' => $this->availableTagsForForm(),
-            'mode' => 'edit',
-        ]);
+        return $this->communityForm($post, 'edit');
     }
 
     public function communityUpdate(CommunityBlogPostRequest $request, BlogPost $post): RedirectResponse
@@ -390,6 +386,21 @@ final class BlogController extends Controller
         return redirect()
             ->route('blog.community.mine')
             ->with('status', 'Aporte eliminado.');
+    }
+
+    private function communityForm(BlogPost $post, string $mode): View
+    {
+        if ($post->exists) {
+            $post->load(['tags']);
+        } else {
+            $post->setRelation('tags', collect());
+        }
+
+        return view('blog.community.form', [
+            'post' => $post,
+            'availableTags' => $this->availableTagsForForm(),
+            'mode' => $mode,
+        ]);
     }
 
     public function manage(): View
