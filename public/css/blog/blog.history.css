@@ -76,6 +76,10 @@ details.blog-history-year>summary.blog-history-year-summary {
     transition: background-color .15s ease, box-shadow .15s ease;
 }
 
+details.blog-history-year>summary.blog-history-year-summary::marker {
+    content: none;
+}
+
 details.blog-history-year>summary.blog-history-year-summary::-webkit-details-marker {
     display: none;
 }
