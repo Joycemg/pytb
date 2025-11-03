@@ -148,8 +148,8 @@ details.blog-history-year>summary.blog-history-year-summary::-webkit-details-mar
 .blog-history-month-summary {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: .75rem;
+    justify-content: flex-start;
+    gap: .45rem;
     list-style: none;
     cursor: pointer;
     padding: .52rem .5rem;
@@ -179,7 +179,7 @@ details.blog-history-year>summary.blog-history-year-summary::-webkit-details-mar
 .blog-history-month-name {
     display: inline-flex;
     align-items: center;
-    gap: .4rem;
+    gap: .35rem;
 }
 
 /* Badge de cantidad por mes */
