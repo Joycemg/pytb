@@ -35,8 +35,13 @@ trait BlogFilterHelpers
 
         $search = $filters['search'];
         $normalized = ltrim($search, '#');
-        $titleLike = '%' . $normalized . '%';
-        $rawLike = '%' . $search . '%';
+
+        $escapeLike = static function (string $value): string {
+            return '%' . str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $value) . '%';
+        };
+
+        $titleLike = $escapeLike($normalized);
+        $rawLike = $escapeLike($search);
 
         $query->where(function ($builder) use ($titleLike, $rawLike, $normalized, $search): void {
             $builder->where('title', 'like', $titleLike);
@@ -53,6 +58,20 @@ trait BlogFilterHelpers
                     if ($normalized !== $search) {
                         $inner->orWhere('name', 'like', $rawLike)
                             ->orWhere('slug', 'like', $rawLike);
+                    }
+                });
+            });
+
+            $builder->orWhereHas('author', function ($authorQuery) use ($titleLike, $rawLike, $normalized, $search): void {
+                $authorQuery->where(function ($inner) use ($titleLike, $rawLike, $normalized, $search): void {
+                    $inner->where('name', 'like', $titleLike)
+                        ->orWhere('email', 'like', $titleLike)
+                        ->orWhere('username', 'like', $titleLike);
+
+                    if ($normalized !== $search) {
+                        $inner->orWhere('name', 'like', $rawLike)
+                            ->orWhere('email', 'like', $rawLike)
+                            ->orWhere('username', 'like', $rawLike);
                     }
                 });
             });
