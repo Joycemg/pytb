@@ -135,10 +135,10 @@
                          role="button"
                          aria-expanded="{{ $isFirstYear ? 'true' : 'false' }}">
                   <h3 class="blog-history-year-title">
+                    <span aria-hidden="true" class="blog-history-year-caret"></span>
                     {{ $yearGroup['year'] }}
                     <span class="blog-history-year-count-inline">
                       ({{ $yearTotal }})
-                      <span aria-hidden="true" class="blog-history-year-caret"></span>
                     </span>
                   </h3>
                 </summary>
