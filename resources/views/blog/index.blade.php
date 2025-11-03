@@ -276,6 +276,7 @@
 
               @if ($activeTab === 'miembros' && $canSubmitCommunity)
                 <a class="btn btn-primary" href="{{ route('blog.community.create') }}">Publicar mi aporte</a>
+                <a class="btn" href="{{ route('blog.community.mine') }}">Ver mis aportes</a>
               @endif
             </div>
           </div>
