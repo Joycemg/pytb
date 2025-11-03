@@ -23,9 +23,9 @@
     $latestPost = $posts->first();
     $latestPublishedAt = optional(optional($latestPost)->published_at)?->timezone(config('app.timezone', 'UTC'));
 
-    $heroTitle = $activeTab === 'miembros' ? 'Miembros' : 'Novedades';
+    $heroTitle = $activeTab === 'miembros' ? 'Crónicas del club' : 'Novedades';
     $heroSubtitle = $activeTab === 'miembros'
-      ? 'Aportes y reseñas creadas por la comunidad.'
+      ? 'Aportes y reseñas creadas por el club.'
       : 'Lo último de la taberna, en un vistazo.';
 
     // Opcionales provistos desde el controller
@@ -224,7 +224,7 @@
                 'count' => $tabCounts['novedades'] ?? 0,
               ],
               'miembros' => [
-                'label' => 'Miembros',
+                'label' => 'Crónicas del club',
                 'count' => $tabCounts['miembros'] ?? 0,
               ],
             ];
@@ -259,14 +259,25 @@
               @endforeach
             </div>
 
-            @if ($activeTab === 'miembros')
-              <div class="blog-feed-actions">
-                <a class="btn" href="{{ route('blog.community') }}">Ver comunidad</a>
-                @if ($canSubmitCommunity)
-                  <a class="btn btn-primary" href="{{ route('blog.community.create') }}">Publicar mi aporte</a>
-                @endif
-              </div>
-            @endif
+            @php
+              $toggleTabKey = $activeTab === 'miembros' ? 'novedades' : 'miembros';
+              $toggleQuery = array_merge(
+                $queryDefaults,
+                $toggleTabKey === 'miembros'
+                  ? ['tab' => 'miembros']
+                  : []
+              );
+            @endphp
+
+            <div class="blog-feed-actions">
+              <a class="btn" href="{{ route('blog.index', $toggleQuery) }}">
+                {{ $activeTab === 'miembros' ? 'Ver novedades' : 'Ver Crónicas del club' }}
+              </a>
+
+              @if ($activeTab === 'miembros' && $canSubmitCommunity)
+                <a class="btn btn-primary" href="{{ route('blog.community.create') }}">Publicar mi aporte</a>
+              @endif
+            </div>
           </div>
 
           @foreach ($tabs as $tabKey => $tabData)
@@ -296,7 +307,7 @@
 
                         <div class="post-row-meta">
                           @if ($post->is_community)
-                            <span class="post-row-badge">Comunidad</span>
+                            <span class="post-row-badge">Crónicas del club</span>
                             <span class="post-row-sep">·</span>
                           @endif
                           <span class="post-row-author" itemprop="author">{{ $author }}</span>
@@ -339,7 +350,7 @@
                           @if ($canSubmitCommunity)
                             <a class="post-list-empty-link" href="{{ route('blog.community.create') }}">Compartí el primero</a>.
                           @else
-                            <a class="post-list-empty-link" href="{{ route('blog.community') }}">Conocé cómo participar</a>.
+                            <a class="post-list-empty-link" href="{{ route('blog.index', $queryDefaults) }}">Volvé a novedades</a>.
                           @endif
                         @else
                           Todavía no hay publicaciones.
