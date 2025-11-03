@@ -245,11 +245,13 @@
                       : ['tab' => $tabKey]
                   );
                   $tabUrl = route('blog.index', $tabQuery);
+                  $isActive = $activeTab === $tabKey;
                 @endphp
                 <a href="{{ $tabUrl }}"
-                   class="blog-feed-tab {{ $activeTab === $tabKey ? 'is-active' : '' }}"
+                   id="blog-tab-{{ $tabKey }}"
+                   class="blog-feed-tab {{ $isActive ? 'is-active' : '' }}"
                    role="tab"
-                   aria-selected="{{ $activeTab === $tabKey ? 'true' : 'false' }}"
+                   aria-selected="{{ $isActive ? 'true' : 'false' }}"
                    aria-controls="post-list-{{ $tabKey }}">
                   <span>{{ $tabData['label'] }}</span>
                   <span class="blog-feed-tab-count">{{ number_format($tabData['count']) }}</span>
@@ -267,80 +269,92 @@
             @endif
           </div>
 
-          <ul class="post-list" itemscope itemtype="https://schema.org/Blog" id="post-list-{{ $activeTab }}">
-            @forelse ($posts as $post)
-              @php
-                $publishedAt = $post->published_at?->timezone(config('app.timezone', 'UTC'));
-                $author = $post->author->name ?? 'Equipo de La Taberna';
-                if ($post->is_community) {
-                  $author = $post->author->name ?? 'Miembro de la comunidad';
-                }
-              @endphp
+          @foreach ($tabs as $tabKey => $tabData)
+            @php $isActive = $activeTab === $tabKey; @endphp
+            <div id="post-list-{{ $tabKey }}"
+                 class="blog-feed-panel"
+                 role="tabpanel"
+                 aria-labelledby="blog-tab-{{ $tabKey }}"
+                 @if (!$isActive) hidden @endif
+                 @if ($isActive) tabindex="0" @endif>
+              @if ($isActive)
+                <ul class="post-list" itemscope itemtype="https://schema.org/Blog">
+                  @forelse ($posts as $post)
+                    @php
+                      $publishedAt = $post->published_at?->timezone(config('app.timezone', 'UTC'));
+                      $author = $post->author->name ?? 'Equipo de La Taberna';
+                      if ($post->is_community) {
+                        $author = $post->author->name ?? 'Miembro de la comunidad';
+                      }
+                    @endphp
 
-              <li class="post-row" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-                <div class="post-row-left">
-                  <a href="{{ route('blog.show', ['post' => $post->slug]) }}" class="post-row-title" itemprop="headline">
-                    {{ $post->title }}
-                  </a>
+                    <li class="post-row" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+                      <div class="post-row-left">
+                        <a href="{{ route('blog.show', ['post' => $post->slug]) }}" class="post-row-title" itemprop="headline">
+                          {{ $post->title }}
+                        </a>
 
-                  <div class="post-row-meta">
-                    @if ($post->is_community)
-                      <span class="post-row-badge">Comunidad</span>
-                      <span class="post-row-sep">·</span>
-                    @endif
-                    <span class="post-row-author" itemprop="author">{{ $author }}</span>
-                    @if ($publishedAt)
-                      <span class="post-row-sep">·</span>
-                      <time datetime="{{ $publishedAt->toIso8601String() }}" itemprop="datePublished">{{ $publishedAt->format('d/m/y, H:i') }}</time>
-                    @endif
-                  </div>
+                        <div class="post-row-meta">
+                          @if ($post->is_community)
+                            <span class="post-row-badge">Comunidad</span>
+                            <span class="post-row-sep">·</span>
+                          @endif
+                          <span class="post-row-author" itemprop="author">{{ $author }}</span>
+                          @if ($publishedAt)
+                            <span class="post-row-sep">·</span>
+                            <time datetime="{{ $publishedAt->toIso8601String() }}" itemprop="datePublished">{{ $publishedAt->format('d/m/y, H:i') }}</time>
+                          @endif
+                        </div>
 
-                  @if (filled($post->excerpt_computed))
-                    <p class="post-row-excerpt" itemprop="description">{{ $post->excerpt_computed }}</p>
-                  @endif
+                        @if (filled($post->excerpt_computed))
+                          <p class="post-row-excerpt" itemprop="description">{{ $post->excerpt_computed }}</p>
+                        @endif
 
-                  @if ($post->tags->isNotEmpty())
-                    <ul class="post-row-tags" aria-label="Etiquetas">
-                      @foreach ($post->tags as $tag)
-                        @php
-                          $tagQuery = ['q' => '#' . $tag->name];
-                          if ($activeTab === 'miembros') {
-                            $tagQuery['tab'] = 'miembros';
-                          }
-                        @endphp
-                        <li><a class="post-row-tag" href="{{ route('blog.index', $tagQuery) }}">#{{ $tag->name }}</a></li>
-                      @endforeach
-                    </ul>
-                  @endif
+                        @if ($post->tags->isNotEmpty())
+                          <ul class="post-row-tags" aria-label="Etiquetas">
+                            @foreach ($post->tags as $tag)
+                              @php
+                                $tagQuery = ['q' => '#' . $tag->name];
+                                if ($activeTab === 'miembros') {
+                                  $tagQuery['tab'] = 'miembros';
+                                }
+                              @endphp
+                              <li><a class="post-row-tag" href="{{ route('blog.index', $tagQuery) }}">#{{ $tag->name }}</a></li>
+                            @endforeach
+                          </ul>
+                        @endif
+                      </div>
+
+                      <div class="post-row-right">
+                        <a href="{{ route('blog.show', ['post' => $post->slug]) }}" class="post-row-read">Leer</a>
+                      </div>
+                    </li>
+                  @empty
+                    <li class="post-list-empty">
+                      @if (!empty($filters['active']) && filled($filters['applied']['search'] ?? ''))
+                        No encontramos resultados para “{{ $filters['applied']['search'] }}”.
+                      @else
+                        @if ($activeTab === 'miembros')
+                          Aún no hay aportes publicados.
+                          @if ($canSubmitCommunity)
+                            <a class="post-list-empty-link" href="{{ route('blog.community.create') }}">Compartí el primero</a>.
+                          @else
+                            <a class="post-list-empty-link" href="{{ route('blog.community') }}">Conocé cómo participar</a>.
+                          @endif
+                        @else
+                          Todavía no hay publicaciones.
+                        @endif
+                      @endif
+                    </li>
+                  @endforelse
+                </ul>
+
+                <div class="blog-pagination">
+                  {{ $posts->appends($activeTab === 'miembros' ? ['tab' => 'miembros'] : [])->links() }}
                 </div>
-
-                <div class="post-row-right">
-                  <a href="{{ route('blog.show', ['post' => $post->slug]) }}" class="post-row-read">Leer</a>
-                </div>
-              </li>
-            @empty
-              <li class="post-list-empty">
-                @if (!empty($filters['active']) && filled($filters['applied']['search'] ?? ''))
-                  No encontramos resultados para “{{ $filters['applied']['search'] }}”.
-                @else
-                  @if ($activeTab === 'miembros')
-                    Aún no hay aportes publicados.
-                    @if ($canSubmitCommunity)
-                      <a class="post-list-empty-link" href="{{ route('blog.community.create') }}">Compartí el primero</a>.
-                    @else
-                      <a class="post-list-empty-link" href="{{ route('blog.community') }}">Conocé cómo participar</a>.
-                    @endif
-                  @else
-                    Todavía no hay publicaciones.
-                  @endif
-                @endif
-              </li>
-            @endforelse
-          </ul>
-
-          <div class="blog-pagination">
-            {{ $posts->appends($activeTab === 'miembros' ? ['tab' => 'miembros'] : [])->links() }}
-          </div>
+              @endif
+            </div>
+          @endforeach
         </div>
 
         <section class="blog-cta blog-cta--compact" aria-label="Usá La Taberna como app">
