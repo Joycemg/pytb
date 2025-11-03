@@ -5,6 +5,19 @@
     --blog-radius: 8px;
 }
 
+/* util accesibilidad (lo usamos en la vista) */
+.sr-only {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 .blog-list .page-head {
     display: flex;
     flex-direction: column;
@@ -48,7 +61,12 @@
 }
 
 
+/* ================= HERO ================= */
 .blog-hero {
+    /* ↓ reducción de ancho + centrado */
+    max-width: clamp(560px, 82vw, 760px);
+    margin-inline: auto;
+
     margin: 1.25rem 0 1rem;
     padding: clamp(1rem, 2.5vw, 1.75rem);
     border-radius: 20px;
@@ -80,7 +98,8 @@
     display: flex;
     flex-direction: column;
     gap: .4rem;
-    max-width: 720px;
+    /* ↓ un toque más acotado */
+    max-width: 600px;
 }
 
 .blog-hero-eyebrow {
@@ -172,11 +191,14 @@
 }
 
 
+/* Highlight debajo del hero */
 .blog-hero-highlight {
-    margin-top: 1rem;
+    margin-top: .75rem;
+    /* ↓ mismo “respirito” que el buscador */
     display: flex;
     width: 100%;
-    max-width: 42rem;
+    max-width: 38rem;
+    /* ↓ antes 42rem */
     flex-direction: column;
     gap: .6rem;
     padding: .7rem .95rem;
@@ -283,13 +305,16 @@
     }
 }
 
+/* ====== Buscador en el hero (columna derecha) ====== */
 .blog-hero-search {
-    margin-top: 0;
+    margin-top: .75rem;
+    /* ↓ igual que highlight */
     display: flex;
     flex-direction: column;
     gap: .5rem;
     width: 100%;
-    max-width: 26rem;
+    max-width: 24rem;
+    /* ↓ un poco más compacta */
 }
 
 .blog-hero-search .blog-filter-field {
@@ -299,10 +324,12 @@
 
 @media (min-width: 48em) {
     .blog-hero-search {
-        width: 16.5rem;
+        width: 16rem;
+        /* ↓ antes 16.5rem */
     }
 }
 
+/* Tarjeta del formulario de filtro */
 .blog-filter-form {
     margin: 0;
     padding: 1.5rem 1.75rem;
@@ -315,6 +342,7 @@
     gap: 1.75rem;
 }
 
+/* Grid y campos del filtro */
 .blog-filter-grid {
     display: grid;
     gap: 1.2rem;
@@ -375,6 +403,7 @@
     color: #94a3b8;
 }
 
+/* Acciones y chips */
 .blog-filter-actions {
     display: flex;
     flex-wrap: wrap;
@@ -467,6 +496,7 @@
     transform: translateY(-1px);
 }
 
+/* ====== Feed, tarjetas, layout, etc. (sin cambios estructurales) ====== */
 .blog-feed {
     display: flex;
     flex-direction: column;
@@ -626,7 +656,7 @@
     align-items: flex-start;
 }
 
-.blog-main > .blog-cta:first-child {
+.blog-main>.blog-cta:first-child {
     margin-top: 0;
 }
 
@@ -688,7 +718,7 @@
     font-size: .95rem;
 }
 
-.blog-cta-steps li + li {
+.blog-cta-steps li+li {
     margin-top: .3rem;
 }
 
@@ -760,7 +790,6 @@
     text-transform: uppercase;
 }
 
-
 .blog-history-month {
     border: none;
     border-radius: var(--blog-radius, 8px);
@@ -768,7 +797,7 @@
     padding: 0;
 }
 
-.blog-history-month + .blog-history-month {
+.blog-history-month+.blog-history-month {
     margin-top: .35rem;
 }
 
@@ -789,7 +818,6 @@
     display: none;
 }
 
-
 .blog-history-month-summary::after {
     content: '▾';
     font-size: .75rem;
@@ -800,7 +828,6 @@
 .blog-history-month[open] .blog-history-month-summary::after {
     transform: rotate(180deg);
 }
-
 
 .blog-history-list {
     list-style: none;
@@ -814,7 +841,6 @@
 .blog-history-item {
     margin: 0;
 }
-
 
 .blog-history-link {
     display: flex;
@@ -884,12 +910,12 @@
 }
 
 .blog-feed .blog-pagination nav,
-.blog-feed .blog-pagination nav > div:first-child {
+.blog-feed .blog-pagination nav>div:first-child {
     width: 100%;
 }
 
-.blog-feed .blog-pagination nav > div:first-child > span,
-.blog-feed .blog-pagination nav > div:first-child > a {
+.blog-feed .blog-pagination nav>div:first-child>span,
+.blog-feed .blog-pagination nav>div:first-child>a {
     width: auto;
 }
 
@@ -1252,6 +1278,7 @@
 }
 
 
+/* ================= POST ================= */
 .blog-post {
     --blog-accent: var(--blog-accent, var(--brand, #8c2e2e));
     --blog-accent-text: var(--blog-accent-text, var(--ink, #2b2a28));
@@ -1964,7 +1991,7 @@
 }
 
 .blog-color-custom-error.is-visible {
-    display: block;
+    display: 0block;
 }
 
 .blog-color-custom-actions {
@@ -2156,5 +2183,207 @@
 
     .blog-customizer-row {
         flex-direction: column;
+    }
+}
+
+/* Ajuste fino de 2 columnas y hero reducido para desktop */
+@media (min-width: 62em) {
+    .blog-hero-content {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 2rem;
+    }
+}
+
+/* En pantallas grandes (>=1440px) aún más compacto */
+@media (min-width: 90em) {
+    .blog-hero {
+        max-width: 720px;
+        /* ↓ antes 760px */
+    }
+}
+
+
+/* ============================
+   PATCH: FEED EN MODO LISTA
+   ============================ */
+
+/* Fuente de verdad del ancho del hero (si ya la tenés, esto no altera nada) */
+:root {
+    --blog-hero-max: clamp(560px, 82vw, 760px);
+}
+
+@media (min-width: 90em) {
+    :root {
+        --blog-hero-max: 720px;
+    }
+}
+
+/* El feed en lista replica el ancho del hero y queda centrado */
+.blog-feed--as-list {
+    max-width: var(--blog-hero-max);
+    margin-inline: auto;
+    width: 100%;
+}
+
+/* Contenedor lista */
+.post-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, .06);
+}
+
+/* Fila */
+.post-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: .75rem 1rem;
+    padding: .9rem 1rem;
+    align-items: center;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.post-row:last-child {
+    border-bottom: 0;
+}
+
+.post-row-left {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+}
+
+.post-row-right {
+    display: flex;
+    align-items: center;
+}
+
+/* Título + meta */
+.post-row-title {
+    font-weight: 700;
+    font-size: 1.02rem;
+    color: #0f172a;
+    text-decoration: none;
+    line-height: 1.25;
+}
+
+.post-row-title:hover,
+.post-row-title:focus-visible {
+    text-decoration: underline;
+    outline: none;
+}
+
+.post-row-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem .6rem;
+    font-size: .85rem;
+    color: #64748b;
+}
+
+.post-row-author {
+    font-weight: 600;
+}
+
+.post-row-sep {
+    opacity: .7;
+}
+
+.post-row-excerpt {
+    margin: 0;
+    font-size: .95rem;
+    color: #334155;
+}
+
+/* Tags */
+.post-row-tags {
+    margin: .1rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem .5rem;
+}
+
+.post-row-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #334155;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: .22rem .45rem;
+    border-radius: 999px;
+    text-decoration: none;
+}
+
+.post-row-tag:hover {
+    background: #fff;
+}
+
+/* Botón "Leer" */
+.post-row-read {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .45rem .8rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    font-weight: 700;
+    font-size: .85rem;
+    color: #1f2937;
+    text-decoration: none;
+    transition: transform .15s ease, border-color .2s ease, background-color .2s ease;
+}
+
+.post-row-read::after {
+    content: "→";
+    margin-left: .35rem;
+}
+
+.post-row-read:hover,
+.post-row-read:focus-visible {
+    background: #fff;
+    border-color: #cbd5f5;
+    transform: translateY(-1px);
+    outline: none;
+}
+
+/* Estado vacío */
+.post-list-empty {
+    padding: 1.2rem;
+    text-align: center;
+    color: #64748b;
+}
+
+/* Cuando el feed está en lista, ocultamos la grilla de tarjetas si existiera */
+.blog-feed--as-list .blog-grid,
+.blog-feed--as-list .blog-card {
+    display: none !important;
+}
+
+/* Responsive lista */
+@media (max-width: 640px) {
+    .post-row {
+        grid-template-columns: 1fr;
+        padding: .85rem .9rem;
+    }
+
+    .post-row-right {
+        justify-content: flex-start;
     }
 }

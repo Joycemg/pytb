@@ -19,12 +19,21 @@
 @import "components/ranking.css";
 @import "components/table.css";
 @import "components/modal.css";
-@import "components/blog.css";
+/* @import "components/blog.css"; */
 
 /* ===== Layout ===== */
 @import "layout/header.css";
 @import "layout/nav.css";
 
+
+@import "blog/blog.feed.css";
+@import "blog/blog.hero-filter.css";
+@import "blog/blog.layout.css";
+@import "blog/blog.tokens.css";
+@import "blog/blog.post-customizer-responsive.css";
+
+@import "blog/components.css";
+@import "blog/history.css";
 /* ===== Helpers específicos del layout.blade ===== */
 
 /* footer centrado */

@@ -1,0 +1,365 @@
+/* ==========================================================================
+   blog.history.css — Sidebar "History"
+   ========================================================================== */
+
+
+
+/* ============================== BASE ===================================== */
+@layer base {
+    .blog-history {
+        position: sticky;
+        top: 5rem;
+        background: transparent;
+        border-radius: var(--blog-radius, 8px);
+        padding: .75rem 0;
+        box-shadow: none;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        color: var(--ink, #2b2a28);
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* En móviles el sticky suele tapar la cabecera; lo desactivamos */
+    @media (max-width: 640px) {
+        .blog-history {
+            position: static;
+            top: auto;
+        }
+    }
+
+    .blog-history-title {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        color: color-mix(in srgb, var(--ink, #2b2a28) 88%, transparent);
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
+    .blog-history-groups {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+/* ============================== AÑO ====================================== */
+/* Contenedor del año */
+.blog-history-year {
+    display: block;
+    padding-top: .35rem;
+    border-top: 1px solid color-mix(in srgb, var(--line, #e9d8c9) 70%, transparent);
+}
+
+.blog-history-year:first-child {
+    border-top: 0;
+    padding-top: 0;
+}
+
+/* SUMMARY del año con marker nativo a la derecha
+   - list-item para mantener marker
+   - direction: rtl lleva marker a la derecha
+   - el contenido interno vuelve a LTR por clase */
+details.blog-history-year>summary.blog-history-year-summary {
+    display: list-item !important;
+    /* asegura marker nativo */
+    list-style: disclosure-closed;
+    /* triángulo cerrado */
+    direction: rtl;
+    /* marker a la derecha */
+    white-space: nowrap;
+    /* evitar cortes raros */
+    line-height: 1.25;
+    /* Altura mínima para accesibilidad táctil */
+    min-height: 40px;
+    padding: .4rem .4rem;
+    margin: 0;
+    cursor: pointer;
+    border-radius: var(--blog-radius, 8px);
+    user-select: none;
+    outline: none;
+    transition: background-color .15s ease, box-shadow .15s ease;
+}
+
+details.blog-history-year[open]>summary.blog-history-year-summary {
+    list-style: disclosure-open;
+}
+
+/* Asegurar que NUNCA se oculte el marker nativo (Safari/WebKit) */
+details.blog-history-year>summary.blog-history-year-summary::-webkit-details-marker {
+    display: inline-block !important;
+}
+
+details.blog-history-year>summary.blog-history-year-summary::marker {
+    content: normal !important;
+}
+
+/* Hover/focus visibles del año */
+.blog-history-year-summary:hover {
+    background: color-mix(in srgb, var(--brand, #8c2e2e) 10%, #fff);
+}
+
+.blog-history-year-summary:focus-visible {
+    box-shadow: 0 0 0 3px rgba(148, 163, 184, .28);
+}
+
+/* Título y contador del año (forzamos LTR para texto) */
+.blog-history-year-title {
+    margin: 0 !important;
+    display: inline !important;
+    direction: ltr;
+    white-space: nowrap;
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: .01em;
+    color: color-mix(in srgb, var(--ink, #2b2a28) 92%, transparent);
+    vertical-align: middle;
+}
+
+.blog-history-year-count-inline {
+    direction: ltr;
+    display: inline !important;
+    font-weight: 700;
+    font-size: .95rem;
+    color: color-mix(in srgb, var(--ink, #2b2a28) 70%, transparent);
+    opacity: .9;
+    margin-left: .35rem;
+    vertical-align: middle;
+}
+
+/* Quitar cualquier caret artificial que algún reset haya agregado */
+.blog-history-year-summary::after,
+.blog-history-year-title::after,
+.blog-history-year-count-inline::after {
+    content: none !important;
+}
+
+/* Aparición suave del cuerpo del año */
+.blog-history-year[open] .blog-history-year-body {
+    animation: blog-accordion-in .16s ease-out;
+}
+
+/* Pequeña guía visual al abrir (borde más notorio) */
+.blog-history-year:has([open]) {
+    border-top-color: color-mix(in srgb, var(--brand, #8c2e2e) 35%, transparent);
+}
+
+/* ============================== MES ====================================== */
+.blog-history-month {
+    border: none;
+    border-radius: var(--blog-radius, 8px);
+    background: none;
+    padding: 0;
+}
+
+.blog-history-month+.blog-history-month {
+    margin-top: .25rem;
+}
+
+.blog-history-month-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    list-style: none;
+    cursor: pointer;
+    padding: .52rem .5rem;
+    min-height: 40px;
+    /* hit area */
+    font-weight: 700;
+    font-size: .92rem;
+    color: color-mix(in srgb, var(--ink, #2b2a28) 85%, transparent);
+    border-radius: var(--blog-radius, 8px);
+    user-select: none;
+    outline: none;
+    transition: background-color .15s ease, box-shadow .15s ease, color .15s ease;
+}
+
+.blog-history-month-summary::-webkit-details-marker {
+    display: none;
+}
+
+.blog-history-month-summary:hover {
+    background: color-mix(in srgb, var(--brand, #8c2e2e) 8%, #fff);
+}
+
+.blog-history-month-summary:focus-visible {
+    box-shadow: 0 0 0 3px rgba(148, 163, 184, .25);
+}
+
+/* Caret custom para el mes */
+.blog-history-month-summary::after {
+    content: '▾';
+    font-size: .8rem;
+    line-height: 1;
+    margin-left: .35rem;
+    color: color-mix(in srgb, var(--ink, #2b2a28) 55%, transparent);
+    transition: transform .18s ease;
+}
+
+.blog-history-month[open] .blog-history-month-summary::after {
+    transform: rotate(180deg);
+}
+
+.blog-history-month-name {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+}
+
+/* Badge de cantidad por mes */
+.blog-history-month-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.6rem;
+    height: 1.3rem;
+    padding: 0 .5rem;
+    border-radius: 999px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #475569;
+    font-weight: 800;
+    font-size: .72rem;
+    line-height: 1;
+    box-shadow: 0 1px 0 rgba(148, 163, 184, .12);
+}
+
+/* ============================== LISTA DE POSTS =========================== */
+.blog-history-list {
+    list-style: none;
+    margin: .2rem 0 .5rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+}
+
+.blog-history-item {
+    margin: 0;
+}
+
+.blog-history-link {
+    display: flex;
+    flex-direction: column;
+    gap: .1rem;
+    text-decoration: none;
+    color: inherit;
+    padding: .42rem .5rem;
+    border-radius: var(--blog-radius, 8px);
+    transition: color .15s ease, background-color .15s ease, box-shadow .15s ease;
+}
+
+.blog-history-link:hover,
+.blog-history-link:focus-visible {
+    color: color-mix(in srgb, var(--brand, #8c2e2e) 55%, var(--ink, #2b2a28) 45%);
+    background: color-mix(in srgb, var(--brand, #8c2e2e) 16%, rgba(255, 255, 255, .92));
+    text-decoration: none;
+    outline: none;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brand, #8c2e2e) 35%, transparent);
+}
+
+.blog-history-post-title {
+    font-weight: 700;
+    font-size: .9rem;
+}
+
+.blog-history-post-date {
+    font-size: .78rem;
+    color: var(--muted, #7c6f63);
+}
+
+/* Vacío */
+.blog-history-empty {
+    margin: 0;
+    font-size: .9rem;
+    color: var(--muted, #7c6f63);
+}
+
+/* ============================== ANIMACIONES ============================== */
+@keyframes blog-accordion-in {
+    from {
+        opacity: 0;
+        transform: translateY(-2px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Respeto a usuarios con motion reducido */
+@media (prefers-reduced-motion: reduce) {
+
+    .blog-history-year[open] .blog-history-year-body,
+    .blog-history-month[open] .blog-history-list {
+        animation: none !important;
+    }
+
+    .blog-history-link,
+    .blog-history-month-summary,
+    .blog-history-year-summary {
+        transition: none !important;
+    }
+}
+
+/* ============================== MÓVILES ================================== */
+@media (max-width: 640px) {
+    .blog-history {
+        padding: .5rem 0;
+    }
+
+    /* Menos padding pero mantiene hit area >= 40px */
+    .blog-history-year-summary {
+        padding: .35rem .3rem;
+        min-height: 40px;
+    }
+
+    .blog-history-year-title {
+        font-size: 1rem;
+    }
+
+    .blog-history-month-summary {
+        padding: .38rem .3rem;
+        min-height: 40px;
+    }
+
+    .blog-history-post-title {
+        font-size: .88rem;
+    }
+
+    .blog-history-post-date {
+        font-size: .76rem;
+    }
+}
+
+/* ============================== MODO OSCURO ============================== */
+@media (prefers-color-scheme: dark) {
+    .blog-history {
+        color: color-mix(in srgb, var(--ink, #f3efe9) 94%, transparent);
+    }
+
+    .blog-history-year {
+        border-top-color: color-mix(in srgb, var(--line, #3b342d) 65%, transparent);
+    }
+
+    .blog-history-month-summary:hover {
+        background: color-mix(in srgb, var(--brand, #e08b8b) 10%, #111);
+    }
+
+    .blog-history-link:hover,
+    .blog-history-link:focus-visible {
+        background: color-mix(in srgb, var(--brand, #e08b8b) 16%, rgba(0, 0, 0, .2));
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brand, #e08b8b) 40%, transparent);
+    }
+
+    .blog-history-month-count {
+        border-color: #334155;
+        background: #0b0f16;
+        color: #e2e8f0;
+        box-shadow: 0 1px 0 rgba(15, 23, 42, .4);
+    }
+}
