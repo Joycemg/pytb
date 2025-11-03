@@ -111,16 +111,18 @@
             <a class="blog-filter-reset" href="{{ route('blog.index') }}">Quitar filtro</a>
           </div>
         </div>
-      @elseif ($suggestedTags->isNotEmpty())
-        <div class="blog-filter-suggestion" aria-label="Tendencias">
-          <span class="blog-filter-suggestion-label">Tendencias</span>
-          @foreach ($suggestedTags as $tag)
-            @php $tagQuery = ['q' => '#' . ltrim($tag['name'], '#')]; @endphp
-            <a class="blog-filter-suggestion-btn" href="{{ route('blog.index', $tagQuery) }}">#{{ $tag['name'] }}</a>
-          @endforeach
-        </div>
       @endif
     </header>
+
+    @if (empty($filters['active']) && $suggestedTags->isNotEmpty())
+      <div class="blog-filter-suggestion blog-filter-suggestion--below" aria-label="Tendencias">
+        <span class="blog-filter-suggestion-label">Tendencias</span>
+        @foreach ($suggestedTags as $tag)
+          @php $tagQuery = ['q' => '#' . ltrim($tag['name'], '#')]; @endphp
+          <a class="blog-filter-suggestion-btn" href="{{ route('blog.index', $tagQuery) }}">#{{ $tag['name'] }}</a>
+        @endforeach
+      </div>
+    @endif
 
     <div class="blog-layout">
       {{-- ===== HISTORIAL ===== --}}
