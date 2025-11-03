@@ -95,17 +95,6 @@ details.blog-history-year>summary.blog-history-year-summary::-webkit-details-mar
     box-shadow: 0 0 0 3px rgba(148, 163, 184, .28);
 }
 
-details.blog-history-year>summary.blog-history-year-summary::after {
-    content: '▾';
-    font-size: .8rem;
-    margin-left: .2rem;
-    transition: transform .18s ease;
-}
-
-.blog-history-year[open]>summary.blog-history-year-summary::after {
-    transform: rotate(180deg);
-}
-
 /* Título y contador del año (forzamos LTR para texto) */
 .blog-history-year-title {
     margin: 0 !important;
@@ -185,20 +174,6 @@ details.blog-history-year>summary.blog-history-year-summary::after {
 
 .blog-history-month-summary:focus-visible {
     box-shadow: 0 0 0 3px rgba(148, 163, 184, .25);
-}
-
-/* Caret custom para el mes */
-.blog-history-month-summary::after {
-    content: '▾';
-    font-size: .8rem;
-    line-height: 1;
-    margin-left: .35rem;
-    color: color-mix(in srgb, var(--ink, #2b2a28) 55%, transparent);
-    transition: transform .18s ease;
-}
-
-.blog-history-month[open] .blog-history-month-summary::after {
-    transform: rotate(180deg);
 }
 
 .blog-history-month-name {
