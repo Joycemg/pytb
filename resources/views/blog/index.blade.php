@@ -53,7 +53,14 @@
                      value="{{ $filters['input']['q'] ?? '' }}"
                      placeholder="Escribí algo como torneo, #evento o Juan"
                      autocomplete="off" />
-              <button type="submit" class="btn sm blog-filter-submit">Buscar</button>
+              <button type="submit" class="btn sm blog-filter-submit" aria-label="Buscar">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
+                     class="blog-filter-submit-icon">
+                  <path fill-rule="evenodd"
+                        d="M9 3.5a5.5 5.5 0 1 1-3.478 9.756l-2.384 2.384a.75.75 0 0 1-1.06-1.06l2.384-2.384A5.5 5.5 0 0 1 9 3.5Zm0 1.5a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"
+                        clip-rule="evenodd" />
+                </svg>
+              </button>
             </div>
           </div>
 
