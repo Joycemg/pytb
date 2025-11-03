@@ -121,8 +121,7 @@ details.blog-history-year>summary.blog-history-year-summary::marker {
     vertical-align: middle;
 }
 
-.blog-history-year-count-inline::after {
-    content: '';
+.blog-history-year-caret {
     display: inline-block;
     width: 0;
     height: 0;
@@ -133,7 +132,7 @@ details.blog-history-year>summary.blog-history-year-summary::marker {
     transform-origin: center;
 }
 
-.blog-history-year[open] .blog-history-year-count-inline::after {
+.blog-history-year[open] .blog-history-year-caret {
     transform: rotate(90deg);
 }
 
