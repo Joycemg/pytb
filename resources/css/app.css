@@ -446,6 +446,11 @@
         @apply inline-flex items-center gap-1 rounded-full border border-slate-200 px-1.5 py-0.5 text-[0.625rem] font-semibold uppercase tracking-[0.16em] text-slate-600 transition hover:border-slate-300 hover:text-slate-900;
     }
 
+    .blog-filter-suggestion--below {
+        @apply mt-4 mb-6;
+        display: inline-flex;
+    }
+
     .blog-feed {
         @apply mt-8 space-y-10;
     }
