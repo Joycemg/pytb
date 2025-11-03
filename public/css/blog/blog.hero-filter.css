@@ -119,7 +119,7 @@
         margin-top: .75rem;
         display: flex;
         width: 100%;
-        max-width: 38rem;
+        max-width: 25rem;
         flex-direction: column;
         gap: .6rem;
         padding: .7rem .95rem;
@@ -253,6 +253,7 @@
         display: flex;
         flex-direction: column;
         gap: 1.75rem;
+
     }
 
     .blog-filter-grid {
@@ -307,10 +308,10 @@
     .blog-filter-input-control {
         flex: 1;
         min-width: 0;
-        padding-top: .45rem;
-        padding-bottom: .45rem;
-        padding-left: .75rem;
-        padding-right: 2.75rem;
+        padding-top: .15rem;
+        padding-bottom: .15rem;
+        padding-left: .55rem;
+        padding-right: 1.75rem;
         border-radius: 8px;
         border: 1px solid #cbd5f5;
         background: #fff;
@@ -318,6 +319,7 @@
         color: #1f2937;
         box-shadow: inset 0 1px 2px rgba(148, 163, 184, .12);
         transition: border-color .2s ease, box-shadow .2s ease;
+
     }
 
     .blog-filter-input-control:focus {
@@ -338,8 +340,8 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 2.5rem;
-        height: 2.5rem;
+        width: 2.55rem;
+        height: 100%;
         border-radius: 0;
         border: 0;
         background: #7b1d26;

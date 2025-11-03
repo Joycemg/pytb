@@ -336,6 +336,7 @@ details.blog-history-year>summary.blog-history-year-summary::-webkit-details-mar
         box-shadow: 0 1px 0 rgba(15, 23, 42, .4);
     }
 }
+
 /* ============================== RESET MARKERS ============================ */
 /* Quitar SIEMPRE el triángulo nativo de cualquier summary */
 details>summary {
@@ -359,4 +360,3 @@ details.blog-history-year>summary.blog-history-year-summary::-webkit-details-mar
 details.blog-history-month>summary.blog-history-month-summary::-webkit-details-marker {
     display: none;
 }
-

@@ -175,16 +175,22 @@
     }
 
     .blog-history-month-summary {
-        list-style: none;
-        cursor: pointer;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: .75rem;
-        font-weight: 600;
-        color: color-mix(in srgb, var(--ink) 75%, transparent);
-        font-size: .9rem;
-        padding: .35rem 0;
+        justify-content: flex-start;
+        gap: .45rem;
+        list-style: none;
+        cursor: pointer;
+        padding: .52rem .5rem;
+        min-height: 40px;
+        /* hit area */
+        font-weight: 700;
+        font-size: .92rem;
+        color: color-mix(in srgb, var(--ink, #2b2a28) 85%, transparent);
+        border-radius: var(--blog-radius, 8px);
+        user-select: none;
+        outline: none;
+        transition: background-color .15s ease, box-shadow .15s ease, color .15s ease;
     }
 
     .blog-history-month-summary::-webkit-details-marker {
