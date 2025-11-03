@@ -60,7 +60,9 @@
 
 /* SUMMARY del año junto al contador */
 details.blog-history-year>summary.blog-history-year-summary {
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
     list-style: none;
     white-space: nowrap;
     /* evitar cortes raros */
@@ -76,10 +78,6 @@ details.blog-history-year>summary.blog-history-year-summary {
     transition: background-color .15s ease, box-shadow .15s ease;
 }
 
-details.blog-history-year>summary.blog-history-year-summary::-webkit-details-marker {
-    display: none;
-}
-
 /* Hover/focus visibles del año */
 .blog-history-year-summary:hover {
     background: color-mix(in srgb, var(--brand, #8c2e2e) 10%, #fff);
@@ -87,6 +85,17 @@ details.blog-history-year>summary.blog-history-year-summary::-webkit-details-mar
 
 .blog-history-year-summary:focus-visible {
     box-shadow: 0 0 0 3px rgba(148, 163, 184, .28);
+}
+
+details.blog-history-year>summary.blog-history-year-summary::after {
+    content: '▾';
+    font-size: .8rem;
+    margin-left: .2rem;
+    transition: transform .18s ease;
+}
+
+.blog-history-year[open]>summary.blog-history-year-summary::after {
+    transform: rotate(180deg);
 }
 
 /* Título y contador del año (forzamos LTR para texto) */
@@ -344,3 +353,27 @@ details.blog-history-year>summary.blog-history-year-summary::-webkit-details-mar
         box-shadow: 0 1px 0 rgba(15, 23, 42, .4);
     }
 }
+/* ============================== RESET MARKERS ============================ */
+/* Quitar SIEMPRE el triángulo nativo de cualquier summary */
+details>summary {
+    list-style: none;
+}
+
+details>summary::marker {
+    content: "";
+}
+
+details>summary::-webkit-details-marker {
+    display: none;
+}
+
+details.blog-history-year>summary.blog-history-year-summary::marker,
+details.blog-history-month>summary.blog-history-month-summary::marker {
+    content: "";
+}
+
+details.blog-history-year>summary.blog-history-year-summary::-webkit-details-marker,
+details.blog-history-month>summary.blog-history-month-summary::-webkit-details-marker {
+    display: none;
+}
+
