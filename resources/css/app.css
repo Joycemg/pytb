@@ -480,6 +480,10 @@
         min-width: 2rem;
     }
 
+    .blog-feed-panel[hidden] {
+        display: none;
+    }
+
     .blog-feed-actions {
         @apply flex flex-wrap gap-2;
     }
