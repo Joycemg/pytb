@@ -58,7 +58,7 @@
     padding-top: 0;
 }
 
-/* SUMMARY del año con caret personalizado junto al contador */
+/* SUMMARY del año junto al contador */
 details.blog-history-year>summary.blog-history-year-summary {
     display: block;
     list-style: none;
@@ -119,21 +119,6 @@ details.blog-history-year>summary.blog-history-year-summary::marker {
     opacity: .9;
     margin-left: .35rem;
     vertical-align: middle;
-}
-
-.blog-history-year-caret {
-    display: inline-block;
-    width: 0;
-    height: 0;
-    border-top: 5px solid transparent;
-    border-bottom: 5px solid transparent;
-    border-left: 7px solid color-mix(in srgb, var(--ink, #2b2a28) 55%, transparent);
-    transition: transform .18s ease;
-    transform-origin: center;
-}
-
-.blog-history-year[open] .blog-history-year-caret {
-    transform: rotate(90deg);
 }
 
 /* Aparición suave del cuerpo del año */
