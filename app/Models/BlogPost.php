@@ -27,10 +27,15 @@ final class BlogPost extends Model
         'hero_image_url',
         'hero_image_caption',
         'published_at',
+        'is_community',
+        'approved_at',
+        'approved_by',
     ];
 
     protected $casts = [
         'published_at' => 'datetime',
+        'approved_at' => 'datetime',
+        'is_community' => 'bool',
     ];
 
     protected static function booted(): void
@@ -72,6 +77,16 @@ final class BlogPost extends Model
         return $this->hasMany(BlogAttachment::class);
     }
 
+    public function comments(): HasMany
+    {
+        return $this->hasMany(BlogPostComment::class);
+    }
+
+    public function approver(): BelongsTo
+    {
+        return $this->belongsTo(Usuario::class, 'approved_by');
+    }
+
     /**
      * @return BelongsToMany<BlogTag>
      */
@@ -96,5 +111,16 @@ final class BlogPost extends Model
     {
         return $query->whereNotNull('published_at')
             ->where('published_at', '<=', now());
+    }
+
+    public function scopeCommunity($query)
+    {
+        return $query->where('is_community', true);
+    }
+
+    public function scopePendingApproval($query)
+    {
+        return $query->where('is_community', true)
+            ->whereNull('approved_at');
     }
 }

@@ -34,6 +34,13 @@ final class BlogPostPolicy
         return $user->hasAnyRole(['admin', 'moderator']);
     }
 
+    public function createCommunity(Usuario $user): bool
+    {
+        return method_exists($user, 'estaAprobado')
+            ? $user->estaAprobado()
+            : false;
+    }
+
     public function update(Usuario $user, BlogPost $post): bool
     {
         if ($user->hasRole('admin')) {
@@ -44,11 +51,20 @@ final class BlogPostPolicy
             return $post->user_id === $user->id;
         }
 
+        if ($post->is_community && $post->user_id === $user->id && $post->approved_at === null) {
+            return true;
+        }
+
         return false;
     }
 
     public function delete(Usuario $user, BlogPost $post): bool
     {
         return $this->update($user, $post);
+    }
+
+    public function review(Usuario $user, BlogPost $post): bool
+    {
+        return $user->hasAnyRole(['admin', 'moderator']);
     }
 }

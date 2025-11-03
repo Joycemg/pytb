@@ -16,9 +16,17 @@
       'applied' => ['search' => ''],
       'active' => false,
     ];
+    $activeTab = $activeTab ?? 'novedades';
+    $tabCounts = $tabCounts ?? ['novedades' => 0, 'miembros' => 0];
+    $tabQueryDefaults = $tabQueryDefaults ?? [];
 
     $latestPost = $posts->first();
     $latestPublishedAt = optional(optional($latestPost)->published_at)?->timezone(config('app.timezone', 'UTC'));
+
+    $heroTitle = $activeTab === 'miembros' ? 'Miembros' : 'Novedades';
+    $heroSubtitle = $activeTab === 'miembros'
+      ? 'Aportes y reseñas creadas por la comunidad.'
+      : 'Lo último de la taberna, en un vistazo.';
 
     // Opcionales provistos desde el controller
     $topTrend = $topTrend ?? null;               // ['name' => 'LA TABERNA']
@@ -31,8 +39,8 @@
         {{-- IZQUIERDA: título, stats y última publicación --}}
         <div class="blog-hero-copy">
           <p class="blog-hero-eyebrow">Blog de La Taberna</p>
-          <h1 id="blog-hero-title" class="blog-hero-title">Novedades</h1>
-          <p class="blog-hero-subtitle">Lo último de la taberna, en un vistazo.</p>
+          <h1 id="blog-hero-title" class="blog-hero-title">{{ $heroTitle }}</h1>
+          <p class="blog-hero-subtitle">{{ $heroSubtitle }}</p>
 
           <dl class="blog-hero-stats" aria-label="Indicadores del blog">
             <div class="blog-hero-stat">
@@ -51,6 +59,9 @@
             @php
               $hAt = optional($latestPost->published_at)?->timezone(config('app.timezone', 'UTC'));
               $hAuthor = $latestPost->author->name ?? 'Equipo de La Taberna';
+              if ($latestPost->is_community) {
+                $hAuthor = $latestPost->author->name ?? 'Miembro de la comunidad';
+              }
             @endphp
             <a class="blog-hero-highlight"
                href="{{ route('blog.show', ['post' => $latestPost->slug]) }}"
@@ -206,11 +217,64 @@
       {{-- ===== FEED ===== --}}
       <div id="blog-posts" class="blog-main" role="main" aria-describedby="blog-hero-title">
         <div class="blog-feed blog-feed--as-list" aria-live="polite">
-          <ul class="post-list" itemscope itemtype="https://schema.org/Blog">
+          @php
+            $tabs = [
+              'novedades' => [
+                'label' => 'Novedades',
+                'count' => $tabCounts['novedades'] ?? 0,
+              ],
+              'miembros' => [
+                'label' => 'Miembros',
+                'count' => $tabCounts['miembros'] ?? 0,
+              ],
+            ];
+
+            $queryDefaults = collect($tabQueryDefaults)
+              ->filter(fn($value) => $value !== null && $value !== '')
+              ->all();
+          @endphp
+
+          <div class="blog-feed-head">
+            <div class="blog-feed-tabs" role="tablist" aria-label="Tipo de publicaciones">
+              @foreach ($tabs as $tabKey => $tabData)
+                @php
+                  $tabQuery = array_merge(
+                    $queryDefaults,
+                    $tabKey === 'novedades'
+                      ? []
+                      : ['tab' => $tabKey]
+                  );
+                  $tabUrl = route('blog.index', $tabQuery);
+                @endphp
+                <a href="{{ $tabUrl }}"
+                   class="blog-feed-tab {{ $activeTab === $tabKey ? 'is-active' : '' }}"
+                   role="tab"
+                   aria-selected="{{ $activeTab === $tabKey ? 'true' : 'false' }}"
+                   aria-controls="post-list-{{ $tabKey }}">
+                  <span>{{ $tabData['label'] }}</span>
+                  <span class="blog-feed-tab-count">{{ number_format($tabData['count']) }}</span>
+                </a>
+              @endforeach
+            </div>
+
+            @if ($activeTab === 'miembros')
+              <div class="blog-feed-actions">
+                <a class="btn" href="{{ route('blog.community') }}">Ver comunidad</a>
+                @if ($canSubmitCommunity)
+                  <a class="btn btn-primary" href="{{ route('blog.community.create') }}">Publicar mi aporte</a>
+                @endif
+              </div>
+            @endif
+          </div>
+
+          <ul class="post-list" itemscope itemtype="https://schema.org/Blog" id="post-list-{{ $activeTab }}">
             @forelse ($posts as $post)
               @php
                 $publishedAt = $post->published_at?->timezone(config('app.timezone', 'UTC'));
                 $author = $post->author->name ?? 'Equipo de La Taberna';
+                if ($post->is_community) {
+                  $author = $post->author->name ?? 'Miembro de la comunidad';
+                }
               @endphp
 
               <li class="post-row" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
@@ -220,6 +284,10 @@
                   </a>
 
                   <div class="post-row-meta">
+                    @if ($post->is_community)
+                      <span class="post-row-badge">Comunidad</span>
+                      <span class="post-row-sep">·</span>
+                    @endif
                     <span class="post-row-author" itemprop="author">{{ $author }}</span>
                     @if ($publishedAt)
                       <span class="post-row-sep">·</span>
@@ -234,7 +302,12 @@
                   @if ($post->tags->isNotEmpty())
                     <ul class="post-row-tags" aria-label="Etiquetas">
                       @foreach ($post->tags as $tag)
-                        @php $tagQuery = ['q' => '#' . $tag->name]; @endphp
+                        @php
+                          $tagQuery = ['q' => '#' . $tag->name];
+                          if ($activeTab === 'miembros') {
+                            $tagQuery['tab'] = 'miembros';
+                          }
+                        @endphp
                         <li><a class="post-row-tag" href="{{ route('blog.index', $tagQuery) }}">#{{ $tag->name }}</a></li>
                       @endforeach
                     </ul>
@@ -250,14 +323,23 @@
                 @if (!empty($filters['active']) && filled($filters['applied']['search'] ?? ''))
                   No encontramos resultados para “{{ $filters['applied']['search'] }}”.
                 @else
-                  Todavía no hay publicaciones.
+                  @if ($activeTab === 'miembros')
+                    Aún no hay aportes publicados.
+                    @if ($canSubmitCommunity)
+                      <a class="post-list-empty-link" href="{{ route('blog.community.create') }}">Compartí el primero</a>.
+                    @else
+                      <a class="post-list-empty-link" href="{{ route('blog.community') }}">Conocé cómo participar</a>.
+                    @endif
+                  @else
+                    Todavía no hay publicaciones.
+                  @endif
                 @endif
               </li>
             @endforelse
           </ul>
 
           <div class="blog-pagination">
-            {{ $posts->links() }}
+            {{ $posts->appends($activeTab === 'miembros' ? ['tab' => 'miembros'] : [])->links() }}
           </div>
         </div>
 

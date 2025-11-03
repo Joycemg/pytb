@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Concerns\BlogFilterHelpers;
 use App\Http\Requests\BlogPostRequest;
+use App\Http\Requests\CommunityBlogPostRequest;
 use App\Models\BlogAttachment;
 use App\Models\BlogPost;
 use App\Models\BlogTag;
@@ -37,15 +38,31 @@ final class BlogController extends Controller
             $displaySearch = '#' . ltrim($rawFilters['tag'], '#');
         }
 
-        $query = BlogPost::query()
+        $activeTab = $request->query('tab', 'novedades');
+        if (!in_array($activeTab, ['novedades', 'miembros'], true)) {
+            $activeTab = 'novedades';
+        }
+
+        $officialQuery = BlogPost::query()
             ->published()
+            ->where('is_community', false)
             ->latest('published_at')
             ->with(['author', 'tags']);
 
-        $this->applyBlogFilters($query, $normalizedFilters);
+        $communityQuery = BlogPost::query()
+            ->published()
+            ->community()
+            ->latest('published_at')
+            ->with(['author', 'tags']);
+
+        $this->applyBlogFilters($officialQuery, $normalizedFilters);
+        $this->applyBlogFilters($communityQuery, $normalizedFilters);
+
+        $officialCount = (clone $officialQuery)->count();
+        $communityCount = (clone $communityQuery)->count();
 
         /** @var LengthAwarePaginator $posts */
-        $posts = $query
+        $posts = ($activeTab === 'miembros' ? $communityQuery : $officialQuery)
             ->paginate(10)
             ->withQueryString();
 
@@ -108,6 +125,13 @@ final class BlogController extends Controller
 
         $topContributor = $this->topContributor(); // ['author' => User, 'count' => int] | null
 
+        $canSubmitCommunity = $request->user()?->can('createCommunity', BlogPost::class) ?? false;
+
+        $tabQueryDefaults = array_filter([
+            'q' => $rawFilters['q'],
+            'tag' => $rawFilters['tag'],
+        ], fn($value) => $value !== null && $value !== '');
+
         if ($request->wantsJson()) {
             return response()->json([
                 'data' => $posts->getCollection()->map(function (BlogPost $post) {
@@ -147,6 +171,13 @@ final class BlogController extends Controller
                     'applied' => ['search' => $normalizedFilters['search']],
                     'active' => $this->blogFiltersAreActive($normalizedFilters),
                 ],
+                'tab' => [
+                    'active' => $activeTab,
+                    'counts' => [
+                        'novedades' => $officialCount,
+                        'miembros' => $communityCount,
+                    ],
+                ],
                 // JSON también expone estos dos
                 'top_tag' => $topTag ? [
                     'id' => (int) $topTag->id,
@@ -179,10 +210,17 @@ final class BlogController extends Controller
             'suggestedTags' => $suggestedTags,  // 1 tag (top)
             'topTag' => $topTag,
             'topContributor' => $topContributor,
+            'canSubmitCommunity' => $canSubmitCommunity,
+            'activeTab' => $activeTab,
+            'tabCounts' => [
+                'novedades' => $officialCount,
+                'miembros' => $communityCount,
+            ],
+            'tabQueryDefaults' => $tabQueryDefaults,
         ]);
     }
 
-    public function show(BlogPost $post): View
+    public function show(Request $request, BlogPost $post): View
     {
         if ($post->published_at === null || $post->published_at->isFuture()) {
             $user = auth()->user();
@@ -191,9 +229,196 @@ final class BlogController extends Controller
             }
         }
 
+        $post->load(['author', 'attachments', 'tags']);
+
+        $comments = $post->comments()
+            ->with(['author'])
+            ->latest('created_at')
+            ->get();
+
+        $ratingRow = $post->comments()
+            ->whereNotNull('rating')
+            ->selectRaw('COUNT(*) as c, AVG(rating) as avg_rating')
+            ->first();
+
+        $ratingAverage = $ratingRow?->avg_rating ? round((float) $ratingRow->avg_rating, 1) : 0.0;
+        $ratingCount = (int) ($ratingRow->c ?? 0);
+        $ratingFull = (int) floor($ratingAverage);
+        $ratingPartial = max(0, min(1, $ratingAverage - $ratingFull));
+
+        $userComment = null;
+        $user = $request->user();
+        if ($user !== null) {
+            $userComment = $comments->firstWhere('user_id', $user->id);
+        }
+
+        $canComment = false;
+        if ($user !== null) {
+            $canComment = method_exists($user, 'estaAprobado') ? (bool) $user->estaAprobado() : true;
+        }
+
         return view('blog.show', [
-            'post' => $post->load(['author', 'attachments', 'tags']),
+            'post' => $post,
+            'comments' => $comments,
+            'userComment' => $userComment,
+            'canComment' => $canComment,
+            'ratingSummary' => [
+                'average' => $ratingAverage,
+                'count' => $ratingCount,
+                'full' => $ratingFull,
+                'partial' => $ratingPartial,
+            ],
         ]);
+    }
+
+    public function community(Request $request): View
+    {
+        $rawFilters = [
+            'q' => trim((string) $request->query('q', '')),
+            'tag' => trim((string) $request->query('tag', '')),
+        ];
+
+        $normalizedFilters = $this->normalizeBlogFilters($rawFilters);
+        $displaySearch = $rawFilters['q'];
+        if ($displaySearch === '' && $rawFilters['tag'] !== '') {
+            $displaySearch = '#' . ltrim($rawFilters['tag'], '#');
+        }
+
+        $query = BlogPost::query()
+            ->published()
+            ->community()
+            ->latest('published_at')
+            ->with(['author', 'tags']);
+
+        $this->applyBlogFilters($query, $normalizedFilters);
+
+        /** @var LengthAwarePaginator $posts */
+        $posts = $query
+            ->paginate(12)
+            ->withQueryString();
+
+        return view('blog.community.index', [
+            'posts' => $posts,
+            'filters' => [
+                'input' => ['q' => $displaySearch],
+                'applied' => ['search' => $normalizedFilters['search']],
+                'active' => $this->blogFiltersAreActive($normalizedFilters),
+            ],
+            'canSubmit' => $request->user()?->can('createCommunity', BlogPost::class) ?? false,
+        ]);
+    }
+
+    public function communityCreate(): View
+    {
+        $this->authorize('createCommunity', BlogPost::class);
+
+        return view('blog.community.form', [
+            'post' => new BlogPost(['is_community' => true]),
+            'availableTags' => $this->availableTagsForForm(),
+            'mode' => 'create',
+        ]);
+    }
+
+    public function communityStore(CommunityBlogPostRequest $request): RedirectResponse
+    {
+        $this->authorize('createCommunity', BlogPost::class);
+
+        $data = $request->validated();
+
+        $post = new BlogPost();
+        $post->title = (string) $data['title'];
+        $post->excerpt = $data['excerpt'] ?? null;
+        $post->content = $this->sanitizeHtml($data['content'] ?? '');
+        $post->is_community = true;
+        $post->user_id = (int) $request->user()->id;
+        $post->published_at = null;
+        $post->approved_at = null;
+        $post->approved_by = null;
+        $post->save();
+
+        $this->syncTags($post, $request);
+
+        return redirect()
+            ->route('blog.community.mine')
+            ->with('status', 'Tu aporte se envió para revisión.');
+    }
+
+    public function communityMine(Request $request): View
+    {
+        $this->authorize('createCommunity', BlogPost::class);
+
+        $posts = BlogPost::query()
+            ->where('user_id', $request->user()->id)
+            ->where('is_community', true)
+            ->latest('created_at')
+            ->paginate(15);
+
+        return view('blog.community.mine', [
+            'posts' => $posts,
+        ]);
+    }
+
+    public function communityEdit(BlogPost $post): View
+    {
+        if (!$post->is_community) {
+            abort(404);
+        }
+
+        $this->authorize('update', $post);
+
+        if ($post->approved_at !== null) {
+            abort(403, 'El aporte ya fue aprobado.');
+        }
+
+        return view('blog.community.form', [
+            'post' => $post->load(['tags']),
+            'availableTags' => $this->availableTagsForForm(),
+            'mode' => 'edit',
+        ]);
+    }
+
+    public function communityUpdate(CommunityBlogPostRequest $request, BlogPost $post): RedirectResponse
+    {
+        if (!$post->is_community) {
+            abort(404);
+        }
+
+        $this->authorize('update', $post);
+
+        if ($post->approved_at !== null) {
+            abort(403, 'El aporte ya fue aprobado.');
+        }
+
+        $data = $request->validated();
+        $post->title = (string) $data['title'];
+        $post->excerpt = $data['excerpt'] ?? null;
+        $post->content = $this->sanitizeHtml($data['content'] ?? '');
+        $post->save();
+
+        $this->syncTags($post, $request);
+
+        return redirect()
+            ->route('blog.community.mine')
+            ->with('status', 'Aporte actualizado.');
+    }
+
+    public function communityDestroy(BlogPost $post): RedirectResponse
+    {
+        if (!$post->is_community) {
+            abort(404);
+        }
+
+        $this->authorize('delete', $post);
+
+        if ($post->approved_at !== null) {
+            abort(403, 'El aporte ya fue aprobado.');
+        }
+
+        $this->deletePost($post);
+
+        return redirect()
+            ->route('blog.community.mine')
+            ->with('status', 'Aporte eliminado.');
     }
 
     public function manage(): View
@@ -201,13 +426,19 @@ final class BlogController extends Controller
         $this->authorize('viewAny', BlogPost::class);
 
         $posts = BlogPost::query()
-            ->with(['author'])
+            ->with(['author', 'approver'])
+            ->orderByRaw('CASE WHEN is_community = 1 AND approved_at IS NULL THEN 0 ELSE 1 END')
             ->orderByDesc('published_at')
             ->orderByDesc('created_at')
             ->paginate(20);
 
+        $pendingCount = BlogPost::query()
+            ->pendingApproval()
+            ->count();
+
         return view('blog.manage.index', [
             'posts' => $posts,
+            'pendingCount' => $pendingCount,
         ]);
     }
 
@@ -293,12 +524,7 @@ final class BlogController extends Controller
     {
         $this->authorize('delete', $post);
 
-        foreach ($post->attachments as $attachment) {
-            Storage::disk('public')->delete($attachment->path);
-            $attachment->delete();
-        }
-
-        $post->delete();
+        $this->deletePost($post);
 
         return redirect()
             ->route('blog.manage')
@@ -319,6 +545,47 @@ final class BlogController extends Controller
         return redirect()
             ->route('blog.edit', $post)
             ->with('status', 'Archivo eliminado.');
+    }
+
+    private function deletePost(BlogPost $post): void
+    {
+        foreach ($post->attachments as $attachment) {
+            Storage::disk('public')->delete($attachment->path);
+            $attachment->delete();
+        }
+
+        $post->delete();
+    }
+
+    public function approve(Request $request, BlogPost $post): RedirectResponse
+    {
+        if (!$post->is_community) {
+            abort(404);
+        }
+
+        $this->authorize('review', $post);
+
+        if ($post->approved_at !== null) {
+            return redirect()
+                ->route('blog.manage')
+                ->with('status', 'El aporte ya estaba aprobado.');
+        }
+
+        $post->approved_at = now();
+        $post->approved_by = (int) $request->user()->id;
+
+        if ($post->published_at === null || $post->published_at->isFuture()) {
+            $post->published_at = now();
+        }
+
+        $post->save();
+
+        Cache::forget('blog.top_tag');
+        Cache::forget('blog.top_contributor_row');
+
+        return redirect()
+            ->route('blog.manage')
+            ->with('status', 'Aporte aprobado y publicado.');
     }
 
     /**
