@@ -110,19 +110,19 @@
         justify-content: center;
         width: 2.5rem;
         height: 2.5rem;
-        border-radius: .5rem;
+        border-radius: 0;
         border: 0;
-        background: #0f172a;
+        background: #7b1d26;
         color: #fff;
         cursor: pointer;
-        box-shadow: 0 4px 12px rgba(15, 23, 42, .18);
+        box-shadow: 0 4px 12px rgba(123, 29, 38, .24);
         transition: background-color .2s ease, box-shadow .2s ease;
     }
 
     .blog-filter-input-action:hover,
     .blog-filter-input-action:focus-visible {
-        background: #1e293b;
-        box-shadow: 0 6px 16px rgba(15, 23, 42, .22);
+        background: #5c141b;
+        box-shadow: 0 6px 16px rgba(92, 20, 27, .28);
     }
 
     .blog-filter-input-icon {
