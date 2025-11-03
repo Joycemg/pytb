@@ -70,3 +70,40 @@
     border-radius: 8px;
     padding: .7rem .9rem;
 }
+
+summary::-webkit-details-marker {
+    display: none;
+}
+
+summary::marker {
+    content: none;
+}
+
+/* ===== Flecha personalizada junto al contador del AÑO ===== */
+.blog-history-year-count-inline {
+    display: inline-flex !important;
+    align-items: center;
+    gap: .35rem;
+    /* espacio entre flecha y (2) */
+}
+
+/* Flecha antes del (2) */
+.blog-history-year-count-inline::after {
+    content: "▸";
+    /* podés usar "›" o "▶" si preferís */
+    display: inline-block;
+    line-height: 1;
+    transform: translateY(1px) rotate(0deg);
+    transition: transform .2s ease;
+    opacity: .85;
+}
+
+/* Al abrir el año, rotamos la flecha */
+.blog-history-year[open] .blog-history-year-count-inline::after {
+    transform: translateY(1px) rotate(90deg);
+}
+
+/* (Opcional) más contraste al hover del summary del año */
+.blog-history-year-summary:hover .blog-history-year-count-inline::after {
+    opacity: 1;
+}
