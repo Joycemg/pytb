@@ -51,7 +51,6 @@
             <div class="blog-filter-input">
               <input id="filter-search" type="search" name="q"
                      value="{{ $filters['input']['q'] ?? '' }}"
-                     placeholder="Escribí algo como torneo, #evento o Juan"
                      autocomplete="off"
                      class="blog-filter-input-control" />
               <button type="submit" class="blog-filter-input-action" aria-label="Buscar">
