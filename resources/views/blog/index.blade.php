@@ -163,7 +163,7 @@
                                aria-expanded="{{ $loop->first && $isFirstYear ? 'true' : 'false' }}">
                         <span class="blog-history-month-name">{{ $monthLabel }}</span>
                         <span class="blog-history-month-count"
-                              aria-label="Publicaciones en {{ $monthLabel }}">{{ $monthTotal }}</span>
+                              aria-label="Publicaciones en {{ $monthLabel }}">({{ $monthTotal }})</span>
                       </summary>
 
                       @if ($monthTotal > 0)
