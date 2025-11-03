@@ -58,17 +58,10 @@
     padding-top: 0;
 }
 
-/* SUMMARY del año con marker nativo a la derecha
-   - list-item para mantener marker
-   - direction: rtl lleva marker a la derecha
-   - el contenido interno vuelve a LTR por clase */
+/* SUMMARY del año con caret personalizado junto al contador */
 details.blog-history-year>summary.blog-history-year-summary {
-    display: list-item !important;
-    /* asegura marker nativo */
-    list-style: disclosure-closed;
-    /* triángulo cerrado */
-    direction: rtl;
-    /* marker a la derecha */
+    display: block;
+    list-style: none;
     white-space: nowrap;
     /* evitar cortes raros */
     line-height: 1.25;
@@ -83,17 +76,12 @@ details.blog-history-year>summary.blog-history-year-summary {
     transition: background-color .15s ease, box-shadow .15s ease;
 }
 
-details.blog-history-year[open]>summary.blog-history-year-summary {
-    list-style: disclosure-open;
-}
-
-/* Asegurar que NUNCA se oculte el marker nativo (Safari/WebKit) */
 details.blog-history-year>summary.blog-history-year-summary::-webkit-details-marker {
-    display: inline-block !important;
+    display: none;
 }
 
 details.blog-history-year>summary.blog-history-year-summary::marker {
-    content: normal !important;
+    content: '';
 }
 
 /* Hover/focus visibles del año */
@@ -108,8 +96,10 @@ details.blog-history-year>summary.blog-history-year-summary::marker {
 /* Título y contador del año (forzamos LTR para texto) */
 .blog-history-year-title {
     margin: 0 !important;
-    display: inline !important;
+    display: inline-flex !important;
     direction: ltr;
+    align-items: center;
+    gap: .35rem;
     white-space: nowrap;
     font-size: 1.05rem;
     font-weight: 800;
@@ -120,7 +110,9 @@ details.blog-history-year>summary.blog-history-year-summary::marker {
 
 .blog-history-year-count-inline {
     direction: ltr;
-    display: inline !important;
+    display: inline-flex !important;
+    align-items: center;
+    gap: .35rem;
     font-weight: 700;
     font-size: .95rem;
     color: color-mix(in srgb, var(--ink, #2b2a28) 70%, transparent);
@@ -129,11 +121,20 @@ details.blog-history-year>summary.blog-history-year-summary::marker {
     vertical-align: middle;
 }
 
-/* Quitar cualquier caret artificial que algún reset haya agregado */
-.blog-history-year-summary::after,
-.blog-history-year-title::after,
 .blog-history-year-count-inline::after {
-    content: none !important;
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 7px solid color-mix(in srgb, var(--ink, #2b2a28) 55%, transparent);
+    transition: transform .18s ease;
+    transform-origin: center;
+}
+
+.blog-history-year[open] .blog-history-year-count-inline::after {
+    transform: rotate(90deg);
 }
 
 /* Aparición suave del cuerpo del año */
