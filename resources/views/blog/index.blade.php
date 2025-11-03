@@ -48,14 +48,15 @@
         <form method="get" action="{{ route('blog.index') }}" class="blog-hero-search" role="search" aria-label="Buscar publicaciones">
           <div class="blog-filter-field blog-filter-field--search">
             <label for="filter-search">Buscá por título, etiqueta o autor</label>
-            <div class="blog-filter-control">
+            <div class="blog-filter-input">
               <input id="filter-search" type="search" name="q"
                      value="{{ $filters['input']['q'] ?? '' }}"
                      placeholder="Escribí algo como torneo, #evento o Juan"
-                     autocomplete="off" />
-              <button type="submit" class="btn sm blog-filter-submit" aria-label="Buscar">
+                     autocomplete="off"
+                     class="blog-filter-input-control" />
+              <button type="submit" class="blog-filter-input-action" aria-label="Buscar">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
-                     class="blog-filter-submit-icon">
+                     class="blog-filter-input-icon">
                   <path fill-rule="evenodd"
                         d="M9 3.5a5.5 5.5 0 1 1-3.478 9.756l-2.384 2.384a.75.75 0 0 1-1.06-1.06l2.384-2.384A5.5 5.5 0 0 1 9 3.5Zm0 1.5a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"
                         clip-rule="evenodd" />
