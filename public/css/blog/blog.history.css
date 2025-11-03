@@ -80,10 +80,6 @@ details.blog-history-year>summary.blog-history-year-summary::-webkit-details-mar
     display: none;
 }
 
-details.blog-history-year>summary.blog-history-year-summary::marker {
-    content: '';
-}
-
 /* Hover/focus visibles del año */
 .blog-history-year-summary:hover {
     background: color-mix(in srgb, var(--brand, #8c2e2e) 10%, #fff);
