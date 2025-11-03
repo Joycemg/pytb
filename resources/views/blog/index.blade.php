@@ -4,7 +4,8 @@
 @section('title', 'Blog')
 
 @push('head')
-  <link rel="stylesheet" href="/assets/blog-history.css">
+  <link rel="stylesheet" href="/css/blog-history.css">
+  <link rel="stylesheet" href="/css/blog-hero-filter.css">
 @endpush
 
 @section('content')
@@ -18,12 +19,16 @@
 
     $latestPost = $posts->first();
     $latestPublishedAt = optional(optional($latestPost)->published_at)?->timezone(config('app.timezone', 'UTC'));
-    $suggestedTags = ($suggestedTags ?? collect())->filter(fn($tag) => !empty($tag['name'] ?? ''));
+
+    // Opcionales provistos desde el controller
+    $topTrend = $topTrend ?? null;               // ['name' => 'LA TABERNA']
+    $topContributor = $topContributor ?? null;   // ['name'=>'Marcelo','avatar'=>url,'count'=>2]
   @endphp
 
   <div class="page container blog-list" itemscope itemtype="https://schema.org/Blog">
     <header class="blog-hero" aria-labelledby="blog-hero-title">
       <div class="blog-hero-content">
+        {{-- IZQUIERDA: título, stats y última publicación --}}
         <div class="blog-hero-copy">
           <p class="blog-hero-eyebrow">Blog de La Taberna</p>
           <h1 id="blog-hero-title" class="blog-hero-title">Novedades</h1>
@@ -34,7 +39,6 @@
               <dt>Publicaciones</dt>
               <dd>{{ number_format($posts->total()) }}</dd>
             </div>
-
             @if ($latestPublishedAt)
               <div class="blog-hero-stat">
                 <dt>Última actualización</dt>
@@ -42,87 +46,96 @@
               </div>
             @endif
           </dl>
+
+          @if (!$filters['active'] && $latestPost)
+            @php
+              $hAt = optional($latestPost->published_at)?->timezone(config('app.timezone', 'UTC'));
+              $hAuthor = $latestPost->author->name ?? 'Equipo de La Taberna';
+            @endphp
+            <a class="blog-hero-highlight"
+               href="{{ route('blog.show', ['post' => $latestPost->slug]) }}"
+               aria-label="Última publicación: {{ $latestPost->title }}">
+              <div class="blog-hero-highlight-body">
+                <span class="blog-hero-highlight-label">Última publicación</span>
+                <div class="blog-hero-highlight-header">
+                  <span class="blog-hero-highlight-title">
+                    {{ $latestPost->title }}
+                    <span class="blog-hero-highlight-title-meta">
+                      por {{ $hAuthor }}
+                      @if ($hAt)
+                        <span class="blog-hero-highlight-title-sep" aria-hidden="true">-</span>
+                        <time datetime="{{ $hAt->toIso8601String() }}">{{ $hAt->format('d/m/y, H:i') }}</time>
+                      @endif
+                    </span>
+                  </span>
+                </div>
+              </div>
+            </a>
+          @endif
         </div>
 
-        {{-- Buscador --}}
-        <form method="get" action="{{ route('blog.index') }}" class="blog-hero-search" role="search" aria-label="Buscar publicaciones">
-          <div class="blog-filter-field blog-filter-field--search">
-            <label for="filter-search">Buscá por título, etiqueta o autor</label>
-            <div class="blog-filter-input">
-              <input id="filter-search" type="search" name="q"
-                     value="{{ $filters['input']['q'] ?? '' }}"
-                     autocomplete="off"
-                     class="blog-filter-input-control" />
-              <button type="submit" class="blog-filter-input-action" aria-label="Buscar">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"
-                     class="blog-filter-input-icon">
-                  <path fill-rule="evenodd"
-                        d="M9 3.5a5.5 5.5 0 1 1-3.478 9.756l-2.384 2.384a.75.75 0 0 1-1.06-1.06l2.384-2.384A5.5 5.5 0 0 1 9 3.5Zm0 1.5a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z"
-                        clip-rule="evenodd" />
-                </svg>
-              </button>
+        {{-- DERECHA: buscador + tendencia + top contributor --}}
+        <div class="blog-hero-side">
+          <form method="get" action="{{ route('blog.index') }}" class="blog-hero-search" role="search" aria-label="Buscar publicaciones">
+            <div class="blog-filter-field blog-filter-field--search">
+              <label for="filter-search">Buscá por título, etiqueta o autor</label>
+              <div class="blog-filter-input">
+                <input id="filter-search" type="search" name="q"
+                       value="{{ $filters['input']['q'] ?? '' }}"
+                       autocomplete="off"
+                       class="blog-filter-input-control" />
+                <button type="submit" class="blog-filter-input-action" aria-label="Buscar">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="blog-filter-input-icon">
+                    <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 1-3.478 9.756l-2.384 2.384a.75.75 0 0 1-1.06-1.06l2.384-2.384A5.5 5.5 0 0 1 9 3.5Zm0 1.5a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" clip-rule="evenodd"/>
+                  </svg>
+                </button>
+              </div>
             </div>
-          </div>
 
-          @if (!empty($filters['active']))
-            <div class="blog-filter-actions">
-              <a class="blog-filter-reset" href="{{ route('blog.index') }}">Limpiar</a>
+            @if (!empty($filters['active']))
+              <div class="blog-filter-actions">
+                <a class="blog-filter-reset" href="{{ route('blog.index') }}">Limpiar</a>
+              </div>
+            @endif
+          </form>
+
+          @if (empty($filters['active']) && is_array($topTrend) && !empty($topTrend['name'] ?? ''))
+            <div class="blog-filter-suggestion blog-filter-suggestion--in-hero" aria-label="Tendencia">
+              <span class="blog-filter-suggestion-label">Tendencia</span>
+              <a class="blog-filter-suggestion-btn" href="{{ route('blog.index', ['q' => '#'.ltrim($topTrend['name'], '#')]) }}">
+                #{{ ltrim($topTrend['name'], '#') }}
+              </a>
             </div>
           @endif
-        </form>
+
+          @if (is_array($topContributor) && !empty($topContributor['name'] ?? ''))
+            <div class="blog-top-contributor" aria-label="Miembro que más aportó">
+              <span class="btc-label">Miembro que más aportó</span>
+              <div class="btc-avatar" aria-hidden="true">
+                @if (!empty($topContributor['avatar'] ?? null))
+                  <img src="{{ $topContributor['avatar'] }}" alt="">
+                @else
+                  <div class="btc-avatar-fallback">👤</div>
+                @endif
+              </div>
+              <span class="btc-name">{{ $topContributor['name'] }}</span>
+              @if (!empty($topContributor['count']))
+                <span class="btc-count">— {{ (int) $topContributor['count'] }} aportes</span>
+              @endif
+            </div>
+          @endif
+        </div>
       </div>
 
-      {{-- Highlight debajo del hero --}}
-      @if (!$filters['active'] && $latestPost)
-        @php
-          $highlightPublishedAt = optional($latestPost->published_at)?->timezone(config('app.timezone', 'UTC'));
-          $highlightAuthor = $latestPost->author->name ?? 'Equipo de La Taberna';
-        @endphp
-
-        <a class="blog-hero-highlight"
-           href="{{ route('blog.show', ['post' => $latestPost->slug]) }}"
-           aria-label="Última publicación: {{ $latestPost->title }}">
-          <div class="blog-hero-highlight-body">
-            <span class="blog-hero-highlight-label">Última publicación</span>
-            <div class="blog-hero-highlight-header">
-              <span class="blog-hero-highlight-title">
-                {{ $latestPost->title }}
-                <span class="blog-hero-highlight-title-meta">
-                  por {{ $highlightAuthor }}
-                  @if ($highlightPublishedAt)
-                    <span class="blog-hero-highlight-title-sep" aria-hidden="true">-</span>
-                    <time datetime="{{ $highlightPublishedAt->toIso8601String() }}">
-                      {{ $highlightPublishedAt->format('d/m/y, H:i') }}
-                    </time>
-                  @endif
-                </span>
-              </span>
-            </div>
-          </div>
-        </a>
-      @endif
-
-      {{-- Filtros / tendencias --}}
       @if (!empty($filters['active']) && filled($filters['applied']['search'] ?? ''))
         <div class="blog-filter-meta">
           <div class="blog-filter-active" role="status" aria-live="polite">
-            <span class="blog-filter-chip">Mostrando resultados para
-              <strong>{{ $filters['applied']['search'] }}</strong></span>
+            <span class="blog-filter-chip">Mostrando resultados para <strong>{{ $filters['applied']['search'] }}</strong></span>
             <a class="blog-filter-reset" href="{{ route('blog.index') }}">Quitar filtro</a>
           </div>
         </div>
       @endif
     </header>
-
-    @if (empty($filters['active']) && $suggestedTags->isNotEmpty())
-      <div class="blog-filter-suggestion blog-filter-suggestion--below" aria-label="Tendencias">
-        <span class="blog-filter-suggestion-label">Tendencias</span>
-        @foreach ($suggestedTags as $tag)
-          @php $tagQuery = ['q' => '#' . ltrim($tag['name'], '#')]; @endphp
-          <a class="blog-filter-suggestion-btn" href="{{ route('blog.index', $tagQuery) }}">#{{ $tag['name'] }}</a>
-        @endforeach
-      </div>
-    @endif
 
     <div class="blog-layout">
       {{-- ===== HISTORIAL ===== --}}
@@ -139,15 +152,10 @@
               @endphp
 
               <details class="blog-history-year" {{ $isFirstYear ? 'open' : '' }}>
-                <summary class="blog-history-year-summary"
-                         id="y-{{ $yearGroup['year'] }}"
-                         role="button"
-                         aria-expanded="{{ $isFirstYear ? 'true' : 'false' }}">
+                <summary class="blog-history-year-summary" id="y-{{ $yearGroup['year'] }}" role="button" aria-expanded="{{ $isFirstYear ? 'true' : 'false' }}">
                   <h3 class="blog-history-year-title">
                     {{ $yearGroup['year'] }}
-                    <span class="blog-history-year-count-inline">
-                      ({{ $yearTotal }})
-                    </span>
+                    <span class="blog-history-year-count-inline">({{ $yearTotal }})</span>
                   </h3>
                 </summary>
 
@@ -160,12 +168,9 @@
                     @endphp
 
                     <details class="blog-history-month" {{ $loop->first && $isFirstYear ? 'open' : '' }}>
-                      <summary class="blog-history-month-summary"
-                               role="button"
-                               aria-expanded="{{ $loop->first && $isFirstYear ? 'true' : 'false' }}">
+                      <summary class="blog-history-month-summary" role="button" aria-expanded="{{ $loop->first && $isFirstYear ? 'true' : 'false' }}">
                         <span class="blog-history-month-name">{{ $monthLabel }}</span>
-                        <span class="blog-history-month-count"
-                              aria-label="Publicaciones en {{ $monthLabel }}">({{ $monthTotal }})</span>
+                        <span class="blog-history-month-count" aria-label="Publicaciones en {{ $monthLabel }}">({{ $monthTotal }})</span>
                       </summary>
 
                       @if ($monthTotal > 0)
@@ -173,8 +178,7 @@
                           @foreach ($postsInMonth as $historyPost)
                             @php $historyDate = optional($historyPost['published_at']); @endphp
                             <li class="blog-history-item">
-                              <a href="{{ route('blog.show', ['post' => $historyPost['slug']]) }}"
-                                 class="blog-history-link">
+                              <a href="{{ route('blog.show', ['post' => $historyPost['slug']]) }}" class="blog-history-link">
                                 <span class="blog-history-post-title">{{ $historyPost['title'] }}</span>
                                 @if ($historyDate)
                                   <time class="blog-history-post-date" datetime="{{ $historyDate->toDateString() }}">
@@ -199,7 +203,7 @@
         @endif
       </aside>
 
-      {{-- ===== FEED (lista) ===== --}}
+      {{-- ===== FEED ===== --}}
       <div id="blog-posts" class="blog-main" role="main" aria-describedby="blog-hero-title">
         <div class="blog-feed blog-feed--as-list" aria-live="polite">
           <ul class="post-list" itemscope itemtype="https://schema.org/Blog">
@@ -211,8 +215,7 @@
 
               <li class="post-row" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
                 <div class="post-row-left">
-                  <a href="{{ route('blog.show', ['post' => $post->slug]) }}"
-                     class="post-row-title" itemprop="headline">
+                  <a href="{{ route('blog.show', ['post' => $post->slug]) }}" class="post-row-title" itemprop="headline">
                     {{ $post->title }}
                   </a>
 
@@ -220,16 +223,12 @@
                     <span class="post-row-author" itemprop="author">{{ $author }}</span>
                     @if ($publishedAt)
                       <span class="post-row-sep">·</span>
-                      <time datetime="{{ $publishedAt->toIso8601String() }}" itemprop="datePublished">
-                        {{ $publishedAt->format('d/m/y, H:i') }}
-                      </time>
+                      <time datetime="{{ $publishedAt->toIso8601String() }}" itemprop="datePublished">{{ $publishedAt->format('d/m/y, H:i') }}</time>
                     @endif
                   </div>
 
                   @if (filled($post->excerpt_computed))
-                    <p class="post-row-excerpt" itemprop="description">
-                      {{ $post->excerpt_computed }}
-                    </p>
+                    <p class="post-row-excerpt" itemprop="description">{{ $post->excerpt_computed }}</p>
                   @endif
 
                   @if ($post->tags->isNotEmpty())
@@ -262,7 +261,6 @@
           </div>
         </div>
 
-        {{-- CTA inferior --}}
         <section class="blog-cta blog-cta--compact" aria-label="Usá La Taberna como app">
           <div class="blog-cta-icon" aria-hidden="true">📱</div>
           <div class="blog-cta-content">
@@ -275,7 +273,6 @@
     </div>
   </div>
 
-  {{-- JS inline: accesible y sincroniza aria-expanded --}}
   <script>
     (function () {
       function initSummaries(summarySelector, detailsSelector) {
@@ -310,7 +307,6 @@
         });
       }
 
-      // Años y meses
       initSummaries('.blog-history-year > .blog-history-year-summary', '.blog-history-year');
       initSummaries('.blog-history-month > .blog-history-month-summary', '.blog-history-month');
     })();

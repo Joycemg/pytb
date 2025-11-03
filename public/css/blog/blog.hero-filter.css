@@ -1,19 +1,13 @@
 @layer components {
 
-    /* =======================================================
-     HERO a la IZQUIERDA (+ variables con fallback de ancho)
-     ======================================================= */
-
-    /* Si --blog-hero-max no existe, usamos el clamp como fallback */
+    /* ===== HERO contenedor ===== */
     .blog-hero {
         max-width: var(--blog-hero-max, clamp(560px, 82vw, 760px)) !important;
         width: 100%;
-        /* alineado a la IZQUIERDA del contenedor */
         margin: 1.25rem 0 1rem;
         margin-left: 0 !important;
         margin-right: auto !important;
         place-self: start;
-        /* por si está dentro de grid */
         padding: clamp(1rem, 2.5vw, 1.75rem);
         border-radius: 20px;
         border: 1px solid #e2e8f0;
@@ -26,21 +20,23 @@
         content: none;
     }
 
+    /* === 2 columnas compactas === */
     .blog-hero-content {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
+        display: grid;
+        grid-template-columns: 1fr 22rem;
+        /* derecha más angosta */
+        align-items: start;
+        gap: 1.25rem;
     }
 
-    @media (min-width: 62em) {
+    @media (max-width:62em) {
         .blog-hero-content {
-            flex-direction: row;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 2rem;
+            grid-template-columns: 1fr;
+            gap: 1rem;
         }
     }
 
+    /* Izquierda */
     .blog-hero-copy {
         display: flex;
         flex-direction: column;
@@ -71,17 +67,11 @@
         color: #475569;
     }
 
-    .blog-hero-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: .85rem;
-    }
-
     .blog-hero-stats {
         display: flex;
         flex-wrap: wrap;
-        gap: .4rem .85rem;
-        margin: .5rem 0 0;
+        gap: .3rem .7rem;
+        margin: .35rem 0 0;
         padding: 0;
         font-size: .8rem;
     }
@@ -112,14 +102,12 @@
         color: #1f2937;
     }
 
-    /* =========================
-     Highlight debajo del copy
-     ========================= */
+    /* Última publicación (pegada a stats) */
     .blog-hero-highlight {
-        margin-top: .75rem;
+        margin-top: .25rem;
         display: flex;
         width: 100%;
-        max-width: 25rem;
+        max-width: 42rem;
         flex-direction: column;
         gap: .6rem;
         padding: .7rem .95rem;
@@ -191,74 +179,22 @@
         font-weight: 600;
     }
 
-    .blog-hero-highlight-cta {
-        display: inline-flex;
-        align-items: center;
-        gap: .35rem;
-        font-size: .8rem;
-        font-weight: 600;
-        color: #334155;
-    }
-
-    .blog-hero-highlight-cta::after {
-        content: "→";
-        font-size: .9em;
-        transition: transform .2s;
-    }
-
-    .blog-hero-highlight:hover .blog-hero-highlight-cta::after,
-    .blog-hero-highlight:focus-visible .blog-hero-highlight-cta::after {
-        transform: translateX(2px);
-    }
-
-    @media (min-width: 62em) {
-        .blog-hero-highlight {
-            flex-direction: row;
-            align-items: center;
-        }
-
-        .blog-hero-highlight-cta {
-            align-self: stretch;
-        }
-    }
-
-    /* ==============================================
-     Columna derecha: buscador compacto dentro del hero
-     ============================================== */
-    .blog-hero-search {
-        margin-top: .75rem;
+    /* Derecha */
+    .blog-hero-side {
         display: flex;
         flex-direction: column;
+        align-items: stretch;
         gap: .5rem;
+    }
+
+    /* Buscador compacto */
+    .blog-hero-search {
+        margin-top: 0;
         width: 100%;
-        max-width: 24rem;
-    }
-
-    @media (min-width: 48em) {
-        .blog-hero-search {
-            width: 16rem;
-        }
-    }
-
-    /* =================
-     FORM / FILTER UI
-     ================= */
-    .blog-filter-form {
-        margin: 0;
-        padding: 1.5rem 1.75rem;
-        border-radius: 24px;
-        border: 1px solid #e2e8f0;
-        background: #fff;
-        box-shadow: 0 10px 30px rgba(15, 23, 42, .12);
+        max-width: 20rem;
+        gap: .35rem;
         display: flex;
         flex-direction: column;
-        gap: 1.75rem;
-
-    }
-
-    .blog-filter-grid {
-        display: grid;
-        gap: 1.2rem;
     }
 
     .blog-filter-field {
@@ -267,59 +203,39 @@
         gap: .5rem;
     }
 
-    .blog-filter-field label {
-        font-size: .85rem;
-        font-weight: 600;
-        color: #475569;
-    }
-
-    .blog-filter-field input,
-    .blog-filter-field select {
-        width: 100%;
-        border-radius: 6px;
-        border: 1px solid #cbd5f5;
-        background: #fff;
-        padding: .45rem .75rem;
-        font-size: .875rem;
-        color: #1f2937;
-        box-shadow: inset 0 1px 2px rgba(148, 163, 184, .12);
-        transition: border-color .2s, box-shadow .2s;
-    }
-
-    .blog-filter-field input:focus,
-    .blog-filter-field select:focus {
-        outline: none;
-        border-color: #475569;
-        box-shadow: 0 0 0 3px rgba(148, 163, 184, .18);
-    }
-
     .blog-filter-field--search {
-        margin-top: 1rem;
+        margin-top: .15rem;
         width: 100%;
-        max-width: 24rem;
+    }
+
+    .blog-filter-field label {
+        font-size: .78rem;
+        font-weight: 600;
+        color: #6b7280;
+        line-height: 1.1;
     }
 
     .blog-filter-input {
         position: relative;
         display: flex;
         align-items: center;
+        --control-h: 32px;
     }
 
     .blog-filter-input-control {
         flex: 1;
         min-width: 0;
-        padding-top: .15rem;
-        padding-bottom: .15rem;
-        padding-left: .55rem;
-        padding-right: 1.75rem;
+        height: var(--control-h);
+        padding: 0 .55rem 0 .55rem;
+        padding-right: 2.25rem;
         border-radius: 8px;
         border: 1px solid #cbd5f5;
         background: #fff;
         font-size: .875rem;
         color: #1f2937;
+        line-height: 1;
         box-shadow: inset 0 1px 2px rgba(148, 163, 184, .12);
         transition: border-color .2s ease, box-shadow .2s ease;
-
     }
 
     .blog-filter-input-control:focus {
@@ -335,19 +251,19 @@
     .blog-filter-input-action {
         position: absolute;
         top: 50%;
-        right: .4rem;
+        right: .35rem;
         transform: translateY(-50%);
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 2.55rem;
-        height: 100%;
-        border-radius: 0;
+        width: 2rem;
+        height: var(--control-h);
         border: 0;
+        border-radius: 0;
         background: #7b1d26;
         color: #fff;
         cursor: pointer;
-        box-shadow: 0 4px 12px rgba(123, 29, 38, .24);
+        box-shadow: 0 2px 8px rgba(123, 29, 38, .18);
         transition: background-color .2s ease, box-shadow .2s ease;
     }
 
@@ -358,53 +274,13 @@
     }
 
     .blog-filter-input-icon {
-        width: 1.25rem;
-        height: 1.25rem;
+        width: 1rem;
+        height: 1rem;
     }
 
-    .blog-filter-actions {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: .85rem;
-    }
-
-    .blog-filter-reset {
-        font-size: .85rem;
-        color: #475569;
-        text-decoration: underline;
-        text-decoration-thickness: 2px;
-        text-underline-offset: 4px;
-    }
-
-    .blog-filter-reset:hover,
-    .blog-filter-reset:focus-visible {
-        color: #0f172a;
-    }
-
-    .blog-filter-active {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: .85rem;
-        border-radius: 18px;
-        border: 1px solid #cbd5f5;
-        background: #f8fafc;
-        padding: .85rem 1rem;
-        font-size: .85rem;
-        color: #475569;
-    }
-
-    .blog-filter-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: .4rem;
-        border-radius: 999px;
-        background: #fff;
-        padding: .4rem .9rem;
-        box-shadow: 0 4px 10px rgba(15, 23, 42, .08);
-        font-weight: 600;
-        color: #1f2937;
+    /* Tendencia (1 chip) */
+    .blog-filter-suggestion--in-hero {
+        margin-top: .1rem;
     }
 
     .blog-filter-suggestion {
@@ -412,15 +288,15 @@
         display: inline-flex;
         flex-wrap: wrap;
         align-items: center;
-        gap: .5rem .75rem;
-        font-size: .78rem;
+        gap: .4rem .6rem;
+        font-size: .75rem;
         color: #64748b;
     }
 
     .blog-filter-suggestion-label {
-        font-size: .65rem;
+        font-size: .62rem;
         font-weight: 700;
-        letter-spacing: .16em;
+        letter-spacing: .14em;
         text-transform: uppercase;
         color: #94a3b8;
     }
@@ -433,13 +309,12 @@
         border: 1px solid #cbd5f5;
         background: #fff;
         color: #475569;
-        font-size: .62rem;
+        font-size: .6rem;
         font-weight: 700;
         letter-spacing: .1em;
         text-transform: uppercase;
-        padding: .25rem .6rem;
-        box-shadow: 0 10px 18px rgba(148, 163, 184, .18);
-        cursor: pointer;
+        padding: .22rem .5rem;
+        box-shadow: 0 6px 14px rgba(148, 163, 184, .14);
         transition: border-color .2s ease, transform .2s ease;
     }
 
@@ -449,9 +324,60 @@
         transform: translateY(-1px);
     }
 
-    /* =====================================================
-     (OPCIONAL) FEED con el mismo ancho y alineación que HERO
-     ===================================================== */
+    /* Top contributor con rótulo */
+    .blog-top-contributor {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: .5rem;
+        margin-top: .15rem;
+    }
+
+    .btc-label {
+        flex: 0 0 100%;
+        font-size: .66rem;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: #94a3b8;
+    }
+
+    .blog-top-contributor .btc-avatar {
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: #eee;
+        flex: 0 0 26px;
+    }
+
+    .blog-top-contributor img {
+        display: block;
+        width: 26px;
+        height: 26px;
+        object-fit: cover;
+    }
+
+    .btc-avatar-fallback {
+        display: grid;
+        place-items: center;
+        width: 26px;
+        height: 26px;
+        background: #f3f4f6;
+        color: #111827;
+        font-size: .9rem;
+    }
+
+    .blog-top-contributor .btc-name {
+        font-weight: 700;
+    }
+
+    .blog-top-contributor .btc-count {
+        font-size: .85rem;
+        opacity: .8;
+    }
+
+    /* Feed alineado al ancho del hero */
     .blog-feed--as-list,
     .blog-main>.blog-feed--as-list,
     .blog-feed:not(.blog-feed--as-list) {
@@ -463,44 +389,7 @@
     }
 }
 
-/* ====== Compactar altura del buscador ====== */
-
-/* Altura objetivo (ajustá a gusto: 32–40px) */
-.blog-filter-input {
-    --control-h: 25px;
-}
-
-/* Input más bajo */
-.blog-filter-input-control {
-    height: var(--control-h);
-    padding-top: 0;
-    /* quitamos padding vertical extra */
-    padding-bottom: 0;
-    line-height: 1;
-    /* evita que “sume” altura */
-    font-size: .85rem;
-    /* opcional: texto un toque más chico */
-    border-radius: 6px;
-    /* mantiene estética */
-}
-
-/* Botón (lupa) acompaña la nueva altura */
-.blog-filter-input-action {
-    height: var(--control-h);
-    width: 2.1rem;
-    /* más angosto */
-    right: .35rem;
-    /* mantiene margen derecho */
-    box-shadow: 0 3px 10px rgba(123, 29, 38, .22);
-}
-
-/* Ícono un poco más chico para el nuevo alto */
-.blog-filter-input-icon {
-    width: 1rem;
-    height: 1rem;
-}
-
-/* (Opcional) Campos de texto/select del filtro en general más bajos */
+/* altura global inputs (si hay otros) */
 .blog-filter-field input,
 .blog-filter-field select {
     padding-top: .25rem;

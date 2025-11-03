@@ -7,12 +7,15 @@ use App\Http\Requests\BlogPostRequest;
 use App\Models\BlogAttachment;
 use App\Models\BlogPost;
 use App\Models\BlogTag;
+use App\Models\Usuario as User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -46,6 +49,7 @@ final class BlogController extends Controller
             ->paginate(10)
             ->withQueryString();
 
+        // ===== Historial =====
         $historyQuery = BlogPost::query()
             ->published()
             ->latest('published_at');
@@ -95,7 +99,14 @@ final class BlogController extends Controller
 
         $hasActiveFilters = $this->blogFiltersAreActive($normalizedFilters);
 
-        $suggestedTags = $this->heroSuggestedTags();
+        // ===== Tendencia (1) y Top contributor =====
+        $topTag = $this->topTag();
+        // Para compatibilidad con la vista que usa $suggestedTags, pasamos solo 1
+        $suggestedTags = $topTag
+            ? collect([['id' => (int) $topTag->id, 'name' => $topTag->name, 'slug' => $topTag->slug]])
+            : collect();
+
+        $topContributor = $this->topContributor(); // ['author' => User, 'count' => int] | null
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -133,11 +144,26 @@ final class BlogController extends Controller
                 ],
                 'filters' => [
                     'input' => ['q' => $displaySearch],
-                    'applied' => [
-                        'search' => $normalizedFilters['search'],
-                    ],
+                    'applied' => ['search' => $normalizedFilters['search']],
                     'active' => $this->blogFiltersAreActive($normalizedFilters),
                 ],
+                // JSON también expone estos dos
+                'top_tag' => $topTag ? [
+                    'id' => (int) $topTag->id,
+                    'name' => $topTag->name,
+                    'slug' => $topTag->slug,
+                ] : null,
+                'top_contributor' => $topContributor ? [
+                    'author' => [
+                        'id' => (int) $topContributor['author']->id,
+                        'name' => (string) $topContributor['author']->name,
+                        'avatar_url' => $topContributor['author']->avatar_url_computed
+                            ?? $topContributor['author']->profile_photo_url
+                            ?? null,
+                    ],
+                    'count' => (int) $topContributor['count'],
+                ] : null,
+                // mantenemos suggested_tags por compatibilidad (1 sola)
                 'suggested_tags' => $suggestedTags->all(),
             ]);
         }
@@ -147,12 +173,12 @@ final class BlogController extends Controller
             'history' => $history,
             'filters' => [
                 'input' => ['q' => $displaySearch],
-                'applied' => [
-                    'search' => $normalizedFilters['search'],
-                ],
+                'applied' => ['search' => $normalizedFilters['search']],
                 'active' => $hasActiveFilters,
             ],
-            'suggestedTags' => $suggestedTags,
+            'suggestedTags' => $suggestedTags,  // 1 tag (top)
+            'topTag' => $topTag,
+            'topContributor' => $topContributor,
         ]);
     }
 
@@ -303,7 +329,7 @@ final class BlogController extends Controller
         return BlogTag::query()
             ->orderBy('name')
             ->get(['id', 'name', 'slug'])
-            ->map(fn (BlogTag $tag) => [
+            ->map(fn(BlogTag $tag) => [
                 'id' => (int) $tag->id,
                 'name' => $tag->name,
                 'slug' => $tag->slug,
@@ -322,7 +348,7 @@ final class BlogController extends Controller
             ->orderBy('name')
             ->take(4)
             ->get(['id', 'name', 'slug'])
-            ->map(fn (BlogTag $tag) => [
+            ->map(fn(BlogTag $tag) => [
                 'id' => (int) $tag->id,
                 'name' => $tag->name,
                 'slug' => $tag->slug,
@@ -331,20 +357,77 @@ final class BlogController extends Controller
     }
 
     /**
+     * Tendencia principal: tag con más posts publicados.
+     */
+    private function topTag(): ?BlogTag
+    {
+        return Cache::remember('blog.top_tag', now()->addMinutes(30), function () {
+            return BlogTag::query()
+                ->whereHas('posts', fn($query) => $query->published())
+                ->withCount([
+                    'posts as published_posts_count' => fn($query) => $query->published(),
+                ])
+                ->orderByDesc('published_posts_count')
+                ->orderBy('name')
+                ->first(['id', 'name', 'slug']);
+        });
+    }
+
+    /**
+     * Top contributor: usuario con más posts publicados.
+     * @return array{author:\App\Models\User,count:int}|null
+     */
+    private function topContributor(): ?array
+    {
+        $row = Cache::remember('blog.top_contributor_row', now()->addMinutes(30), function () {
+            return BlogPost::query()
+                ->whereNotNull('published_at')
+                ->select('user_id', DB::raw('COUNT(*) as c'))
+                ->groupBy('user_id')
+                ->orderByDesc('c')
+                ->first();
+        });
+
+        if (!$row || empty($row->user_id)) {
+            return null;
+        }
+
+        $author = User::find($row->user_id);
+        if (!$author) {
+            // Fallback si la relación cambiara
+            $author = BlogPost::query()
+                ->with('author')
+                ->where('user_id', $row->user_id)
+                ->latest('published_at')
+                ->first()?->author;
+        }
+
+        if (!$author) {
+            return null;
+        }
+
+        return [
+            'author' => $author,
+            'count' => (int) $row->c,
+        ];
+    }
+
+    /**
      * @return Collection<int, array{id:int,name:string,slug:string}>
      */
     private function heroSuggestedTags(): Collection
     {
+        // Ya no se usa directamente en home(), pero lo dejamos para otros screens
         return BlogTag::query()
-            ->whereHas('posts', fn ($query) => $query->published())
+            ->whereHas('posts', fn($query) => $query->published())
             ->withCount([
-                'posts as published_posts_count' => fn ($query) => $query->published(),
+                'posts as published_posts_count' => fn($query) => $query->published(),
             ])
             ->orderByDesc('published_posts_count')
             ->orderBy('name')
             ->take(4)
             ->get(['id', 'name', 'slug'])
-            ->map(fn (BlogTag $tag) => [
+            ->map(fn(BlogTag $tag) => [
                 'id' => (int) $tag->id,
                 'name' => $tag->name,
                 'slug' => $tag->slug,
@@ -355,14 +438,14 @@ final class BlogController extends Controller
     private function syncTags(BlogPost $post, Request $request): void
     {
         $existingTagIds = collect($request->input('tags', []))
-            ->filter(fn ($value) => is_numeric($value))
-            ->map(fn ($value) => (int) $value);
+            ->filter(fn($value) => is_numeric($value))
+            ->map(fn($value) => (int) $value);
 
         $rawNewTags = preg_split('/[\n,;]+/', (string) $request->input('new_tags', ''));
         $newTags = collect($rawNewTags ?: [])
-            ->map(fn ($value) => Str::of((string) $value)->squish()->toString())
-            ->filter(fn ($value) => $value !== '')
-            ->unique(fn ($value) => Str::lower($value))
+            ->map(fn($value) => Str::of((string) $value)->squish()->toString())
+            ->filter(fn($value) => $value !== '')
+            ->unique(fn($value) => Str::lower($value))
             ->values();
 
         $createdIds = [];
