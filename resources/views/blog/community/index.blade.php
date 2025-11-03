@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Comunidad')
+@section('title', 'Crónicas del club')
 
 @push('head')
   <link rel="stylesheet" href="/css/blog-history.css">
@@ -11,8 +11,8 @@
   <div class="page container blog-community-page">
     <header class="page-head blog-community-hero">
       <div>
-        <p class="blog-community-eyebrow">Comunidad</p>
-        <h1 class="page-title">Aportes de la comunidad</h1>
+        <p class="blog-community-eyebrow">Crónicas del club</p>
+        <h1 class="page-title">Aportes del club</h1>
         <p class="blog-community-subtitle">Un espacio para que las personas de la Taberna compartan ideas, recomendaciones y experiencias.</p>
       </div>
 
@@ -26,7 +26,7 @@
       </div>
     </header>
 
-    <section class="blog-community-search" aria-label="Buscar en la comunidad">
+    <section class="blog-community-search" aria-label="Buscar en Crónicas del club">
       <form method="get" action="{{ route('blog.community') }}" class="blog-hero-search" role="search">
         <div class="blog-filter-field blog-filter-field--search">
           <label for="community-search">Buscá por título, etiqueta o autor</label>
@@ -49,7 +49,7 @@
 
       @if (!empty($filters['active']) && filled($filters['applied']['search'] ?? ''))
         <p class="blog-filter-active" role="status" aria-live="polite">
-          Mostrando aportes para <strong>{{ $filters['applied']['search'] }}</strong>
+          Mostrando crónicas para <strong>{{ $filters['applied']['search'] }}</strong>
           <a class="blog-filter-reset" href="{{ route('blog.community') }}">Quitar filtro</a>
         </p>
       @endif
@@ -60,7 +60,7 @@
         @forelse ($posts as $post)
           @php
             $publishedAt = $post->published_at?->timezone(config('app.timezone', 'UTC'));
-            $author = $post->author->name ?? 'Miembro de la comunidad';
+            $author = $post->author->name ?? 'Autor del club';
           @endphp
           <li class="post-row" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
             <div class="post-row-left">
@@ -69,7 +69,7 @@
               </a>
 
               <div class="post-row-meta">
-                <span class="post-row-badge">Comunidad</span>
+                <span class="post-row-badge">Crónicas del club</span>
                 <span class="post-row-sep">·</span>
                 <span class="post-row-author" itemprop="author">{{ $author }}</span>
                 @if ($publishedAt)

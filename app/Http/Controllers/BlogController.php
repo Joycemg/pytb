@@ -271,41 +271,12 @@ final class BlogController extends Controller
         ]);
     }
 
-    public function community(Request $request): View
+    public function community(Request $request): RedirectResponse
     {
-        $rawFilters = [
-            'q' => trim((string) $request->query('q', '')),
-            'tag' => trim((string) $request->query('tag', '')),
-        ];
+        $query = $request->query();
+        $query['tab'] = 'miembros';
 
-        $normalizedFilters = $this->normalizeBlogFilters($rawFilters);
-        $displaySearch = $rawFilters['q'];
-        if ($displaySearch === '' && $rawFilters['tag'] !== '') {
-            $displaySearch = '#' . ltrim($rawFilters['tag'], '#');
-        }
-
-        $query = BlogPost::query()
-            ->published()
-            ->community()
-            ->latest('published_at')
-            ->with(['author', 'tags']);
-
-        $this->applyBlogFilters($query, $normalizedFilters);
-
-        /** @var LengthAwarePaginator $posts */
-        $posts = $query
-            ->paginate(12)
-            ->withQueryString();
-
-        return view('blog.community.index', [
-            'posts' => $posts,
-            'filters' => [
-                'input' => ['q' => $displaySearch],
-                'applied' => ['search' => $normalizedFilters['search']],
-                'active' => $this->blogFiltersAreActive($normalizedFilters),
-            ],
-            'canSubmit' => $request->user()?->can('createCommunity', BlogPost::class) ?? false,
-        ]);
+        return redirect()->route('blog.index', $query);
     }
 
     public function communityCreate(): View

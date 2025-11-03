@@ -94,7 +94,7 @@
                   <div class="blog-tag-creator" data-tag-creator>
                     <label for="new_tags_input">Seleccionar o crear etiquetas</label>
                     <div class="blog-tag-creator-control">
-                      <input id="new_tags_input" type="text" value="" placeholder="Ej: Comunidad, Eventos" list="blog-tag-suggestions" autocomplete="off" data-tag-input>
+                      <input id="new_tags_input" type="text" value="" placeholder="Ej: Crónicas del club, Eventos" list="blog-tag-suggestions" autocomplete="off" data-tag-input>
                     </div>
                     <input name="new_tags" type="hidden" value="{{ old('new_tags') }}" data-tag-storage>
                     <small class="hint">Escribí para elegir etiquetas existentes o creá nuevas separándolas con comas o presionando Enter. Las etiquetas nuevas estarán disponibles para futuras entradas.</small>

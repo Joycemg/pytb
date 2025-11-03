@@ -12,7 +12,7 @@
 
     @if (($pendingCount ?? 0) > 0)
       <div class="flash flash-warn">
-        Hay {{ $pendingCount }} {{ Str::plural('aporte', $pendingCount) }} de la comunidad pendiente{{ $pendingCount === 1 ? '' : 's' }} de aprobación.
+        Hay {{ $pendingCount }} {{ Str::plural('aporte', $pendingCount) }} de Crónicas del club pendiente{{ $pendingCount === 1 ? '' : 's' }} de aprobación.
       </div>
     @endif
 
@@ -42,7 +42,7 @@
                     ? ($post->approved_at ? 'community-status community-status--published' : 'community-status community-status--pending')
                     : ($post->published_at ? 'community-status community-status--published' : 'community-status community-status--pending');
                   $statusLabel = $isCommunity
-                    ? ($post->approved_at ? 'Comunidad · Publicado' : 'Comunidad · Pendiente')
+                    ? ($post->approved_at ? 'Crónicas del club · Publicado' : 'Crónicas del club · Pendiente')
                     : ($post->published_at ? 'Equipo · Publicado' : 'Equipo · Borrador');
                 @endphp
                 <tr>

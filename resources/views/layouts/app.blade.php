@@ -123,9 +123,6 @@
            href="{{ route('blog.index') }}">Blog</a>
 
         <a class="nav-link"
-           href="{{ route('blog.community') }}">Comunidad</a>
-
-        <a class="nav-link"
            href="{{ route('mesas.index') }}">Mesas</a>
 
         @if (LRoute::has('jornadas.index'))
