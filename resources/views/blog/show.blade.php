@@ -16,6 +16,18 @@
     $plainContent = trim(preg_replace('/\s+/', ' ', strip_tags((string) $rawContent)) ?? '');
     $wordCount = max(0, str_word_count($plainContent));
     $readingMinutes = max(1, (int) ceil($wordCount / 220));
+
+    $ratingSummary = array_merge([
+      'average' => 0.0,
+      'count' => 0,
+      'full' => 0,
+      'partial' => 0.0,
+    ], $ratingSummary ?? []);
+
+    $comments = collect($comments ?? []);
+    $commentsCount = $comments->count();
+    $userComment = $userComment ?? null;
+    $canComment = $canComment ?? false;
   @endphp
 
   <article class="page container blog-post blog-theme-{{ $theme }}" style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }};">
@@ -50,6 +62,33 @@
           <span class="sr-only" data-copy-feedback aria-live="polite"></span>
         </div>
       </div>
+
+      @if (($ratingSummary['count'] ?? 0) > 0)
+        @php
+          $fullMeeples = (int) $ratingSummary['full'];
+          $partialMeeple = (float) $ratingSummary['partial'];
+          $averageLabel = number_format($ratingSummary['average'], 1);
+        @endphp
+        <div class="blog-post-rating-summary" role="region" aria-label="Calificación promedio de la comunidad">
+          <div class="meeple-rating meeple-rating--lg" role="img" aria-label="{{ $averageLabel }} de 5 meeples">
+            @for ($i = 1; $i <= 5; $i++)
+              @php
+                $isFull = $i <= $fullMeeples;
+                $isPartial = !$isFull && $i === $fullMeeples + 1 && $partialMeeple > 0;
+              @endphp
+              <span class="meeple-rating-icon{{ $isFull ? ' is-active' : '' }}{{ $isPartial ? ' is-partial' : '' }}"
+                    @if ($isPartial) style="--meeple-fill: {{ max(0, min(100, round($partialMeeple * 100))) }}%;" @endif></span>
+            @endfor
+          </div>
+          <div class="blog-post-rating-data">
+            <span class="blog-post-rating-average">{{ $averageLabel }}</span>
+            <span class="blog-post-rating-count">
+              {{ $ratingSummary['count'] }}
+              {{ \Illuminate\Support\Str::plural('reseña', $ratingSummary['count']) }}
+            </span>
+          </div>
+        </div>
+      @endif
     </header>
 
     @if ($post->tags->isNotEmpty())
@@ -76,6 +115,99 @@
     <div class="blog-post-content">
       {!! $hasMarkup ? $rawContent : nl2br(e($rawContent)) !!}
     </div>
+
+    <section class="blog-comments" id="comentarios" aria-labelledby="blog-comments-title">
+      <div class="blog-comments-head">
+        <h2 id="blog-comments-title">Comentarios</h2>
+        <span class="blog-comments-count">{{ $commentsCount }}</span>
+      </div>
+
+      @auth
+        @if ($canComment)
+          @php
+            $currentRating = (int) old('rating', optional($userComment)->rating);
+            if ($currentRating < 1 || $currentRating > 5) {
+              $currentRating = 0;
+            }
+            $commentBody = old('body', optional($userComment)->body);
+          @endphp
+          <form method="post" action="{{ route('blog.comments.store', $post) }}" class="blog-comment-form">
+            @csrf
+
+            <div class="blog-comment-form-rating">
+              <span id="comment-rating-label" class="blog-comment-label">Tu calificación</span>
+              <div class="meeple-rating-input" role="radiogroup" aria-labelledby="comment-rating-label">
+                @for ($i = 1; $i <= 5; $i++)
+                  <input type="radio"
+                         id="comment-rating-{{ $i }}"
+                         name="rating"
+                         value="{{ $i }}"
+                         {{ $currentRating === $i ? 'checked' : '' }}
+                         {{ $loop->first ? 'required' : '' }}>
+                  <label for="comment-rating-{{ $i }}" class="meeple-rating-input-label">
+                    <span class="sr-only">{{ $i }} {{ \Illuminate\Support\Str::plural('meeple', $i) }}</span>
+                    <span class="meeple-rating-icon" aria-hidden="true"></span>
+                  </label>
+                @endfor
+              </div>
+            </div>
+
+            <div class="blog-comment-form-field">
+              <label for="comment-body" class="blog-comment-label">Tu comentario</label>
+              <textarea id="comment-body" name="body" rows="4" required>{{ $commentBody }}</textarea>
+              <p class="blog-comment-hint">Contanos qué te pareció esta publicación.</p>
+            </div>
+
+            @if ($userComment)
+              <p class="blog-comment-note">Ya dejaste tu reseña. Podés actualizarla cuando quieras.</p>
+            @endif
+
+            <button type="submit" class="btn btn-primary" data-once>Guardar mi reseña</button>
+          </form>
+        @else
+          <p class="blog-comments-hint">Tu cuenta debe estar aprobada para poder comentar y puntuar publicaciones.</p>
+        @endif
+      @else
+        <p class="blog-comments-hint">Ingresá para dejar tu comentario y sumar meeples.</p>
+      @endauth
+
+      @if ($commentsCount > 0)
+        <ul class="blog-comments-list">
+          @foreach ($comments as $comment)
+            @php
+              $commentAt = optional($comment->created_at)?->timezone(config('app.timezone', 'UTC'));
+              $commentRating = (int) ($comment->rating ?? 0);
+              $isSelf = $userComment && $comment->id === $userComment->id;
+            @endphp
+            <li class="blog-comment{{ $isSelf ? ' is-self' : '' }}">
+              <div class="blog-comment-header">
+                <div class="blog-comment-author">
+                  <span class="blog-comment-name">{{ $comment->author->name ?? 'Miembro de la comunidad' }}</span>
+                  @if ($isSelf)
+                    <span class="blog-comment-badge">Tu reseña</span>
+                  @endif
+                </div>
+                <div class="blog-comment-meta">
+                  @if ($commentRating > 0)
+                    <div class="meeple-rating meeple-rating--sm" role="img" aria-label="{{ $commentRating }} de 5 meeples">
+                      @for ($i = 1; $i <= 5; $i++)
+                        <span class="meeple-rating-icon{{ $i <= $commentRating ? ' is-active' : '' }}"></span>
+                      @endfor
+                    </div>
+                  @endif
+                  @if ($commentAt)
+                    <time datetime="{{ $commentAt->toIso8601String() }}">{{ $commentAt->diffForHumans() }}</time>
+                  @endif
+                </div>
+              </div>
+              <p class="blog-comment-body">{{ $comment->body }}</p>
+            </li>
+          @endforeach
+        </ul>
+      @else
+        <p class="blog-comments-empty">Todavía no hay comentarios. ¡Sé la primera persona en opinar!</p>
+      @endif
+    </section>
 
     @if ($post->attachments->isNotEmpty())
       <section class="blog-post-attachments">

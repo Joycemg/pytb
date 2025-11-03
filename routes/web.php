@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 // App controllers
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BlogCommentController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BlogFeedController;
 use App\Http\Controllers\InscripcionController;
@@ -38,8 +39,9 @@ Route::pattern('apartado', '\d+');
 /* --------------------------------- Home -------------------------------- */
 Route::get('/', [BlogController::class, 'home'])->name('home');
 Route::get('/blog', [BlogController::class, 'home'])->name('blog.index');
-Route::get('/blog/{post:slug}', [BlogController::class, 'show'])->name('blog.show');
+Route::get('/blog/comunidad', [BlogController::class, 'community'])->name('blog.community');
 Route::get('/blog/atom', [BlogFeedController::class, 'atom'])->name('blog.atom');
+Route::get('/blog/{post:slug}', [BlogController::class, 'show'])->name('blog.show');
 
 /* ---------------------------------- Auth -------------------------------- */
 Route::middleware('guest')->group(function () {
@@ -149,6 +151,30 @@ Route::middleware(['auth', EnsureUserIsActive::class])
             ->name('moderacion.confirmarMesa');
 
         /* ===== Blog ===== */
+        Route::get('/blog/comunidad/enviar', [BlogController::class, 'communityCreate'])
+            ->name('blog.community.create');
+
+        Route::post('/blog/comunidad', [BlogController::class, 'communityStore'])
+            ->name('blog.community.store');
+
+        Route::get('/blog/comunidad/mis-aportes', [BlogController::class, 'communityMine'])
+            ->name('blog.community.mine');
+
+        Route::get('/blog/comunidad/{post}/editar', [BlogController::class, 'communityEdit'])
+            ->whereNumber('post')
+            ->name('blog.community.edit');
+
+        Route::put('/blog/comunidad/{post}', [BlogController::class, 'communityUpdate'])
+            ->whereNumber('post')
+            ->name('blog.community.update');
+
+        Route::delete('/blog/comunidad/{post}', [BlogController::class, 'communityDestroy'])
+            ->whereNumber('post')
+            ->name('blog.community.destroy');
+
+        Route::post('/blog/{post:slug}/comentarios', [BlogCommentController::class, 'store'])
+            ->name('blog.comments.store');
+
         Route::get('/panel/blog', [BlogController::class, 'manage'])
             ->name('blog.manage');
 
@@ -166,6 +192,9 @@ Route::middleware(['auth', EnsureUserIsActive::class])
 
         Route::delete('/panel/blog/{post}', [BlogController::class, 'destroy'])
             ->name('blog.destroy');
+
+        Route::post('/panel/blog/{post}/aprobar', [BlogController::class, 'approve'])
+            ->name('blog.approve');
 
         Route::delete('/panel/blog/{post}/adjuntos/{attachment}', [BlogController::class, 'destroyAttachment'])
             ->name('blog.attachments.destroy');
