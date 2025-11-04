@@ -1,17 +1,31 @@
 @extends('layouts.app')
 
-@section('title', $post->exists ? 'Editar entrada' : 'Nueva entrada')
+@php
+  $availableTags = $availableTags ?? collect();
+  $popularTags = $popularTags ?? collect();
+  $popularTagIds = $popularTags->pluck('id')->all();
+  $context = $context ?? 'manage';
+  $isCommunity = $context === 'community';
+  $pageTitle = $pageTitle ?? ($post->exists ? 'Editar entrada' : 'Nueva entrada');
+  $backUrl = $backUrl ?? route('blog.manage');
+  $backLabel = $backLabel ?? '← Volver';
+  $formAction = $formAction ?? ($post->exists ? route('blog.update', $post) : route('blog.store'));
+  $formMethod = strtolower($formMethod ?? ($post->exists ? 'put' : 'post'));
+  $submitLabel = $submitLabel ?? ($post->exists ? 'Guardar cambios' : 'Guardar entrada');
+  $showSlugField = $showSlugField ?? ! $isCommunity;
+  $showMediaSection = $showMediaSection ?? ! $isCommunity;
+  $showStyleSection = $showStyleSection ?? (! $isCommunity && ! $post->exists);
+  $showViewLink = $showViewLink ?? (! $isCommunity && $post->exists);
+  $draftKey = $draftKey ?? ($post->exists ? 'post-' . $post->id : 'new-' . (auth()->id() ?? 'guest'));
+@endphp
+
+@section('title', $pageTitle)
 
 @section('content')
-  @php
-    $availableTags = $availableTags ?? collect();
-    $popularTags = $popularTags ?? collect();
-    $popularTagIds = $popularTags->pluck('id')->all();
-  @endphp
   <div class="page container blog-form">
     <header class="page-head">
-      <h1 class="page-title">{{ $post->exists ? 'Editar entrada' : 'Nueva entrada' }}</h1>
-      <a class="btn" href="{{ route('blog.manage') }}">← Volver</a>
+      <h1 class="page-title">{{ $pageTitle }}</h1>
+      <a class="btn" href="{{ $backUrl }}">{{ $backLabel }}</a>
     </header>
 
     @if ($errors->any())
@@ -35,9 +49,9 @@
       <div class="card-body">
         <div class="blog-form-layout">
           <div class="blog-form-main">
-            <form id="blog-entry-form" method="post" action="{{ $post->exists ? route('blog.update', $post) : route('blog.store') }}" enctype="multipart/form-data" class="form blog-form-body" data-draft-key="{{ $post->exists ? 'post-'.$post->id : 'new-'.(auth()->id() ?? 'guest') }}">
+            <form id="blog-entry-form" method="post" action="{{ $formAction }}" @if ($showMediaSection) enctype="multipart/form-data" @endif class="form blog-form-body" data-draft-key="{{ $draftKey }}">
               @csrf
-              @if ($post->exists)
+              @if ($formMethod !== 'post')
                 @method('put')
               @endif
 
@@ -53,11 +67,13 @@
                   <input id="title" name="title" type="text" value="{{ old('title', $post->title) }}" required>
                 </div>
 
-                <div class="form-group">
-                  <label for="slug">Slug (opcional)</label>
-                  <input id="slug" name="slug" type="text" value="{{ old('slug', $post->slug) }}" placeholder="mi-entrada-super-epica">
-                  <small class="hint">Se usará en la URL. Si se deja vacío se generará automáticamente.</small>
-                </div>
+                @if ($showSlugField)
+                  <div class="form-group">
+                    <label for="slug">Slug (opcional)</label>
+                    <input id="slug" name="slug" type="text" value="{{ old('slug', $post->slug) }}" placeholder="mi-entrada-super-epica">
+                    <small class="hint">Se usará en la URL. Si se deja vacío se generará automáticamente.</small>
+                  </div>
+                @endif
 
                 @php
                   $selectedTagIds = collect(old('tags', $post->tags->pluck('id')->all()))
@@ -262,7 +278,7 @@
               </div>
             </section>
 
-            @if (! $post->exists)
+            @if ($showStyleSection)
               <section id="blog-form-style" class="blog-form-section" aria-labelledby="blog-form-style-title">
                 <div class="blog-form-section-header">
                   <h2 id="blog-form-style-title" class="blog-form-section-title">Personalización visual</h2>
@@ -278,54 +294,56 @@
               </section>
             @endif
 
-            <section id="blog-form-media" class="blog-form-section" aria-labelledby="blog-form-media-title">
-              <div class="blog-form-section-header">
-                <h2 id="blog-form-media-title" class="blog-form-section-title">Recursos y archivos</h2>
-                <p class="blog-form-section-description">Complementá la entrada con imágenes destacadas y materiales adicionales para descargar.</p>
-              </div>
-
-              <div class="blog-form-section-body">
-                <div class="form-group">
-                  <label for="hero_image_url">Imagen de cabecera (opcional)</label>
-                  <input id="hero_image_url" name="hero_image_url" type="text" value="{{ old('hero_image_url', $post->hero_image_url) }}" placeholder="https://cdn.ejemplo.com/imagen.jpg">
-                  <small class="hint">La imagen se mostrará en la parte superior de la entrada. Debe ser una URL absoluta.</small>
+            @if ($showMediaSection)
+              <section id="blog-form-media" class="blog-form-section" aria-labelledby="blog-form-media-title">
+                <div class="blog-form-section-header">
+                  <h2 id="blog-form-media-title" class="blog-form-section-title">Recursos y archivos</h2>
+                  <p class="blog-form-section-description">Complementá la entrada con imágenes destacadas y materiales adicionales para descargar.</p>
                 </div>
 
-                <div class="form-group">
-                  <label for="hero_image_caption">Texto descriptivo de la imagen</label>
-                  <input id="hero_image_caption" name="hero_image_caption" type="text" value="{{ old('hero_image_caption', $post->hero_image_caption) }}" maxlength="160" placeholder="Créditos o una breve descripción de la foto">
-                </div>
-
-                <div class="form-group">
-                  <label for="attachments">Adjuntar archivos</label>
-                  <input id="attachments" name="attachments[]" type="file" multiple>
-                  <small class="hint">Podés subir imágenes, PDF, archivos comprimidos y más (hasta 50MB cada uno).</small>
-                </div>
-
-                @if ($post->exists && $post->attachments->isNotEmpty())
+                <div class="blog-form-section-body">
                   <div class="form-group">
-                    <label>Archivos actuales</label>
-                    <ul class="attachment-list">
-                      @foreach ($post->attachments as $attachment)
-                        <li>
-                          <a href="{{ Storage::disk('public')->url($attachment->path) }}" target="_blank" rel="noopener">{{ $attachment->original_name }}</a>
-                          <form method="post" action="{{ route('blog.attachments.destroy', [$post, $attachment]) }}" onsubmit="return confirm('¿Eliminar este archivo?');">
-                            @csrf
-                            @method('delete')
-                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                          </form>
-                        </li>
-                      @endforeach
-                    </ul>
+                    <label for="hero_image_url">Imagen de cabecera (opcional)</label>
+                    <input id="hero_image_url" name="hero_image_url" type="text" value="{{ old('hero_image_url', $post->hero_image_url) }}" placeholder="https://cdn.ejemplo.com/imagen.jpg">
+                    <small class="hint">La imagen se mostrará en la parte superior de la entrada. Debe ser una URL absoluta.</small>
                   </div>
-                @endif
-              </div>
-            </section>
+
+                  <div class="form-group">
+                    <label for="hero_image_caption">Texto descriptivo de la imagen</label>
+                    <input id="hero_image_caption" name="hero_image_caption" type="text" value="{{ old('hero_image_caption', $post->hero_image_caption) }}" maxlength="160" placeholder="Créditos o una breve descripción de la foto">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="attachments">Adjuntar archivos</label>
+                    <input id="attachments" name="attachments[]" type="file" multiple>
+                    <small class="hint">Podés subir imágenes, PDF, archivos comprimidos y más (hasta 50MB cada uno).</small>
+                  </div>
+
+                  @if ($post->exists && $post->attachments->isNotEmpty())
+                    <div class="form-group">
+                      <label>Archivos actuales</label>
+                      <ul class="attachment-list">
+                        @foreach ($post->attachments as $attachment)
+                          <li>
+                            <a href="{{ Storage::disk('public')->url($attachment->path) }}" target="_blank" rel="noopener">{{ $attachment->original_name }}</a>
+                            <form method="post" action="{{ route('blog.attachments.destroy', [$post, $attachment]) }}" onsubmit="return confirm('¿Eliminar este archivo?');">
+                              @csrf
+                              @method('delete')
+                              <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                            </form>
+                          </li>
+                        @endforeach
+                      </ul>
+                    </div>
+                  @endif
+                </div>
+              </section>
+            @endif
 
             <div class="form-actions blog-form-actions">
               <button type="button" class="btn" data-draft-clear hidden>Descartar borrador guardado</button>
-              <button type="submit" class="btn btn-primary">{{ $post->exists ? 'Guardar cambios' : 'Guardar entrada' }}</button>
-              @if ($post->exists)
+              <button type="submit" class="btn btn-primary">{{ $submitLabel }}</button>
+              @if ($showViewLink)
                 <a class="btn" href="{{ route('blog.show', ['post' => $post->slug]) }}" target="_blank" rel="noopener">Ver publicación</a>
               @endif
             </div>

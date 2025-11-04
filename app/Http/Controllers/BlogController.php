@@ -396,10 +396,25 @@ final class BlogController extends Controller
             $post->setRelation('tags', collect());
         }
 
-        return view('blog.community.form', [
+        $pageTitle = $mode === 'edit' ? 'Editar aporte comunitario' : 'Nuevo aporte comunitario';
+
+        return view('blog.manage.form', [
             'post' => $post,
             'availableTags' => $this->availableTagsForForm(),
-            'mode' => $mode,
+            'popularTags' => $this->popularTagsForForm(),
+            'context' => 'community',
+            'pageTitle' => $pageTitle,
+            'backUrl' => route('blog.community.mine'),
+            'backLabel' => '← Mis aportes',
+            'formAction' => $mode === 'edit'
+                ? route('blog.community.update', $post)
+                : route('blog.community.store'),
+            'formMethod' => $mode === 'edit' ? 'put' : 'post',
+            'submitLabel' => $mode === 'edit' ? 'Guardar cambios' : 'Enviar para revisión',
+            'showSlugField' => false,
+            'showMediaSection' => false,
+            'showStyleSection' => false,
+            'showViewLink' => false,
         ]);
     }
 
