@@ -230,21 +230,12 @@ final class BlogController extends Controller
         }
 
         $post->load(['author', 'attachments', 'tags']);
+        $post->loadCount('likes');
 
         $comments = $post->comments()
             ->with(['author'])
             ->latest('created_at')
             ->get();
-
-        $ratingRow = $post->comments()
-            ->whereNotNull('rating')
-            ->selectRaw('COUNT(*) as c, AVG(rating) as avg_rating')
-            ->first();
-
-        $ratingAverage = $ratingRow?->avg_rating ? round((float) $ratingRow->avg_rating, 1) : 0.0;
-        $ratingCount = (int) ($ratingRow->c ?? 0);
-        $ratingFull = (int) floor($ratingAverage);
-        $ratingPartial = max(0, min(1, $ratingAverage - $ratingFull));
 
         $userComment = null;
         $user = $request->user();
@@ -252,21 +243,29 @@ final class BlogController extends Controller
             $userComment = $comments->firstWhere('user_id', $user->id);
         }
 
+        $userHasLiked = false;
+        if ($user !== null) {
+            $userHasLiked = $post->likes()
+                ->where('user_id', $user->id)
+                ->exists();
+        }
+
         $canComment = false;
         if ($user !== null) {
             $canComment = method_exists($user, 'estaAprobado') ? (bool) $user->estaAprobado() : true;
         }
+
+        $likesCount = (int) ($post->likes_count ?? 0);
 
         return view('blog.show', [
             'post' => $post,
             'comments' => $comments,
             'userComment' => $userComment,
             'canComment' => $canComment,
-            'ratingSummary' => [
-                'average' => $ratingAverage,
-                'count' => $ratingCount,
-                'full' => $ratingFull,
-                'partial' => $ratingPartial,
+            'canLike' => $canComment,
+            'likesSummary' => [
+                'count' => $likesCount,
+                'hasLiked' => $userHasLiked,
             ],
         ]);
     }

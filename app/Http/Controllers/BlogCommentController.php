@@ -30,7 +30,7 @@ final class BlogCommentController extends Controller
             ],
             [
                 'body' => $body,
-                'rating' => (int) $request->input('rating'),
+                'rating' => 0,
             ]
         );
 
