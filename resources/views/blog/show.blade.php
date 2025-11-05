@@ -153,21 +153,16 @@
             @csrf
 
             <div class="blog-comment-form-rating">
-              <span id="comment-rating-label" class="blog-comment-label">Tu calificación (1 a 5 meeples)</span>
-              <div class="meeple-rating-input" role="radiogroup" aria-labelledby="comment-rating-label">
+              <label for="comment-rating" class="blog-comment-label">Tu calificación</label>
+              <select id="comment-rating" name="rating" required>
+                <option value="" disabled {{ $currentRating === 0 ? 'selected' : '' }}>Seleccioná una opción</option>
                 @for ($i = 1; $i <= 5; $i++)
-                  <input type="radio"
-                         id="comment-rating-{{ $i }}"
-                         name="rating"
-                         value="{{ $i }}"
-                         {{ $currentRating === $i ? 'checked' : '' }}
-                         {{ $i === 1 ? 'required' : '' }}>
-                  <label for="comment-rating-{{ $i }}" class="meeple-rating-input-label">
-                    <span class="sr-only">{{ $i }} {{ \Illuminate\Support\Str::plural('meeple', $i) }}</span>
-                    <span class="meeple-rating-icon" aria-hidden="true"></span>
-                  </label>
+                  <option value="{{ $i }}" {{ $currentRating === $i ? 'selected' : '' }}>
+                    {{ $i }} {{ \Illuminate\Support\Str::plural('meeple', $i) }}
+                  </option>
                 @endfor
-              </div>
+              </select>
+              <p class="blog-comment-hint">Calificá la publicación del 1 (poco recomendable) al 5 (imperdible).</p>
             </div>
 
             <div class="blog-comment-form-field">
