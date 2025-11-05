@@ -19,8 +19,18 @@
         border-bottom: 3px solid color-mix(in srgb, var(--blog-accent) 65%, transparent);
     }
 
+    .blog-post-head-top {
+        display: flex;
+        flex-direction: column;
+        gap: .65rem;
+    }
+
     .blog-post .page-head::before {
         display: none;
+    }
+
+    .blog-post-rating {
+        margin-top: 1rem;
     }
 
     .blog-post-content {
@@ -144,6 +154,12 @@
         flex-wrap: wrap;
         gap: .75rem;
         margin-top: 2rem;
+    }
+
+    @media (min-width: 768px) {
+        .blog-post-head-top {
+            gap: .85rem;
+        }
     }
 
     /* ===== Formularios de manage/create ===== */

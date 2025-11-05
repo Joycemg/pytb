@@ -2,6 +2,13 @@
 
 @section('title', $post->title)
 
+@push('head')
+  <link rel="stylesheet" href="{{ asset('css/blog/blog.tokens.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/blog/blog.layout.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/blog/blog.post-customizer-responsive.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/blog/components.css') }}">
+@endpush
+
 @section('content')
   @php
     $themes = (array) config('blog.themes', []);
@@ -34,12 +41,15 @@
 
   <article class="page container blog-post blog-theme-{{ $theme }}" style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }};">
     <header class="page-head blog-post-head">
-      <a class="blog-post-back" href="{{ route('blog.index') }}">← Volver a las novedades</a>
-      <p class="blog-post-eyebrow">Publicación destacada</p>
-      <h1 class="page-title">{{ $post->title }}</h1>
-      <div class="blog-post-meta">
+      <div class="blog-post-head-top">
+        <a class="blog-post-back" href="{{ route('blog.index') }}">← Volver a las novedades</a>
+        <p class="blog-post-eyebrow">Publicación destacada</p>
+        <h1 class="page-title">{{ $post->title }}</h1>
+      </div>
+
+      <div class="blog-post-meta" role="list">
         @php $publishedAt = $post->published_at?->timezone($timezone); @endphp
-        <p class="blog-card-meta">
+        <p class="blog-card-meta" role="listitem">
           <span>Por {{ $post->author->name ?? 'Equipo de La Taberna' }}</span>
           @if ($publishedAt)
             <span aria-hidden="true" class="blog-post-meta-separator">•</span>
@@ -51,7 +61,7 @@
           @endif
         </p>
 
-        <div class="blog-post-actions">
+        <div class="blog-post-actions" role="listitem">
           <button type="button"
                   class="blog-post-share"
                   data-copy-url="{{ route('blog.show', ['post' => $post->slug]) }}"
@@ -65,14 +75,15 @@
         </div>
       </div>
 
-      @if (($ratingSummary['count'] ?? 0) > 0)
-        @php
-          $fullMeeples = (int) $ratingSummary['full'];
-          $partialMeeple = (float) $ratingSummary['partial'];
-          $averageLabel = number_format($ratingSummary['average'], 1);
-        @endphp
-        <div class="blog-post-rating-summary" role="region" aria-label="Calificación promedio de la comunidad">
-          <div class="meeple-rating meeple-rating--lg" role="img" aria-label="{{ $averageLabel }} de 5 meeples">
+      @php
+        $fullMeeples = (int) $ratingSummary['full'];
+        $partialMeeple = (float) $ratingSummary['partial'];
+        $averageLabel = number_format($ratingSummary['average'], 1);
+        $ratingsCount = (int) $ratingSummary['count'];
+      @endphp
+      <div class="blog-post-rating" role="region" aria-live="polite">
+        <div class="blog-post-rating-summary" aria-label="Calificación promedio de la comunidad">
+          <div class="meeple-rating meeple-rating--lg" role="img" aria-label="{{ $ratingsCount > 0 ? $averageLabel . ' de 5 meeples' : 'Sin reseñas todavía' }}">
             @for ($i = 1; $i <= 5; $i++)
               @php
                 $isFull = $i <= $fullMeeples;
@@ -83,14 +94,17 @@
             @endfor
           </div>
           <div class="blog-post-rating-data">
-            <span class="blog-post-rating-average">{{ $averageLabel }}</span>
+            <span class="blog-post-rating-average">{{ $ratingsCount > 0 ? $averageLabel : '—' }}</span>
             <span class="blog-post-rating-count">
-              {{ $ratingSummary['count'] }}
-              {{ \Illuminate\Support\Str::plural('reseña', $ratingSummary['count']) }}
+              @if ($ratingsCount > 0)
+                {{ $ratingsCount }} {{ \Illuminate\Support\Str::plural('reseña', $ratingsCount) }}
+              @else
+                Sin reseñas todavía
+              @endif
             </span>
           </div>
         </div>
-      @endif
+      </div>
     </header>
 
     @if ($post->tags->isNotEmpty())
@@ -121,7 +135,7 @@
     <section class="blog-comments" id="comentarios" aria-labelledby="blog-comments-title">
       <div class="blog-comments-head">
         <h2 id="blog-comments-title">Comentarios</h2>
-        <span class="blog-comments-count">{{ $commentsCount }}</span>
+        <span class="blog-comments-count" aria-label="Cantidad de comentarios">{{ $commentsCount }}</span>
       </div>
 
       @auth
@@ -170,7 +184,9 @@
           <p class="blog-comments-hint">Tu cuenta debe estar aprobada para poder comentar y puntuar publicaciones.</p>
         @endif
       @else
-        <p class="blog-comments-hint">Ingresá para dejar tu comentario y sumar meeples.</p>
+        <p class="blog-comments-hint">
+          <a href="{{ route('auth.login') }}">Ingresá</a> para dejar tu comentario y sumar meeples.
+        </p>
       @endauth
 
       @if ($commentsCount > 0)
