@@ -43,14 +43,20 @@
     <header class="page-head blog-post-head">
       <div class="blog-post-head-top">
         <a class="blog-post-back" href="{{ route('blog.index') }}">← Volver a las novedades</a>
-        <p class="blog-post-eyebrow">Publicación destacada</p>
+        @php $isFeatured = (bool) ($post->is_featured ?? false); @endphp
+        @if ($isFeatured)
+          <p class="blog-post-eyebrow">Publicación destacada</p>
+        @endif
         <h1 class="page-title">{{ $post->title }}</h1>
       </div>
 
       <div class="blog-post-meta" role="list">
         @php $publishedAt = $post->published_at?->timezone($timezone); @endphp
         <p class="blog-card-meta" role="listitem">
-          <span>Por {{ $post->author->name ?? 'Equipo de La Taberna' }}</span>
+          @php $authorName = trim($post->author->name ?? ''); @endphp
+          <span>
+            Por {{ $authorName !== '' ? $authorName : 'Equipo de La Taberna' }}
+          </span>
           @if ($publishedAt)
             <span aria-hidden="true" class="blog-post-meta-separator">•</span>
             <time datetime="{{ $publishedAt->toIso8601String() }}">{{ $publishedAt->translatedFormat('d \d\e F, Y H:i') }}</time>
@@ -108,7 +114,12 @@
 
     @if ($post->hero_image_url)
       <figure class="blog-post-hero">
-        <img src="{{ $post->hero_image_url }}" alt="{{ $heroImageAlt }}">
+        <img
+          src="{{ $post->hero_image_url }}"
+          alt="{{ $heroImageAlt }}"
+          loading="lazy"
+          decoding="async"
+        >
         @if ($post->hero_image_caption)
           <figcaption>{{ $post->hero_image_caption }}</figcaption>
         @endif
@@ -221,10 +232,15 @@
     @if ($post->attachments->isNotEmpty())
       <section class="blog-post-attachments">
         <h2>Archivos adjuntos</h2>
-        <ul>
+        <ul class="blog-post-attachments-list">
           @foreach ($post->attachments as $attachment)
             <li>
-              <a href="{{ Storage::disk('public')->url($attachment->path) }}" target="_blank" rel="noopener">
+              <a
+                href="{{ Storage::disk('public')->url($attachment->path) }}"
+                target="_blank"
+                rel="noopener"
+                class="blog-post-attachment-link"
+              >
                 {{ $attachment->original_name }}
               </a>
               <span class="attachment-meta">({{ number_format($attachment->size / 1024, 1) }} KB)</span>
