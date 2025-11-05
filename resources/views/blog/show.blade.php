@@ -4,18 +4,18 @@
 
 @section('content')
   @php
-    $theme = $post->theme ?? config('blog.default_theme', 'classic');
     $themes = (array) config('blog.themes', []);
-    if (!array_key_exists($theme, $themes)) {
-        $theme = config('blog.default_theme', 'classic');
-    }
+    $defaultTheme = config('blog.default_theme', 'classic');
+    $theme = ($post->theme && array_key_exists($post->theme, $themes)) ? $post->theme : $defaultTheme;
+
     $accent = $post->accent_color ?? ($themes[$theme]['accent'] ?? config('blog.default_accent'));
     $accentText = $post->accent_text_color ?? ($themes[$theme]['text'] ?? config('blog.default_text_color'));
 
     $rawContent = $post->content ?? '';
     $plainContent = trim(preg_replace('/\s+/', ' ', strip_tags((string) $rawContent)) ?? '');
+    $wordsPerMinute = max(80, (int) config('blog.words_per_minute', 220));
     $wordCount = max(0, str_word_count($plainContent));
-    $readingMinutes = max(1, (int) ceil($wordCount / 220));
+    $readingMinutes = max(1, (int) ceil($wordCount / $wordsPerMinute));
 
     $ratingSummary = array_merge([
       'average' => 0.0,
@@ -28,6 +28,8 @@
     $commentsCount = $comments->count();
     $userComment = $userComment ?? null;
     $canComment = $canComment ?? false;
+    $timezone = config('app.timezone', 'UTC');
+    $heroImageAlt = trim($post->hero_image_caption ?? '') ?: ($post->title ?? 'Imagen del artículo');
   @endphp
 
   <article class="page container blog-post blog-theme-{{ $theme }}" style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }};">
@@ -36,7 +38,7 @@
       <p class="blog-post-eyebrow">Publicación destacada</p>
       <h1 class="page-title">{{ $post->title }}</h1>
       <div class="blog-post-meta">
-        @php $publishedAt = $post->published_at?->timezone(config('app.timezone', 'UTC')); @endphp
+        @php $publishedAt = $post->published_at?->timezone($timezone); @endphp
         <p class="blog-card-meta">
           <span>Por {{ $post->author->name ?? 'Equipo de La Taberna' }}</span>
           @if ($publishedAt)
@@ -101,7 +103,7 @@
 
     @if ($post->hero_image_url)
       <figure class="blog-post-hero">
-        <img src="{{ $post->hero_image_url }}" alt="{{ $post->hero_image_caption ?? '' }}">
+        <img src="{{ $post->hero_image_url }}" alt="{{ $heroImageAlt }}">
         @if ($post->hero_image_caption)
           <figcaption>{{ $post->hero_image_caption }}</figcaption>
         @endif
@@ -175,7 +177,7 @@
         <ul class="blog-comments-list">
           @foreach ($comments as $comment)
             @php
-              $commentAt = optional($comment->created_at)?->timezone(config('app.timezone', 'UTC'));
+              $commentAt = optional($comment->created_at)?->timezone($timezone);
               $commentRating = (int) ($comment->rating ?? 0);
               $isSelf = $userComment && $comment->id === $userComment->id;
             @endphp
@@ -200,7 +202,7 @@
                   @endif
                 </div>
               </div>
-              <p class="blog-comment-body">{{ $comment->body }}</p>
+              <p class="blog-comment-body">{!! nl2br(e($comment->body)) !!}</p>
             </li>
           @endforeach
         </ul>
