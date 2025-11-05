@@ -62,6 +62,14 @@
         </p>
 
         <div class="blog-post-actions" role="listitem">
+          <button type="button"
+                  class="blog-post-share"
+                  data-copy-url="{{ route('blog.show', ['post' => $post->slug]) }}"
+                  data-label-default="Copiar enlace"
+                  data-label-copied="Enlace copiado">
+            <span aria-hidden="true">🔗</span>
+            <span class="blog-post-share-text">Copiar enlace</span>
+          </button>
           <a class="blog-post-history" href="{{ route('blog.index') }}#blog-history">Ver historial</a>
           <span class="sr-only" data-copy-feedback aria-live="polite"></span>
         </div>
@@ -75,7 +83,7 @@
       @endphp
       <div class="blog-post-rating" role="region" aria-live="polite">
         <div class="blog-post-rating-summary" aria-label="Calificación promedio de la comunidad">
-          <div class="meeple-rating meeple-rating--lg" role="img" aria-label="{{ $ratingsCount > 0 ? $averageLabel . ' de 5 meeples' : 'Sin calificaciones todavía' }}">
+          <div class="meeple-rating meeple-rating--lg" role="img" aria-label="{{ $ratingsCount > 0 ? $averageLabel . ' de 5 meeples' : 'Sin reseñas todavía' }}">
             @for ($i = 1; $i <= 5; $i++)
               @php
                 $isFull = $i <= $fullMeeples;
@@ -89,9 +97,9 @@
             <span class="blog-post-rating-average">{{ $ratingsCount > 0 ? $averageLabel : '—' }}</span>
             <span class="blog-post-rating-count">
               @if ($ratingsCount > 0)
-                {{ $ratingsCount }} {{ \Illuminate\Support\Str::plural('comentario', $ratingsCount) }}
+                {{ $ratingsCount }} {{ \Illuminate\Support\Str::plural('reseña', $ratingsCount) }}
               @else
-                Sin calificaciones todavía
+                Sin reseñas todavía
               @endif
             </span>
           </div>
@@ -167,10 +175,10 @@
             </div>
 
             @if ($userComment)
-              <p class="blog-comment-note">Ya dejaste tu comentario. Podés actualizarlo cuando quieras.</p>
+              <p class="blog-comment-note">Ya dejaste tu reseña. Podés actualizarla cuando quieras.</p>
             @endif
 
-            <button type="submit" class="btn btn-primary" data-once>Guardar mi comentario</button>
+            <button type="submit" class="btn btn-primary" data-once>Guardar mi reseña</button>
           </form>
         @else
           <p class="blog-comments-hint">Tu cuenta debe estar aprobada para poder comentar y puntuar publicaciones.</p>
@@ -194,7 +202,7 @@
                 <div class="blog-comment-author">
                   <span class="blog-comment-name">{{ $comment->author->name ?? 'Miembro de la comunidad' }}</span>
                   @if ($isSelf)
-                    <span class="blog-comment-badge">Tu comentario</span>
+                    <span class="blog-comment-badge">Tu reseña</span>
                   @endif
                 </div>
                 <div class="blog-comment-meta">
