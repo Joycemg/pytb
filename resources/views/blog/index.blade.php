@@ -235,29 +235,7 @@
           @endphp
 
           <div class="blog-feed-head">
-            <div class="blog-feed-tabs" role="tablist" aria-label="Tipo de publicaciones">
-              @foreach ($tabs as $tabKey => $tabData)
-                @php
-                  $tabQuery = array_merge(
-                    $queryDefaults,
-                    $tabKey === 'novedades'
-                      ? []
-                      : ['tab' => $tabKey]
-                  );
-                  $tabUrl = route('blog.index', $tabQuery);
-                  $isActive = $activeTab === $tabKey;
-                @endphp
-                <a href="{{ $tabUrl }}"
-                   id="blog-tab-{{ $tabKey }}"
-                   class="blog-feed-tab {{ $isActive ? 'is-active' : '' }}"
-                   role="tab"
-                   aria-selected="{{ $isActive ? 'true' : 'false' }}"
-                   aria-controls="post-list-{{ $tabKey }}">
-                  <span>{{ $tabData['label'] }}</span>
-                  <span class="blog-feed-tab-count">{{ number_format($tabData['count']) }}</span>
-                </a>
-              @endforeach
-            </div>
+ 
 
             @php
               $toggleTabKey = $activeTab === 'miembros' ? 'novedades' : 'miembros';
