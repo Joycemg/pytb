@@ -25,7 +25,7 @@
 
     $heroTitle = $activeTab === 'miembros' ? 'Crónicas del club' : 'Novedades';
     $heroSubtitle = $activeTab === 'miembros'
-      ? 'Aportes y reseñas creadas por el club.'
+      ? 'Aportes y comentarios creados por el club.'
       : 'Lo último de la taberna, en un vistazo.';
 
     // Opcionales provistos desde el controller
