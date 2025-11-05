@@ -62,16 +62,7 @@
         </p>
 
         <div class="blog-post-actions" role="listitem">
-          <button type="button"
-                  class="blog-post-share"
-                  data-copy-url="{{ route('blog.show', ['post' => $post->slug]) }}"
-                  data-label-default="Copiar enlace"
-                  data-label-copied="Enlace copiado">
-            <span aria-hidden="true">🔗</span>
-            <span class="blog-post-share-text">Copiar enlace</span>
-          </button>
           <a class="blog-post-history" href="{{ route('blog.index') }}#blog-history">Ver historial</a>
-          <span class="sr-only" data-copy-feedback aria-live="polite"></span>
         </div>
       </div>
 
@@ -83,7 +74,7 @@
       @endphp
       <div class="blog-post-rating" role="region" aria-live="polite">
         <div class="blog-post-rating-summary" aria-label="Calificación promedio de la comunidad">
-          <div class="meeple-rating meeple-rating--lg" role="img" aria-label="{{ $ratingsCount > 0 ? $averageLabel . ' de 5 meeples' : 'Sin reseñas todavía' }}">
+          <div class="meeple-rating meeple-rating--lg" role="img" aria-label="{{ $ratingsCount > 0 ? $averageLabel . ' de 5 meeples' : 'Sin calificaciones todavía' }}">
             @for ($i = 1; $i <= 5; $i++)
               @php
                 $isFull = $i <= $fullMeeples;
@@ -97,9 +88,9 @@
             <span class="blog-post-rating-average">{{ $ratingsCount > 0 ? $averageLabel : '—' }}</span>
             <span class="blog-post-rating-count">
               @if ($ratingsCount > 0)
-                {{ $ratingsCount }} {{ \Illuminate\Support\Str::plural('reseña', $ratingsCount) }}
+                {{ $ratingsCount }} {{ \Illuminate\Support\Str::plural('comentario', $ratingsCount) }}
               @else
-                Sin reseñas todavía
+                Sin calificaciones todavía
               @endif
             </span>
           </div>
@@ -151,7 +142,7 @@
             @csrf
 
             <div class="blog-comment-form-rating">
-              <span id="comment-rating-label" class="blog-comment-label">Tu calificación</span>
+              <span id="comment-rating-label" class="blog-comment-label">Tu calificación (1 a 5 meeples)</span>
               <div class="meeple-rating-input" role="radiogroup" aria-labelledby="comment-rating-label">
                 @for ($i = 1; $i <= 5; $i++)
                   <input type="radio"
@@ -175,10 +166,10 @@
             </div>
 
             @if ($userComment)
-              <p class="blog-comment-note">Ya dejaste tu reseña. Podés actualizarla cuando quieras.</p>
+              <p class="blog-comment-note">Ya dejaste tu comentario. Podés actualizarlo cuando quieras.</p>
             @endif
 
-            <button type="submit" class="btn btn-primary" data-once>Guardar mi reseña</button>
+            <button type="submit" class="btn btn-primary" data-once>Guardar mi comentario</button>
           </form>
         @else
           <p class="blog-comments-hint">Tu cuenta debe estar aprobada para poder comentar y puntuar publicaciones.</p>
@@ -202,7 +193,7 @@
                 <div class="blog-comment-author">
                   <span class="blog-comment-name">{{ $comment->author->name ?? 'Miembro de la comunidad' }}</span>
                   @if ($isSelf)
-                    <span class="blog-comment-badge">Tu reseña</span>
+                    <span class="blog-comment-badge">Tu comentario</span>
                   @endif
                 </div>
                 <div class="blog-comment-meta">
@@ -249,76 +240,3 @@
   </article>
 @endsection
 
-@push('scripts')
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const buttons = document.querySelectorAll('[data-copy-url]');
-
-      buttons.forEach(function (button) {
-        const defaultLabel = button.getAttribute('data-label-default') || button.textContent.trim();
-        const copiedLabel = button.getAttribute('data-label-copied') || 'Copiado';
-        const feedback = button.parentElement?.querySelector('[data-copy-feedback]');
-
-        button.addEventListener('click', async function () {
-          const url = button.getAttribute('data-copy-url');
-          if (!url) {
-            return;
-          }
-
-          let copied = false;
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            try {
-              await navigator.clipboard.writeText(url);
-              copied = true;
-            } catch (error) {
-              copied = false;
-            }
-          }
-
-          if (!copied) {
-            const textarea = document.createElement('textarea');
-            textarea.value = url;
-            textarea.setAttribute('readonly', '');
-            textarea.style.position = 'absolute';
-            textarea.style.left = '-9999px';
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-              document.execCommand('copy');
-              copied = true;
-            } catch (error) {
-              copied = false;
-            }
-            document.body.removeChild(textarea);
-          }
-
-          if (copied) {
-            button.classList.add('is-copied');
-            const labelTarget = button.querySelector('.blog-post-share-text');
-            if (labelTarget) {
-              labelTarget.textContent = copiedLabel;
-            } else {
-              button.textContent = copiedLabel;
-            }
-
-            if (feedback) {
-              feedback.textContent = 'Enlace copiado al portapapeles';
-            }
-
-            window.setTimeout(function () {
-              button.classList.remove('is-copied');
-              if (labelTarget) {
-                labelTarget.textContent = defaultLabel;
-              } else {
-                button.textContent = defaultLabel;
-              }
-              if (feedback) {
-                feedback.textContent = '';
-              }
-            }, 2800);
-          }
-        });
-      });
-    });
-  </script>
-@endpush
