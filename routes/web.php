@@ -7,6 +7,7 @@ use App\Http\Controllers\ApiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogCommentController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\BlogPostLikeController;
 use App\Http\Controllers\BlogFeedController;
 use App\Http\Controllers\InscripcionController;
 use App\Http\Controllers\JornadaApartadoController;
@@ -174,6 +175,9 @@ Route::middleware(['auth', EnsureUserIsActive::class])
 
         Route::post('/blog/{post:slug}/comentarios', [BlogCommentController::class, 'store'])
             ->name('blog.comments.store');
+
+        Route::post('/blog/{post:slug}/me-gusta', BlogPostLikeController::class)
+            ->name('blog.likes.toggle');
 
         Route::get('/panel/blog', [BlogController::class, 'manage'])
             ->name('blog.manage');

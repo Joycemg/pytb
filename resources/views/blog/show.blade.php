@@ -24,17 +24,16 @@
     $wordCount = max(0, str_word_count($plainContent));
     $readingMinutes = max(1, (int) ceil($wordCount / $wordsPerMinute));
 
-    $ratingSummary = array_merge([
-      'average' => 0.0,
+    $likesSummary = array_merge([
       'count' => 0,
-      'full' => 0,
-      'partial' => 0.0,
-    ], $ratingSummary ?? []);
+      'hasLiked' => false,
+    ], $likesSummary ?? []);
 
     $comments = collect($comments ?? []);
     $commentsCount = $comments->count();
     $userComment = $userComment ?? null;
     $canComment = $canComment ?? false;
+    $canLike = $canLike ?? false;
     $timezone = config('app.timezone', 'UTC');
     $heroImageAlt = trim($post->hero_image_caption ?? '') ?: ($post->title ?? 'Imagen del artículo');
   @endphp
@@ -73,33 +72,34 @@
       </div>
 
       @php
-        $fullMeeples = (int) $ratingSummary['full'];
-        $partialMeeple = (float) $ratingSummary['partial'];
-        $averageLabel = number_format($ratingSummary['average'], 1);
-        $ratingsCount = (int) $ratingSummary['count'];
+        $likesCount = (int) $likesSummary['count'];
+        $hasLiked = (bool) $likesSummary['hasLiked'];
       @endphp
-      <div class="blog-post-rating" role="region" aria-live="polite">
-        <div class="blog-post-rating-summary" aria-label="Calificación promedio de la comunidad">
-          <div class="meeple-rating meeple-rating--lg" role="img" aria-label="{{ $ratingsCount > 0 ? $averageLabel . ' de 5 meeples' : 'Sin calificaciones todavía' }}">
-            @for ($i = 1; $i <= 5; $i++)
-              @php
-                $isFull = $i <= $fullMeeples;
-                $isPartial = !$isFull && $i === $fullMeeples + 1 && $partialMeeple > 0;
-              @endphp
-              <span class="meeple-rating-icon{{ $isFull ? ' is-active' : '' }}{{ $isPartial ? ' is-partial' : '' }}"
-                    @if ($isPartial) style="--meeple-fill: {{ max(0, min(100, round($partialMeeple * 100))) }}%;" @endif></span>
-            @endfor
-          </div>
-          <div class="blog-post-rating-data">
-            <span class="blog-post-rating-average">{{ $ratingsCount > 0 ? $averageLabel : '—' }}</span>
-            <span class="blog-post-rating-count">
-              @if ($ratingsCount > 0)
-                {{ $ratingsCount }} {{ \Illuminate\Support\Str::plural('comentario', $ratingsCount) }}
-              @else
-                Sin calificaciones todavía
-              @endif
-            </span>
-          </div>
+      <div class="blog-post-likes" role="region" aria-live="polite">
+        <p class="blog-post-likes-count">
+          @if ($likesCount === 0)
+            Sé la primera persona en marcar “Me gusta”.
+          @else
+            <strong>{{ $likesCount }}</strong>
+            {{ \Illuminate\Support\Str::plural('persona', $likesCount) }}
+            {{ $likesCount === 1 ? 'marcó' : 'marcaron' }} “Me gusta”.
+          @endif
+        </p>
+        <div class="blog-post-likes-action">
+          @auth
+            @if ($canLike)
+              <form method="post" action="{{ route('blog.likes.toggle', $post) }}">
+                @csrf
+                <button type="submit" class="blog-post-like-button{{ $hasLiked ? ' is-active' : '' }}" data-once>
+                  {{ $hasLiked ? 'Ya no me gusta' : 'Me gusta' }}
+                </button>
+              </form>
+            @else
+              <p class="blog-post-likes-hint">Tu cuenta debe estar aprobada para marcar “Me gusta”.</p>
+            @endif
+          @else
+            <a class="blog-post-likes-login" href="{{ route('auth.login') }}">Ingresá para marcar “Me gusta”.</a>
+          @endauth
         </div>
       </div>
     </header>
@@ -143,27 +143,10 @@
       @auth
         @if ($canComment)
           @php
-            $currentRating = (int) old('rating', optional($userComment)->rating);
-            if ($currentRating < 1 || $currentRating > 5) {
-              $currentRating = 0;
-            }
             $commentBody = old('body', optional($userComment)->body);
           @endphp
           <form method="post" action="{{ route('blog.comments.store', $post) }}" class="blog-comment-form">
             @csrf
-
-            <div class="blog-comment-form-rating">
-              <label for="comment-rating" class="blog-comment-label">Tu calificación</label>
-              <select id="comment-rating" name="rating" required>
-                <option value="" disabled {{ $currentRating === 0 ? 'selected' : '' }}>Seleccioná una opción</option>
-                @for ($i = 1; $i <= 5; $i++)
-                  <option value="{{ $i }}" {{ $currentRating === $i ? 'selected' : '' }}>
-                    {{ $i }} {{ \Illuminate\Support\Str::plural('meeple', $i) }}
-                  </option>
-                @endfor
-              </select>
-              <p class="blog-comment-hint">Calificá la publicación del 1 (poco recomendable) al 5 (imperdible).</p>
-            </div>
 
             <div class="blog-comment-form-field">
               <label for="comment-body" class="blog-comment-label">Tu comentario</label>
@@ -178,11 +161,11 @@
             <button type="submit" class="btn btn-primary" data-once>Guardar mi comentario</button>
           </form>
         @else
-          <p class="blog-comments-hint">Tu cuenta debe estar aprobada para poder comentar y puntuar publicaciones.</p>
+          <p class="blog-comments-hint">Tu cuenta debe estar aprobada para poder comentar y reaccionar a las publicaciones.</p>
         @endif
       @else
         <p class="blog-comments-hint">
-          <a href="{{ route('auth.login') }}">Ingresá</a> para dejar tu comentario y sumar meeples.
+          <a href="{{ route('auth.login') }}">Ingresá</a> para dejar tu comentario y marcar “Me gusta”.
         </p>
       @endauth
 
@@ -191,7 +174,6 @@
           @foreach ($comments as $comment)
             @php
               $commentAt = optional($comment->created_at)?->timezone($timezone);
-              $commentRating = (int) ($comment->rating ?? 0);
               $isSelf = $userComment && $comment->id === $userComment->id;
             @endphp
             <li class="blog-comment{{ $isSelf ? ' is-self' : '' }}">
@@ -203,13 +185,6 @@
                   @endif
                 </div>
                 <div class="blog-comment-meta">
-                  @if ($commentRating > 0)
-                    <div class="meeple-rating meeple-rating--sm" role="img" aria-label="{{ $commentRating }} de 5 meeples">
-                      @for ($i = 1; $i <= 5; $i++)
-                        <span class="meeple-rating-icon{{ $i <= $commentRating ? ' is-active' : '' }}"></span>
-                      @endfor
-                    </div>
-                  @endif
                   @if ($commentAt)
                     <time datetime="{{ $commentAt->toIso8601String() }}">{{ $commentAt->diffForHumans() }}</time>
                   @endif

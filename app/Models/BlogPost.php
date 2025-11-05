@@ -82,6 +82,11 @@ final class BlogPost extends Model
         return $this->hasMany(BlogPostComment::class);
     }
 
+    public function likes(): HasMany
+    {
+        return $this->hasMany(BlogPostLike::class);
+    }
+
     public function approver(): BelongsTo
     {
         return $this->belongsTo(Usuario::class, 'approved_by');

@@ -492,86 +492,46 @@
         @apply font-semibold text-slate-700 underline underline-offset-4 hover:text-slate-900;
     }
 
-    .blog-post-rating-summary {
-        @apply mt-4 flex flex-wrap items-center gap-4 rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3;
+    .blog-post-likes {
+        @apply mt-4 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-3 sm:flex-row sm:items-center sm:justify-between;
     }
 
-    .blog-post-rating-data {
-        @apply flex flex-col gap-0.5;
+    .blog-post-likes-count {
+        @apply text-sm text-slate-600;
     }
 
-    .blog-post-rating-average {
-        @apply text-2xl font-semibold text-slate-900;
+    .blog-post-likes-count strong {
+        @apply text-base font-semibold text-slate-900;
     }
 
-    .blog-post-rating-count {
+    .blog-post-likes-action {
+        @apply flex items-center gap-3;
+    }
+
+    .blog-post-like-button {
+        @apply inline-flex items-center justify-center rounded-full border border-transparent px-4 py-2 text-sm font-semibold text-white transition-colors duration-150 ease-in-out;
+        background-color: var(--blog-accent, #7b2d26);
+    }
+
+    .blog-post-like-button.is-active {
+        background-color: #111827;
+    }
+
+    .blog-post-like-button:hover,
+    .blog-post-like-button:focus-visible {
+        background-color: #111827;
+    }
+
+    .blog-post-like-button:focus-visible {
+        @apply outline-none ring-2 ring-slate-900 ring-offset-2 ring-offset-white;
+    }
+
+    .blog-post-likes-hint {
         @apply text-sm text-slate-500;
     }
 
-    .meeple-rating {
-        @apply inline-flex items-center gap-1;
-        --meeple-size: 1.1rem;
-        --meeple-color: var(--blog-accent, #7b2d26);
-        --meeple-muted: rgba(123, 45, 38, 0.18);
-    }
-
-    .meeple-rating--lg {
-        @apply gap-2;
-        --meeple-size: 1.5rem;
-    }
-
-    .meeple-rating--sm {
-        @apply gap-1;
-        --meeple-size: 0.95rem;
-    }
-
-    .meeple-rating-icon {
-        width: var(--meeple-size);
-        height: var(--meeple-size);
-        background-color: var(--meeple-muted);
-        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='currentColor' d='M50%205%20L65%2030%20L92%2034%20L75%2055%20L79%2088%20L50%2074%20L21%2088%20L25%2055%20L8%2034%20L35%2030%20Z'/%3E%3C/svg%3E");
-        mask-size: contain;
-        mask-repeat: no-repeat;
-        mask-position: center;
-        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='currentColor' d='M50%205%20L65%2030%20L92%2034%20L75%2055%20L79%2088%20L50%2074%20L21%2088%20L25%2055%20L8%2034%20L35%2030%20Z'/%3E%3C/svg%3E");
-        -webkit-mask-size: contain;
-        -webkit-mask-repeat: no-repeat;
-        -webkit-mask-position: center;
-        display: inline-block;
-        transition: background-color .2s ease, background .2s ease;
-    }
-
-    .meeple-rating-icon.is-active {
-        background-color: var(--meeple-color);
-    }
-
-    .meeple-rating-icon.is-partial {
-        background: linear-gradient(90deg, var(--meeple-color) var(--meeple-fill, 50%), var(--meeple-muted) var(--meeple-fill, 50%));
-    }
-
-    .meeple-rating-input {
-        @apply inline-flex items-center gap-2;
-    }
-
-    .meeple-rating-input input {
-        @apply sr-only;
-    }
-
-    .meeple-rating-input-label {
-        @apply inline-flex cursor-pointer items-center justify-center rounded-full p-1 transition hover:bg-slate-100;
-    }
-
-    .meeple-rating-input-label .meeple-rating-icon {
-        --meeple-size: 1.8rem;
-    }
-
-    .meeple-rating-input input:checked + .meeple-rating-input-label .meeple-rating-icon,
-    .meeple-rating-input-label:hover .meeple-rating-icon {
-        background-color: var(--meeple-color);
-    }
-
-    .meeple-rating-input input:focus-visible + .meeple-rating-input-label {
-        @apply outline-none ring-2 ring-offset-2 ring-[#7b2d26]/70;
+    .blog-post-likes-login {
+        @apply text-sm font-semibold text-slate-700 underline underline-offset-4 transition-colors duration-150 ease-in-out hover:text-slate-900;
     }
 
     .blog-comments {
@@ -589,10 +549,6 @@
 
     .blog-comment-form {
         @apply flex flex-col gap-4 rounded-2xl border border-slate-100 bg-slate-50/60 p-4;
-    }
-
-    .blog-comment-form-rating {
-        @apply flex flex-col gap-2;
     }
 
     .blog-comment-form-field {
@@ -831,10 +787,6 @@
 
     .blog-post-history {
         @apply text-sm font-semibold text-slate-600 underline underline-offset-4 transition hover:text-slate-900;
-    }
-
-    .blog-post-rating {
-        @apply mt-2;
     }
 
     .blog-post-footer {

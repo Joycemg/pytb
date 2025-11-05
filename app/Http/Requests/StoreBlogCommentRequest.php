@@ -18,7 +18,6 @@ final class StoreBlogCommentRequest extends FormRequest
     {
         return [
             'body' => ['required', 'string', 'min:3', 'max:2000'],
-            'rating' => ['required', 'integer', 'between:1,5'],
         ];
     }
 
@@ -29,7 +28,6 @@ final class StoreBlogCommentRequest extends FormRequest
     {
         return [
             'body' => 'comentario',
-            'rating' => 'calificación',
         ];
     }
 }
