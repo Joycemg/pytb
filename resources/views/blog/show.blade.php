@@ -143,7 +143,7 @@
                          name="rating"
                          value="{{ $i }}"
                          {{ $currentRating === $i ? 'checked' : '' }}
-                         {{ $loop->first ? 'required' : '' }}>
+                         {{ $i === 1 ? 'required' : '' }}>
                   <label for="comment-rating-{{ $i }}" class="meeple-rating-input-label">
                     <span class="sr-only">{{ $i }} {{ \Illuminate\Support\Str::plural('meeple', $i) }}</span>
                     <span class="meeple-rating-icon" aria-hidden="true"></span>
