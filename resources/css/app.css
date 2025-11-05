@@ -791,6 +791,16 @@
         @apply flex flex-col gap-3 pb-6;
     }
 
+    .blog-post-head-top {
+        @apply flex flex-col gap-1.5;
+    }
+
+    @media (min-width:768px) {
+        .blog-post-head-top {
+            @apply gap-2;
+        }
+    }
+
     .blog-post-back {
         @apply w-fit text-sm font-medium text-slate-500 transition hover:text-slate-800;
     }
@@ -821,6 +831,10 @@
 
     .blog-post-history {
         @apply text-sm font-semibold text-slate-600 underline underline-offset-4 transition hover:text-slate-900;
+    }
+
+    .blog-post-rating {
+        @apply mt-2;
     }
 
     .blog-post-footer {
