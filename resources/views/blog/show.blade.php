@@ -129,35 +129,41 @@
       $likesCount = (int) $likesSummary['count'];
       $hasLiked = (bool) $likesSummary['hasLiked'];
     @endphp
+    @php
+      $likesSummaryText = $likesCount === 0
+        ? 'Sé la primera persona en marcar “Me gusta”.'
+        : sprintf(
+            '%d %s %s “Me gusta”.',
+            $likesCount,
+            \Illuminate\Support\Str::plural('persona', $likesCount),
+            $likesCount === 1 ? 'marcó' : 'marcaron'
+          );
+      $likeButtonLabel = $hasLiked ? 'Quitar “Me gusta”' : 'Marcar “Me gusta”';
+      $likeButtonAria = $likesCount > 0
+        ? sprintf('%s. %s', $likeButtonLabel, $likesSummaryText)
+        : $likeButtonLabel;
+    @endphp
     <section class="blog-post-likes" role="region" aria-live="polite">
-      <div class="blog-post-likes-info">
-        <span class="blog-post-likes-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-            <path d="M9.75 21.75a1.5 1.5 0 0 1-1.5-1.5v-6a.75.75 0 0 0-.75-.75H4.5a1.5 1.5 0 0 0-1.5 1.5v6a1.5 1.5 0 0 0 1.5 1.5h5.25Zm2.222-.023c-1.074 0-1.947-.873-1.947-1.947V9.92c0-.525.207-1.029.574-1.4l4.58-4.611a1.1 1.1 0 0 1 1.873.779v2.98h3.274a1.5 1.5 0 0 1 1.447 1.911l-2.037 7.012a2.25 2.25 0 0 1-2.158 1.611h-5.606Z" fill="currentColor" />
-          </svg>
-        </span>
-        <p class="blog-post-likes-count">
-          @if ($likesCount === 0)
-            Sé la primera persona en marcar “Me gusta”.
-          @else
-            <strong>{{ $likesCount }}</strong>
-            {{ \Illuminate\Support\Str::plural('persona', $likesCount) }}
-            {{ $likesCount === 1 ? 'marcó' : 'marcaron' }} “Me gusta”.
-          @endif
-        </p>
-      </div>
-      <div class="blog-post-likes-action">
+      <div class="blog-post-likes-main">
         @auth
           @if ($canLike)
-            <form method="post" action="{{ route('blog.likes.toggle', $post) }}">
+            <form method="post" action="{{ route('blog.likes.toggle', $post) }}" class="blog-post-like-form">
               @csrf
-              <button type="submit" class="blog-post-like-button{{ $hasLiked ? ' is-active' : '' }}" data-once>
+              <button
+                type="submit"
+                class="blog-post-like-button{{ $hasLiked ? ' is-active' : '' }}"
+                data-once
+                aria-pressed="{{ $hasLiked ? 'true' : 'false' }}"
+                aria-label="{{ $likeButtonAria }}"
+              >
                 <span class="blog-post-like-button-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
                     <path d="M9.75 21.75a1.5 1.5 0 0 1-1.5-1.5v-6a.75.75 0 0 0-.75-.75H4.5a1.5 1.5 0 0 0-1.5 1.5v6a1.5 1.5 0 0 0 1.5 1.5h5.25Zm2.222-.023c-1.074 0-1.947-.873-1.947-1.947V9.92c0-.525.207-1.029.574-1.4l4.58-4.611a1.1 1.1 0 0 1 1.873.779v2.98h3.274a1.5 1.5 0 0 1 1.447 1.911l-2.037 7.012a2.25 2.25 0 0 1-2.158 1.611h-5.606Z" fill="currentColor" />
                   </svg>
                 </span>
-                <span class="blog-post-like-button-label">{{ $hasLiked ? 'Quitar “Me gusta”' : '¡Me gusta!' }}</span>
+                <span class="blog-post-like-button-label">{{ $hasLiked ? 'Te gusta' : 'Me gusta' }}</span>
+                <span class="blog-post-like-button-count" aria-hidden="true">{{ $likesCount }}</span>
+                <span class="sr-only">{{ $likesSummaryText }}</span>
               </button>
             </form>
           @else
@@ -167,6 +173,15 @@
           <a class="blog-post-likes-login" href="{{ route('auth.login') }}">Ingresá para marcar “Me gusta”.</a>
         @endauth
       </div>
+      <p class="blog-post-likes-summary">
+        @if ($likesCount === 0)
+          {{ $likesSummaryText }}
+        @else
+          <strong>{{ $likesCount }}</strong>
+          {{ \Illuminate\Support\Str::plural('persona', $likesCount) }}
+          {{ $likesCount === 1 ? 'marcó' : 'marcaron' }} “Me gusta”.
+        @endif
+      </p>
     </section>
 
     <section class="blog-comments" id="comentarios" aria-labelledby="blog-comments-title">
