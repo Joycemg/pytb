@@ -549,8 +549,12 @@
     }
 
     .blog-post-likes-main {
-        @apply flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200/80 bg-white/70 px-4 py-3 backdrop-blur;
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        @apply flex flex-wrap items-center gap-3 px-5 py-4;
+        border: 1px solid rgba(73, 17, 14, 0.85);
+        background: linear-gradient(135deg, #7b2d26 0%, #541915 100%);
+        color: #fdf7f5;
+        border-radius: 0;
+        box-shadow: 0 14px 28px rgba(84, 25, 21, 0.24);
     }
 
     .blog-post-likes-main > * {
@@ -610,7 +614,7 @@
 
     .blog-post-likes-hint {
         @apply text-sm;
-        color: #717b8c;
+        color: rgba(253, 247, 245, 0.85);
     }
 
     .blog-post-likes-login {
