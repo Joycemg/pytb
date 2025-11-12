@@ -530,14 +530,30 @@
     }
 
     .blog-post-likes {
-        @apply mt-8 flex flex-col items-start gap-2 text-slate-600;
+        @apply relative mt-12 flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white/90 p-6 text-slate-600 shadow-sm;
+        overflow: hidden;
+    }
+
+    .blog-post-likes::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at top left, rgba(123, 45, 38, 0.12), transparent 55%),
+            linear-gradient(135deg, rgba(148, 163, 184, 0.12), transparent 65%);
+        pointer-events: none;
+    }
+
+    .blog-post-likes > * {
+        position: relative;
+        z-index: 1;
     }
 
     .blog-post-likes-main {
-        @apply flex flex-wrap items-center gap-3;
+        @apply flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200/80 bg-white/70 px-4 py-3 backdrop-blur;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
     }
 
-    .blog-post-like-form {
+    .blog-post-likes-main > * {
         margin: 0;
     }
 
@@ -583,7 +599,7 @@
     }
 
     .blog-post-likes-summary {
-        @apply text-sm;
+        @apply text-sm leading-relaxed;
         color: #4a5366;
     }
 
@@ -598,13 +614,26 @@
     }
 
     .blog-post-likes-login {
-        @apply text-sm font-semibold underline underline-offset-4 transition duration-150 ease-in-out;
+        @apply inline-flex items-center gap-2 rounded-full border border-slate-300/80 bg-white/70 px-3 py-1.5 text-sm font-semibold text-slate-700 underline-offset-4 transition duration-150 ease-in-out;
+        text-decoration: none;
+    }
+
+    .blog-post-likes-login::after {
+        content: '→';
+        font-size: 0.85em;
         color: var(--blog-accent, #7b2d26);
+        transition: transform 0.2s ease;
     }
 
     .blog-post-likes-login:hover,
     .blog-post-likes-login:focus-visible {
-        opacity: 0.85;
+        color: var(--blog-accent, #7b2d26);
+        text-decoration: underline;
+    }
+
+    .blog-post-likes-login:hover::after,
+    .blog-post-likes-login:focus-visible::after {
+        transform: translateX(2px);
     }
 
     .blog-comments {
