@@ -549,7 +549,8 @@
     }
 
     .blog-post-likes-main {
-        @apply flex flex-wrap items-center gap-3 rounded-2xl px-5 py-4;
+        @apply flex flex-wrap items-center gap-3 rounded-2xl;
+        padding: 0;
         border: none;
         background: none;
         color: #2f3748;
@@ -581,18 +582,14 @@
         @apply inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all duration-150 ease-in-out;
         border: none;
         border-radius: 0;
-        background: linear-gradient(
-            135deg,
-            color-mix(in srgb, var(--blog-accent, #7b2d26) 92%, #ffffff) 0%,
-            color-mix(in srgb, var(--blog-accent, #7b2d26) 78%, #3c0f0d) 100%
-        );
+        background: var(--blog-accent, #7b2d26);
         color: #ffffff;
         box-shadow: 0 10px 24px rgba(123, 45, 38, 0.16);
     }
 
     .blog-post-like-button:hover,
     .blog-post-like-button:focus-visible {
-        filter: brightness(1.05);
+        filter: brightness(1.08);
         transform: translateY(-1px);
         box-shadow: 0 10px 24px rgba(123, 45, 38, 0.22);
     }
@@ -626,15 +623,6 @@
         color: #ffffff;
     }
 
-    .blog-post-likes-summary {
-        @apply text-sm leading-relaxed;
-        color: #4a5366;
-    }
-
-    .blog-post-likes-summary strong {
-        @apply font-semibold;
-        color: #2f3748;
-    }
 
     .blog-post-likes-hint {
         @apply text-sm;

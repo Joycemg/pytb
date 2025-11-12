@@ -173,15 +173,6 @@
           <a class="blog-post-likes-login" href="{{ route('auth.login') }}">Ingresá para marcar “Me gusta”.</a>
         @endauth
       </div>
-      <p class="blog-post-likes-summary">
-        @if ($likesCount === 0)
-          {{ $likesSummaryText }}
-        @else
-          <strong>{{ $likesCount }}</strong>
-          {{ \Illuminate\Support\Str::plural('persona', $likesCount) }}
-          {{ $likesCount === 1 ? 'marcó' : 'marcaron' }} “Me gusta”.
-        @endif
-      </p>
     </section>
 
     <section class="blog-comments" id="comentarios" aria-labelledby="blog-comments-title">
