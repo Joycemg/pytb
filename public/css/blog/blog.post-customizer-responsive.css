@@ -43,6 +43,12 @@
         flex-wrap: wrap;
         align-items: center;
         gap: clamp(.55rem, 1.5vw, .9rem);
+        padding: clamp(.85rem, 1.8vw, 1.25rem) clamp(1.1rem, 2.2vw, 1.75rem);
+        border: 1px solid rgba(73, 17, 14, .85);
+        background: linear-gradient(135deg, #7b2d26 0%, #541915 100%);
+        color: #fdf7f5;
+        border-radius: 0;
+        box-shadow: 0 14px 28px rgba(84, 25, 21, .24);
     }
 
     .blog-post-like-form {
@@ -121,7 +127,7 @@
 
     .blog-post-likes-hint {
         font-size: .875rem;
-        color: #6c7687;
+        color: rgba(253, 247, 245, .85);
         margin: 0;
     }
 
