@@ -176,6 +176,10 @@ Route::middleware(['auth', EnsureUserIsActive::class])
         Route::post('/blog/{post:slug}/comentarios', [BlogCommentController::class, 'store'])
             ->name('blog.comments.store');
 
+        Route::delete('/blog/{post:slug}/comentarios/{comment}', [BlogCommentController::class, 'destroy'])
+            ->whereNumber('comment')
+            ->name('blog.comments.destroy');
+
         Route::post('/blog/{post:slug}/me-gusta', BlogPostLikeController::class)
             ->name('blog.likes.toggle');
 

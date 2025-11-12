@@ -200,7 +200,7 @@
               <button type="submit" class="btn btn-primary" data-once>Guardar mi comentario</button>
             </form>
           @else
-            <p class="blog-comment-note">Ya dejaste tu comentario. No es posible editarlo.</p>
+            <p class="blog-comment-note">Ya dejaste tu comentario.</p>
           @endif
         @else
           <p class="blog-comments-hint">Tu cuenta debe estar aprobada para poder comentar y reaccionar a las publicaciones.</p>
@@ -229,6 +229,20 @@
                 <div class="blog-comment-meta">
                   @if ($commentAt)
                     <time datetime="{{ $commentAt->toIso8601String() }}">{{ $commentAt->diffForHumans() }}</time>
+                  @endif
+                  @if (auth()->user()?->hasAnyRole(['admin', 'moderator']))
+                    <form
+                      method="post"
+                      action="{{ route('blog.comments.destroy', [$post, $comment]) }}"
+                      class="blog-comment-delete-form"
+                      onsubmit="return confirm('¿Eliminar este comentario?');"
+                    >
+                      @csrf
+                      @method('delete')
+                      <button type="submit" class="blog-comment-delete-button">
+                        Eliminar
+                      </button>
+                    </form>
                   @endif
                 </div>
               </div>
