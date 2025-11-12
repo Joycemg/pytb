@@ -44,28 +44,33 @@
         align-items: center;
         gap: clamp(.55rem, 1.5vw, .9rem);
         padding: clamp(.85rem, 1.8vw, 1.25rem) clamp(1.1rem, 2.2vw, 1.75rem);
-        border: 1px solid rgba(73, 17, 14, .85);
-        background: linear-gradient(135deg, #7b2d26 0%, #541915 100%);
-        color: #fdf7f5;
-        border-radius: 0;
-        box-shadow: 0 14px 28px rgba(84, 25, 21, .24);
+        border-radius: clamp(1.35rem, 2vw, 1.75rem);
+        border: 1px solid color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 35%, transparent);
+        background: linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 16%, #ffffff) 0%,
+            color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 6%, #ffffff) 100%
+        );
+        color: #2f3748;
+        box-shadow: 0 16px 32px rgba(15, 23, 42, .08);
     }
 
     .blog-post-like-form {
         margin: 0;
         display: inline-flex;
         align-items: center;
-        padding: .35rem;
+        gap: .35rem;
+        padding: .4rem .5rem;
         border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, .25);
-        background: color-mix(in srgb, #ffffff 14%, transparent);
-        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12), 0 10px 22px rgba(84, 25, 21, .18);
+        border: 1px solid color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 25%, transparent);
+        background: color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 8%, #ffffff);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, .08);
         transition: box-shadow .18s ease, transform .18s ease, background-color .18s ease;
     }
 
     .blog-post-like-form:focus-within {
-        background: color-mix(in srgb, #ffffff 20%, transparent);
-        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18), 0 12px 26px rgba(84, 25, 21, .22);
+        background: color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 12%, #ffffff);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, .12);
         transform: translateY(-1px);
     }
 
@@ -74,13 +79,17 @@
         align-items: center;
         gap: .5rem;
         border-radius: 999px;
-        border: 1px solid transparent;
+        border: 1px solid color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 42%, transparent);
         padding: .45rem 1.15rem;
         font-size: .875rem;
         font-weight: 600;
         color: #fff;
-        background: var(--blog-accent, var(--brand, #8c2e2e));
-        box-shadow: 0 8px 18px rgba(123, 45, 38, .18);
+        background: linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 92%, #ffffff) 0%,
+            color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 78%, #3c0f0d) 100%
+        );
+        box-shadow: 0 10px 24px rgba(123, 45, 38, .16);
         transition: filter .18s ease, transform .18s ease, box-shadow .18s ease;
     }
 
@@ -92,7 +101,7 @@
     }
 
     .blog-post-like-button.is-active {
-        box-shadow: 0 0 0 1px rgba(255, 255, 255, .35), 0 6px 20px rgba(123, 45, 38, .2);
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, .45), 0 0 0 4px rgba(123, 45, 38, .18), 0 10px 26px rgba(123, 45, 38, .22);
     }
 
     .blog-post-like-button-icon {
@@ -102,7 +111,8 @@
         width: clamp(2rem, 3vw, 2.35rem);
         height: clamp(2rem, 3vw, 2.35rem);
         border-radius: 999px;
-        background: rgba(255, 255, 255, .18);
+        background: color-mix(in srgb, #ffffff 75%, var(--blog-accent, var(--brand, #8c2e2e)) 25%);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 22%, transparent);
     }
 
     .blog-post-like-button-icon svg {
