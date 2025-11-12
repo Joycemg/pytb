@@ -153,6 +153,7 @@
                 type="submit"
                 class="blog-post-like-button{{ $hasLiked ? ' is-active' : '' }}"
                 data-once
+                data-label-pending="{{ $hasLiked ? 'Te gusta' : 'Me gusta' }}"
                 aria-pressed="{{ $hasLiked ? 'true' : 'false' }}"
                 aria-label="{{ $likeButtonAria }}"
               >
@@ -162,7 +163,7 @@
                   </svg>
                 </span>
                 <span class="blog-post-like-button-label">{{ $hasLiked ? 'Te gusta' : 'Me gusta' }}</span>
-                <span class="blog-post-like-button-count" aria-hidden="true">{{ $likesCount }}</span>
+                <span class="blog-post-like-button-count" aria-hidden="true">{{ number_format($likesCount, 0, ',', '.') }}</span>
                 <span class="sr-only">{{ $likesSummaryText }}</span>
               </button>
             </form>
