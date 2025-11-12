@@ -580,22 +580,32 @@
 
     .blog-post-like-button {
         @apply inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold transition-all duration-150 ease-in-out;
-        border: none;
-        border-radius: 0;
-        background: var(--blog-accent, #7b2d26);
-        color: #ffffff;
-        box-shadow: 0 10px 24px rgba(123, 45, 38, 0.16);
+        border: 1px solid color-mix(in srgb, var(--blog-accent, #7b2d26) 78%, rgba(255, 255, 255, 0.55));
+        border-radius: 999px;
+        background: linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--blog-accent, #7b2d26) 94%, black 6%),
+            color-mix(in srgb, var(--blog-accent, #7b2d26) 88%, #f4d8d4 12%)
+        );
+        color: #fdf7f5;
+        text-shadow: 0 1px 1px rgba(39, 14, 12, 0.45);
+        box-shadow: 0 10px 24px rgba(94, 26, 21, 0.18);
     }
 
     .blog-post-like-button:hover,
     .blog-post-like-button:focus-visible {
-        filter: brightness(1.08);
+        filter: none;
         transform: translateY(-1px);
-        box-shadow: 0 10px 24px rgba(123, 45, 38, 0.22);
+        box-shadow: 0 12px 28px rgba(94, 26, 21, 0.28);
+        background: linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--blog-accent, #7b2d26) 96%, black 4%),
+            color-mix(in srgb, var(--blog-accent, #7b2d26) 82%, #f9e9e7 18%)
+        );
     }
 
     .blog-post-like-button.is-active {
-        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.45), 0 0 0 4px rgba(123, 45, 38, 0.18), 0 10px 26px rgba(123, 45, 38, 0.22);
+        box-shadow: 0 0 0 1px rgba(255, 244, 242, 0.55), 0 0 0 4px rgba(123, 45, 38, 0.28), 0 14px 30px rgba(94, 26, 21, 0.32);
     }
 
     .blog-post-like-button:focus-visible {
@@ -604,8 +614,9 @@
 
     .blog-post-like-button-icon {
         @apply flex h-7 w-7 items-center justify-center rounded-full;
-        background: color-mix(in srgb, #ffffff 75%, var(--blog-accent, #7b2d26) 25%);
-        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--blog-accent, #7b2d26) 22%, transparent);
+        background: color-mix(in srgb, #ffffff 70%, var(--blog-accent, #7b2d26) 30%);
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--blog-accent, #7b2d26) 32%, transparent);
+        color: color-mix(in srgb, var(--blog-accent, #7b2d26) 92%, white 8%);
     }
 
     .blog-post-like-button-icon svg {
@@ -619,8 +630,10 @@
     }
 
     .blog-post-like-button-count {
-        @apply inline-flex min-w-[2rem] justify-center rounded-full bg-white/15 px-2 py-0.5 text-xs font-semibold;
-        color: #ffffff;
+        @apply inline-flex min-w-[2rem] justify-center rounded-full px-2 py-0.5 text-xs font-semibold;
+        background: color-mix(in srgb, var(--blog-accent, #7b2d26) 22%, rgba(255, 255, 255, 0.2) 78%);
+        color: #fff6f4;
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--blog-accent, #7b2d26) 48%, transparent);
     }
 
 
