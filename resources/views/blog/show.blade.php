@@ -17,6 +17,15 @@
 
     $accent = $post->accent_color ?? ($themes[$theme]['accent'] ?? config('blog.default_accent'));
     $accentText = $post->accent_text_color ?? ($themes[$theme]['text'] ?? config('blog.default_text_color'));
+    $accentRgb = null;
+    if (is_string($accent) && preg_match('/^#?([0-9a-f]{6})$/i', $accent, $accentMatches)) {
+      $hexColor = $accentMatches[1];
+      $accentRgb = [
+        hexdec(substr($hexColor, 0, 2)),
+        hexdec(substr($hexColor, 2, 2)),
+        hexdec(substr($hexColor, 4, 2)),
+      ];
+    }
 
     $rawContent = $post->content ?? '';
     $plainContent = trim(preg_replace('/\s+/', ' ', strip_tags((string) $rawContent)) ?? '');
@@ -38,7 +47,8 @@
     $heroImageAlt = trim($post->hero_image_caption ?? '') ?: ($post->title ?? 'Imagen del artículo');
   @endphp
 
-  <article class="page container blog-post blog-theme-{{ $theme }}" style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }};">
+    @php $accentRgbString = $accentRgb ? implode(', ', $accentRgb) : null; @endphp
+  <article class="page container blog-post blog-theme-{{ $theme }}" style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }}; @if($accentRgbString) --blog-accent-rgb: {{ $accentRgbString }}; @endif">
     <header class="page-head blog-post-head">
       <div class="blog-post-head-top">
         <a class="blog-post-back" href="{{ route('blog.index') }}">← Volver a las novedades</a>
@@ -46,23 +56,30 @@
         @if ($isFeatured)
           <p class="blog-post-eyebrow">Publicación destacada</p>
         @endif
-        <h1 class="page-title">{{ $post->title }}</h1>
+        <h1 class="page-title blog-post-title">{{ $post->title }}</h1>
       </div>
 
-      <div class="blog-post-meta" role="list">
+      <div class="blog-post-meta-card" role="list">
         @php $publishedAt = $post->published_at?->timezone($timezone); @endphp
-        <p class="blog-card-meta" role="listitem">
+        <p class="blog-post-meta" role="listitem">
           @php $authorName = trim($post->author->name ?? ''); @endphp
-          <span>
-            Por {{ $authorName !== '' ? $authorName : 'Equipo de La Taberna' }}
+          <span class="blog-post-meta-item">
+            <span class="blog-post-meta-icon" aria-hidden="true">✍️</span>
+            <span>Por {{ $authorName !== '' ? $authorName : 'Equipo de La Taberna' }}</span>
           </span>
           @if ($publishedAt)
-            <span aria-hidden="true" class="blog-post-meta-separator">•</span>
-            <time datetime="{{ $publishedAt->toIso8601String() }}">{{ $publishedAt->translatedFormat('d \d\e F, Y H:i') }}</time>
+            <span class="blog-post-meta-divider" role="presentation"></span>
+            <span class="blog-post-meta-item">
+              <span class="blog-post-meta-icon" aria-hidden="true">🗓️</span>
+              <time datetime="{{ $publishedAt->toIso8601String() }}">{{ $publishedAt->translatedFormat('d \d\e F, Y H:i') }}</time>
+            </span>
           @endif
           @if ($wordCount > 0)
-            <span aria-hidden="true" class="blog-post-meta-separator">•</span>
-            <span>{{ $readingMinutes }} {{ \Illuminate\Support\Str::plural('minuto', $readingMinutes) }} de lectura</span>
+            <span class="blog-post-meta-divider" role="presentation"></span>
+            <span class="blog-post-meta-item">
+              <span class="blog-post-meta-icon" aria-hidden="true">⏱️</span>
+              <span>{{ $readingMinutes }} {{ \Illuminate\Support\Str::plural('minuto', $readingMinutes) }} de lectura</span>
+            </span>
           @endif
         </p>
 
@@ -76,22 +93,34 @@
         $hasLiked = (bool) $likesSummary['hasLiked'];
       @endphp
       <div class="blog-post-likes" role="region" aria-live="polite">
-        <p class="blog-post-likes-count">
-          @if ($likesCount === 0)
-            Sé la primera persona en marcar “Me gusta”.
-          @else
-            <strong>{{ $likesCount }}</strong>
-            {{ \Illuminate\Support\Str::plural('persona', $likesCount) }}
-            {{ $likesCount === 1 ? 'marcó' : 'marcaron' }} “Me gusta”.
-          @endif
-        </p>
+        <div class="blog-post-likes-info">
+          <span class="blog-post-likes-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+              <path d="M9.75 21.75a1.5 1.5 0 0 1-1.5-1.5v-6a.75.75 0 0 0-.75-.75H4.5a1.5 1.5 0 0 0-1.5 1.5v6a1.5 1.5 0 0 0 1.5 1.5h5.25Zm2.222-.023c-1.074 0-1.947-.873-1.947-1.947V9.92c0-.525.207-1.029.574-1.4l4.58-4.611a1.1 1.1 0 0 1 1.873.779v2.98h3.274a1.5 1.5 0 0 1 1.447 1.911l-2.037 7.012a2.25 2.25 0 0 1-2.158 1.611h-5.606Z" fill="currentColor" />
+            </svg>
+          </span>
+          <p class="blog-post-likes-count">
+            @if ($likesCount === 0)
+              Sé la primera persona en marcar “Me gusta”.
+            @else
+              <strong>{{ $likesCount }}</strong>
+              {{ \Illuminate\Support\Str::plural('persona', $likesCount) }}
+              {{ $likesCount === 1 ? 'marcó' : 'marcaron' }} “Me gusta”.
+            @endif
+          </p>
+        </div>
         <div class="blog-post-likes-action">
           @auth
             @if ($canLike)
               <form method="post" action="{{ route('blog.likes.toggle', $post) }}">
                 @csrf
                 <button type="submit" class="blog-post-like-button{{ $hasLiked ? ' is-active' : '' }}" data-once>
-                  {{ $hasLiked ? 'Ya no me gusta' : 'Me gusta' }}
+                  <span class="blog-post-like-button-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
+                      <path d="M9.75 21.75a1.5 1.5 0 0 1-1.5-1.5v-6a.75.75 0 0 0-.75-.75H4.5a1.5 1.5 0 0 0-1.5 1.5v6a1.5 1.5 0 0 0 1.5 1.5h5.25Zm2.222-.023c-1.074 0-1.947-.873-1.947-1.947V9.92c0-.525.207-1.029.574-1.4l4.58-4.611a1.1 1.1 0 0 1 1.873.779v2.98h3.274a1.5 1.5 0 0 1 1.447 1.911l-2.037 7.012a2.25 2.25 0 0 1-2.158 1.611h-5.606Z" fill="currentColor" />
+                    </svg>
+                  </span>
+                  <span class="blog-post-like-button-label">{{ $hasLiked ? 'Quitar “Me gusta”' : '¡Me gusta!' }}</span>
                 </button>
               </form>
             @else
@@ -107,7 +136,12 @@
     @if ($post->tags->isNotEmpty())
       <ul class="blog-post-tags" aria-label="Etiquetas">
         @foreach ($post->tags as $tag)
-          <li><a class="blog-post-tag" href="{{ route('blog.index', ['q' => '#' . $tag->name]) }}">#{{ $tag->name }}</a></li>
+          <li>
+            <a class="blog-post-tag" href="{{ route('blog.index', ['q' => '#' . $tag->name]) }}">
+              <span class="blog-post-tag-symbol" aria-hidden="true">#</span>
+              <span>{{ $tag->name }}</span>
+            </a>
+          </li>
         @endforeach
       </ul>
     @endif
