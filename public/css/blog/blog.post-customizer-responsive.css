@@ -43,7 +43,7 @@
         flex-wrap: wrap;
         align-items: center;
         gap: clamp(.55rem, 1.5vw, .9rem);
-        padding: clamp(.85rem, 1.8vw, 1.25rem) clamp(1.1rem, 2.2vw, 1.75rem);
+        padding: 0;
         border-radius: clamp(1.35rem, 2vw, 1.75rem);
         border: none;
         background: none;
@@ -80,18 +80,14 @@
         font-size: .875rem;
         font-weight: 600;
         color: #fff;
-        background: linear-gradient(
-            135deg,
-            color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 92%, #ffffff) 0%,
-            color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 78%, #3c0f0d) 100%
-        );
+        background: var(--blog-accent, var(--brand, #8c2e2e));
         box-shadow: 0 10px 24px rgba(123, 45, 38, .16);
         transition: filter .18s ease, transform .18s ease, box-shadow .18s ease;
     }
 
     .blog-post-like-button:hover,
     .blog-post-like-button:focus-visible {
-        filter: brightness(1.05);
+        filter: brightness(1.08);
         transform: translateY(-1px);
         box-shadow: 0 10px 24px rgba(123, 45, 38, .22);
     }
@@ -135,15 +131,6 @@
         color: #fff;
     }
 
-    .blog-post-likes-summary {
-        margin: 0;
-        font-size: .875rem;
-        color: #505a6c;
-    }
-
-    .blog-post-likes-summary strong {
-        color: #2f3748;
-    }
 
     .blog-post-likes-hint {
         font-size: .875rem;
