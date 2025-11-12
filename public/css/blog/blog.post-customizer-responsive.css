@@ -45,14 +45,10 @@
         gap: clamp(.55rem, 1.5vw, .9rem);
         padding: clamp(.85rem, 1.8vw, 1.25rem) clamp(1.1rem, 2.2vw, 1.75rem);
         border-radius: clamp(1.35rem, 2vw, 1.75rem);
-        border: 1px solid color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 35%, transparent);
-        background: linear-gradient(
-            135deg,
-            color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 16%, #ffffff) 0%,
-            color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 6%, #ffffff) 100%
-        );
+        border: none;
+        background: none;
         color: #2f3748;
-        box-shadow: 0 16px 32px rgba(15, 23, 42, .08);
+        box-shadow: none;
     }
 
     .blog-post-like-form {
@@ -60,26 +56,26 @@
         display: inline-flex;
         align-items: center;
         gap: .35rem;
-        padding: .4rem .5rem;
-        border-radius: 999px;
-        border: 1px solid color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 25%, transparent);
-        background: color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 8%, #ffffff);
-        box-shadow: 0 8px 20px rgba(15, 23, 42, .08);
-        transition: box-shadow .18s ease, transform .18s ease, background-color .18s ease;
+        padding: 0;
+        border: none;
+        border-radius: 0;
+        background: none;
+        box-shadow: none;
+        transition: none;
     }
 
     .blog-post-like-form:focus-within {
-        background: color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 12%, #ffffff);
-        box-shadow: 0 10px 24px rgba(15, 23, 42, .12);
-        transform: translateY(-1px);
+        background: none;
+        box-shadow: none;
+        transform: none;
     }
 
     .blog-post-like-button {
         display: inline-flex;
         align-items: center;
         gap: .5rem;
-        border-radius: 999px;
-        border: 1px solid color-mix(in srgb, var(--blog-accent, var(--brand, #8c2e2e)) 42%, transparent);
+        border-radius: 0;
+        border: none;
         padding: .45rem 1.15rem;
         font-size: .875rem;
         font-weight: 600;
