@@ -31,102 +31,63 @@
 
     .blog-post-likes {
         margin-top: clamp(1.5rem, 3vw, 2rem);
-        align-self: stretch;
-        width: 100%;
-        max-width: clamp(440px, 76vw, 640px);
-        margin-left: auto;
-        margin-right: auto;
         display: flex;
         flex-direction: column;
-        gap: clamp(.75rem, 1.5vw, 1.15rem);
-        padding: clamp(.85rem, 2vw, 1.35rem) clamp(1rem, 3vw, 1.75rem);
-        border-radius: calc(var(--blog-radius, 8px) + 4px);
-        border: 1px solid transparent;
-        background: var(--blog-accent, var(--brand, #8c2e2e));
-        color: #ffffff;
-        box-shadow: 0 10px 26px rgba(43, 42, 40, .18);
+        align-items: flex-start;
+        gap: clamp(.55rem, 1.5vw, .9rem);
+        color: #444b5d;
     }
 
-    @media (min-width:40rem) {
-        .blog-post-likes {
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-        }
-    }
-
-    .blog-post-likes-info {
+    .blog-post-likes-main {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
-        gap: clamp(.55rem, 1.5vw, .95rem);
+        gap: clamp(.55rem, 1.5vw, .9rem);
     }
 
-    .blog-post-likes-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: clamp(2.35rem, 3.5vw, 2.8rem);
-        height: clamp(2.35rem, 3.5vw, 2.8rem);
-        border-radius: 16px;
-        border: 1px solid rgba(255, 255, 255, .28);
-        background: rgba(255, 255, 255, .14);
-        color: inherit;
-        box-shadow: 0 10px 22px rgba(43, 42, 40, .16);
-    }
-
-    .blog-post-likes-icon svg {
-        width: clamp(1.1rem, 1.8vw, 1.35rem);
-        height: clamp(1.1rem, 1.8vw, 1.35rem);
-    }
-
-    .blog-post-likes-count {
+    .blog-post-like-form {
         margin: 0;
-        font-size: clamp(.9rem, .2vw + .85rem, .95rem);
-        color: rgba(255, 255, 255, .82);
-    }
-
-    .blog-post-likes-count strong {
-        font-size: clamp(.98rem, .35vw + .9rem, 1.05rem);
-        font-weight: 700;
-        color: #fff;
-    }
-
-    .blog-post-likes-action {
-        display: flex;
-        align-items: center;
-        gap: clamp(.65rem, 1.5vw, 1rem);
     }
 
     .blog-post-like-button {
         display: inline-flex;
         align-items: center;
-        gap: .45rem;
-        border-radius: 18px;
+        gap: .5rem;
+        border-radius: 999px;
         border: 1px solid transparent;
-        padding: .5rem 1.15rem;
+        padding: .45rem 1.15rem;
         font-size: .875rem;
         font-weight: 600;
-        color: var(--blog-accent, var(--brand, #8c2e2e));
-        background: #fff;
-        box-shadow: 0 10px 24px rgba(43, 42, 40, .18);
-        transition: background-color .18s ease, box-shadow .18s ease, transform .18s ease;
+        color: #fff;
+        background: var(--blog-accent, var(--brand, #8c2e2e));
+        box-shadow: 0 8px 18px rgba(123, 45, 38, .18);
+        transition: filter .18s ease, transform .18s ease, box-shadow .18s ease;
     }
 
     .blog-post-like-button:hover,
     .blog-post-like-button:focus-visible {
-        background: rgba(255, 255, 255, .92);
-        box-shadow: 0 12px 28px rgba(43, 42, 40, .22);
+        filter: brightness(1.05);
         transform: translateY(-1px);
+        box-shadow: 0 10px 24px rgba(123, 45, 38, .22);
     }
 
     .blog-post-like-button.is-active {
-        background: rgba(255, 255, 255, .86);
-        border-color: rgba(255, 255, 255, .32);
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, .35), 0 6px 20px rgba(123, 45, 38, .2);
+    }
+
+    .blog-post-like-button-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: clamp(2rem, 3vw, 2.35rem);
+        height: clamp(2rem, 3vw, 2.35rem);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, .18);
     }
 
     .blog-post-like-button-icon svg {
-        width: 1.05rem;
-        height: 1.05rem;
+        width: 1rem;
+        height: 1rem;
     }
 
     .blog-post-like-button-label {
@@ -135,25 +96,48 @@
         letter-spacing: .01em;
     }
 
+    .blog-post-like-button-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: clamp(1.75rem, 2vw + 1.35rem, 2.2rem);
+        padding: .25rem .6rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, .16);
+        font-size: .75rem;
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .blog-post-likes-summary {
+        margin: 0;
+        font-size: .875rem;
+        color: #505a6c;
+    }
+
+    .blog-post-likes-summary strong {
+        color: #2f3748;
+    }
+
     .blog-post-likes-hint {
         font-size: .875rem;
-        color: rgba(255, 255, 255, .75);
+        color: #6c7687;
         margin: 0;
     }
 
     .blog-post-likes-login {
         font-size: .875rem;
         font-weight: 600;
-        color: rgba(255, 255, 255, .92);
+        color: var(--blog-accent, var(--brand, #8c2e2e));
         text-decoration: underline;
         text-decoration-thickness: 2px;
         text-underline-offset: 4px;
-        transition: color .15s ease;
+        transition: opacity .15s ease;
     }
 
     .blog-post-likes-login:hover,
     .blog-post-likes-login:focus-visible {
-        color: #fff;
+        opacity: .85;
     }
 
     .blog-post-content {
