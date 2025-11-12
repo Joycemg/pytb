@@ -6,6 +6,7 @@ use App\Http\Requests\StoreBlogCommentRequest;
 use App\Models\BlogPost;
 use App\Models\BlogPostComment;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 final class BlogCommentController extends Controller
 {
@@ -28,7 +29,7 @@ final class BlogCommentController extends Controller
         if ($existingComment !== null) {
             return redirect()
                 ->route('blog.show', ['post' => $post->slug])
-                ->with('error', 'Ya dejaste tu comentario. No se puede editar.');
+                ->with('error', 'Ya dejaste tu comentario.');
         }
 
         $body = trim(strip_tags((string) $request->input('body')));
@@ -43,5 +44,23 @@ final class BlogCommentController extends Controller
         return redirect()
             ->route('blog.show', ['post' => $post->slug])
             ->with('ok', '¡Gracias por dejar tu comentario!');
+    }
+
+    public function destroy(Request $request, BlogPost $post, BlogPostComment $comment): RedirectResponse
+    {
+        $user = $request->user();
+        if ($user === null || !$user->hasAnyRole(['admin', 'moderator'])) {
+            abort(403);
+        }
+
+        if ($comment->blog_post_id !== $post->id) {
+            abort(404);
+        }
+
+        $comment->delete();
+
+        return redirect()
+            ->route('blog.show', ['post' => $post->slug])
+            ->with('ok', 'Comentario eliminado.');
     }
 }

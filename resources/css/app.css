@@ -724,6 +724,14 @@
         @apply flex flex-wrap items-center gap-2 text-xs text-slate-500;
     }
 
+    .blog-comment-delete-form {
+        @apply inline-flex;
+    }
+
+    .blog-comment-delete-button {
+        @apply rounded-full border border-transparent px-2 py-1 text-xs font-semibold text-red-600 transition hover:border-red-600 hover:text-red-700;
+    }
+
     .blog-comment-body {
         @apply mt-3 whitespace-pre-wrap text-sm leading-relaxed text-slate-700;
     }
