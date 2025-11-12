@@ -53,6 +53,20 @@
 
     .blog-post-like-form {
         margin: 0;
+        display: inline-flex;
+        align-items: center;
+        padding: .35rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, .25);
+        background: color-mix(in srgb, #ffffff 14%, transparent);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12), 0 10px 22px rgba(84, 25, 21, .18);
+        transition: box-shadow .18s ease, transform .18s ease, background-color .18s ease;
+    }
+
+    .blog-post-like-form:focus-within {
+        background: color-mix(in srgb, #ffffff 20%, transparent);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18), 0 12px 26px rgba(84, 25, 21, .22);
+        transform: translateY(-1px);
     }
 
     .blog-post-like-button {
