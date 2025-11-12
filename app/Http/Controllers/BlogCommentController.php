@@ -20,26 +20,28 @@ final class BlogCommentController extends Controller
             abort(403);
         }
 
+        $existingComment = BlogPostComment::query()
+            ->where('blog_post_id', $post->id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if ($existingComment !== null) {
+            return redirect()
+                ->route('blog.show', ['post' => $post->slug])
+                ->with('error', 'Ya dejaste tu comentario. No se puede editar.');
+        }
+
         $body = trim(strip_tags((string) $request->input('body')));
 
-        /** @var BlogPostComment $comment */
-        $comment = BlogPostComment::updateOrCreate(
-            [
-                'blog_post_id' => $post->id,
-                'user_id' => $user->id,
-            ],
-            [
-                'body' => $body,
-                'rating' => 0,
-            ]
-        );
-
-        $message = $comment->wasRecentlyCreated
-            ? '¡Gracias por dejar tu comentario!'
-            : 'Actualizamos tu opinión.';
+        BlogPostComment::create([
+            'blog_post_id' => $post->id,
+            'user_id' => $user->id,
+            'body' => $body,
+            'rating' => 0,
+        ]);
 
         return redirect()
             ->route('blog.show', ['post' => $post->slug])
-            ->with('ok', $message);
+            ->with('ok', '¡Gracias por dejar tu comentario!');
     }
 }

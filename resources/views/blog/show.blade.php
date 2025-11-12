@@ -184,24 +184,24 @@
 
       @auth
         @if ($canComment)
-          @php
-            $commentBody = old('body', optional($userComment)->body);
-          @endphp
-          <form method="post" action="{{ route('blog.comments.store', $post) }}" class="blog-comment-form">
-            @csrf
+          @if ($userComment === null)
+            @php
+              $commentBody = old('body', '');
+            @endphp
+            <form method="post" action="{{ route('blog.comments.store', $post) }}" class="blog-comment-form">
+              @csrf
 
-            <div class="blog-comment-form-field">
-              <label for="comment-body" class="blog-comment-label">Tu comentario</label>
-              <textarea id="comment-body" name="body" rows="4" required>{{ $commentBody }}</textarea>
-              <p class="blog-comment-hint">Contanos qué te pareció esta publicación.</p>
-            </div>
+              <div class="blog-comment-form-field">
+                <label for="comment-body" class="blog-comment-label">Tu comentario</label>
+                <textarea id="comment-body" name="body" rows="4" required>{{ $commentBody }}</textarea>
+                <p class="blog-comment-hint">Contanos qué te pareció esta publicación.</p>
+              </div>
 
-            @if ($userComment)
-              <p class="blog-comment-note">Ya dejaste tu comentario. Podés actualizarlo cuando quieras.</p>
-            @endif
-
-            <button type="submit" class="btn btn-primary" data-once>Guardar mi comentario</button>
-          </form>
+              <button type="submit" class="btn btn-primary" data-once>Guardar mi comentario</button>
+            </form>
+          @else
+            <p class="blog-comment-note">Ya dejaste tu comentario. No es posible editarlo.</p>
+          @endif
         @else
           <p class="blog-comments-hint">Tu cuenta debe estar aprobada para poder comentar y reaccionar a las publicaciones.</p>
         @endif
