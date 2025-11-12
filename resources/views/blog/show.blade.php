@@ -3,10 +3,14 @@
 @section('title', $post->title)
 
 @push('head')
-  <link rel="stylesheet" href="{{ asset('css/blog/blog.tokens.css') }}">
-  <link rel="stylesheet" href="{{ asset('css/blog/blog.layout.css') }}">
-  <link rel="stylesheet" href="{{ asset('css/blog/blog.post-customizer-responsive.css') }}">
-  <link rel="stylesheet" href="{{ asset('css/blog/components.css') }}">
+  <link rel="stylesheet"
+        href="{{ asset('css/blog/blog.tokens.css') }}">
+  <link rel="stylesheet"
+        href="{{ asset('css/blog/blog.layout.css') }}">
+  <link rel="stylesheet"
+        href="{{ asset('css/blog/blog.post-customizer-responsive.css') }}">
+  <link rel="stylesheet"
+        href="{{ asset('css/blog/components.css') }}">
 @endpush
 
 @section('content')
@@ -47,11 +51,13 @@
     $heroImageAlt = trim($post->hero_image_caption ?? '') ?: ($post->title ?? 'Imagen del artículo');
   @endphp
 
-    @php $accentRgbString = $accentRgb ? implode(', ', $accentRgb) : null; @endphp
-  <article class="page container blog-post blog-theme-{{ $theme }}" style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }}; @if($accentRgbString) --blog-accent-rgb: {{ $accentRgbString }}; @endif">
+  @php $accentRgbString = $accentRgb ? implode(', ', $accentRgb) : null; @endphp
+  <article class="page container blog-post blog-theme-{{ $theme }}"
+           style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }}; @if($accentRgbString) --blog-accent-rgb: {{ $accentRgbString }}; @endif">
     <header class="page-head blog-post-head">
       <div class="blog-post-head-top">
-        <a class="blog-post-back" href="{{ route('blog.index') }}">← Volver a las novedades</a>
+        <a class="blog-post-back"
+           href="{{ route('blog.index') }}">← Volver a las novedades</a>
         @php $isFeatured = (bool) ($post->is_featured ?? false); @endphp
         @if ($isFeatured)
           <p class="blog-post-eyebrow">Publicación destacada</p>
@@ -59,43 +65,52 @@
         <h1 class="page-title blog-post-title">{{ $post->title }}</h1>
       </div>
 
-      <div class="blog-post-meta-card" role="list">
+      <div class="blog-post-meta-card"
+           role="list">
         @php $publishedAt = $post->published_at?->timezone($timezone); @endphp
-        <p class="blog-post-meta" role="listitem">
+        <p class="blog-post-meta"
+           role="listitem">
           @php $authorName = trim($post->author->name ?? ''); @endphp
           <span class="blog-post-meta-item">
-            <span class="blog-post-meta-icon" aria-hidden="true">✍️</span>
+            <span class="blog-post-meta-icon"
+                  aria-hidden="true"></span>
             <span>Por {{ $authorName !== '' ? $authorName : 'Equipo de La Taberna' }}</span>
           </span>
           @if ($publishedAt)
-            <span class="blog-post-meta-divider" role="presentation"></span>
+            <span class="blog-post-meta-divider"
+                  role="presentation"></span>
             <span class="blog-post-meta-item">
-              <span class="blog-post-meta-icon" aria-hidden="true">🗓️</span>
-              <time datetime="{{ $publishedAt->toIso8601String() }}">{{ $publishedAt->translatedFormat('d \d\e F, Y H:i') }}</time>
+              <span class="blog-post-meta-icon"
+                    aria-hidden="true"></span>
+              <time
+                    datetime="{{ $publishedAt->toIso8601String() }}">{{ $publishedAt->translatedFormat('d \d\e F, Y H:i') }}</time>
             </span>
           @endif
           @if ($wordCount > 0)
-            <span class="blog-post-meta-divider" role="presentation"></span>
+            <span class="blog-post-meta-divider"
+                  role="presentation"></span>
             <span class="blog-post-meta-item">
-              <span class="blog-post-meta-icon" aria-hidden="true">⏱️</span>
-              <span>{{ $readingMinutes }} {{ \Illuminate\Support\Str::plural('minuto', $readingMinutes) }} de lectura</span>
-            </span>
+              <span class="blog-post-meta-icon"></span>
           @endif
         </p>
 
-        <div class="blog-post-actions" role="listitem">
-          <a class="blog-post-history" href="{{ route('blog.index') }}#blog-history">Ver historial</a>
+        <div class="blog-post-actions"
+             role="listitem">
+
         </div>
       </div>
 
     </header>
 
     @if ($post->tags->isNotEmpty())
-      <ul class="blog-post-tags" aria-label="Etiquetas">
+      <ul class="blog-post-tags"
+          aria-label="Etiquetas">
         @foreach ($post->tags as $tag)
           <li>
-            <a class="blog-post-tag" href="{{ route('blog.index', ['q' => '#' . $tag->name]) }}">
-              <span class="blog-post-tag-symbol" aria-hidden="true">#</span>
+            <a class="blog-post-tag"
+               href="{{ route('blog.index', ['q' => '#' . $tag->name]) }}">
+              <span class="blog-post-tag-symbol"
+                    aria-hidden="true">#</span>
               <span>{{ $tag->name }}</span>
             </a>
           </li>
@@ -105,12 +120,10 @@
 
     @if ($post->hero_image_url)
       <figure class="blog-post-hero">
-        <img
-          src="{{ $post->hero_image_url }}"
-          alt="{{ $heroImageAlt }}"
-          loading="lazy"
-          decoding="async"
-        >
+        <img src="{{ $post->hero_image_url }}"
+             alt="{{ $heroImageAlt }}"
+             loading="lazy"
+             decoding="async">
         @if ($post->hero_image_caption)
           <figcaption>{{ $post->hero_image_caption }}</figcaption>
         @endif
@@ -133,52 +146,63 @@
       $likesSummaryText = $likesCount === 0
         ? 'Sé la primera persona en marcar “Me gusta”.'
         : sprintf(
-            '%d %s %s “Me gusta”.',
-            $likesCount,
-            \Illuminate\Support\Str::plural('persona', $likesCount),
-            $likesCount === 1 ? 'marcó' : 'marcaron'
-          );
+          '%d %s %s “Me gusta”.',
+          $likesCount,
+          \Illuminate\Support\Str::plural('persona', $likesCount),
+          $likesCount === 1 ? 'marcó' : 'marcaron'
+        );
       $likeButtonLabel = $hasLiked ? 'Quitar “Me gusta”' : 'Marcar “Me gusta”';
       $likeButtonAria = $likesCount > 0
         ? sprintf('%s. %s', $likeButtonLabel, $likesSummaryText)
         : $likeButtonLabel;
     @endphp
-    <section class="blog-post-likes" role="region" aria-live="polite">
+    <section class="blog-post-likes"
+             role="region"
+             aria-live="polite">
       <div class="blog-post-likes-main">
         @auth
           @if ($canLike)
-            <form method="post" action="{{ route('blog.likes.toggle', $post) }}" class="blog-post-like-form">
+            <form method="post"
+                  action="{{ route('blog.likes.toggle', $post) }}"
+                  class="blog-post-like-form">
               @csrf
-              <button
-                type="submit"
-                class="blog-post-like-button{{ $hasLiked ? ' is-active' : '' }}"
-                data-once
-                data-label-pending="{{ $hasLiked ? 'Te gusta' : 'Me gusta' }}"
-                aria-pressed="{{ $hasLiked ? 'true' : 'false' }}"
-                aria-label="{{ $likeButtonAria }}"
-              >
-                <span class="blog-post-like-button-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" role="img" aria-hidden="true" focusable="false">
-                    <path d="M9.75 21.75a1.5 1.5 0 0 1-1.5-1.5v-6a.75.75 0 0 0-.75-.75H4.5a1.5 1.5 0 0 0-1.5 1.5v6a1.5 1.5 0 0 0 1.5 1.5h5.25Zm2.222-.023c-1.074 0-1.947-.873-1.947-1.947V9.92c0-.525.207-1.029.574-1.4l4.58-4.611a1.1 1.1 0 0 1 1.873.779v2.98h3.274a1.5 1.5 0 0 1 1.447 1.911l-2.037 7.012a2.25 2.25 0 0 1-2.158 1.611h-5.606Z" fill="currentColor" />
+              <button type="submit"
+                      class="blog-post-like-button{{ $hasLiked ? ' is-active' : '' }}"
+                      data-once
+                      data-label-pending="{{ $hasLiked ? 'Te gusta' : 'Me gusta' }}"
+                      aria-pressed="{{ $hasLiked ? 'true' : 'false' }}"
+                      aria-label="{{ $likeButtonAria }}">
+                <span class="blog-post-like-button-icon"
+                      aria-hidden="true">
+                  <svg viewBox="0 0 24 24"
+                       role="img"
+                       aria-hidden="true"
+                       focusable="false">
+                    <path d="M9.75 21.75a1.5 1.5 0 0 1-1.5-1.5v-6a.75.75 0 0 0-.75-.75H4.5a1.5 1.5 0 0 0-1.5 1.5v6a1.5 1.5 0 0 0 1.5 1.5h5.25Zm2.222-.023c-1.074 0-1.947-.873-1.947-1.947V9.92c0-.525.207-1.029.574-1.4l4.58-4.611a1.1 1.1 0 0 1 1.873.779v2.98h3.274a1.5 1.5 0 0 1 1.447 1.911l-2.037 7.012a2.25 2.25 0 0 1-2.158 1.611h-5.606Z"
+                          fill="currentColor" />
                   </svg>
                 </span>
                 <span class="blog-post-like-button-label">{{ $hasLiked ? 'Te gusta' : 'Me gusta' }}</span>
-                <span class="blog-post-like-button-count" aria-hidden="true">{{ number_format($likesCount, 0, ',', '.') }}</span>
+                <span class="blog-post-like-button-count"
+                      aria-hidden="true">{{ number_format($likesCount, 0, ',', '.') }}</span>
                 <span class="sr-only">{{ $likesSummaryText }}</span>
               </button>
             </form>
           @else
-            <p class="blog-post-likes-hint">Tu cuenta debe estar aprobada para marcar “Me gusta”.</p>
+
           @endif
         @else
-          <a class="blog-post-likes-login" href="{{ route('auth.login') }}">Ingresá para marcar “Me gusta”.</a>
+
         @endauth
       </div>
     </section>
 
-    <section class="blog-comments" id="comentarios" aria-labelledby="blog-comments-title">
+    <section class="blog-comments"
+             id="comentarios"
+             aria-labelledby="blog-comments-title">
       <div class="blog-comments-head">
-        <h2 id="blog-comments-title" class="blog-comments-title">Comentarios</h2>
+        <h2 id="blog-comments-title"
+            class="blog-comments-title">Comentarios</h2>
       </div>
 
       @auth
@@ -187,26 +211,35 @@
             @php
               $commentBody = old('body', '');
             @endphp
-            <form method="post" action="{{ route('blog.comments.store', $post) }}" class="blog-comment-form">
+            <form method="post"
+                  action="{{ route('blog.comments.store', $post) }}"
+                  class="blog-comment-form">
               @csrf
 
               <div class="blog-comment-form-field">
-                <label for="comment-body" class="blog-comment-label">Tu comentario</label>
-                <textarea id="comment-body" name="body" rows="4" required>{{ $commentBody }}</textarea>
+                <label for="comment-body"
+                       class="blog-comment-label">Tu comentario</label>
+                <textarea id="comment-body"
+                          name="body"
+                          rows="4"
+                          required>{{ $commentBody }}</textarea>
                 <p class="blog-comment-hint">Contanos qué te pareció esta publicación.</p>
               </div>
 
-              <button type="submit" class="btn btn-primary" data-once>Guardar mi comentario</button>
+              <button type="submit"
+                      class="btn btn-primary"
+                      data-once>Guardar mi comentario</button>
             </form>
           @else
             <p class="blog-comment-note">Ya dejaste tu comentario.</p>
           @endif
         @else
-          <p class="blog-comments-hint">Tu cuenta debe estar aprobada para poder comentar y reaccionar a las publicaciones.</p>
+          <p class="blog-comments-hint">Tu cuenta debe estar aprobada para poder comentar y reaccionar a las publicaciones.
+          </p>
         @endif
       @else
         <p class="blog-comments-hint">
-          <a href="{{ route('auth.login') }}">Ingresá</a> para dejar tu comentario y marcar “Me gusta”.
+          <a href="{{ route('auth.login') }}">Ingresá</a> para dejar tu comentario.
         </p>
       @endauth
 
@@ -223,7 +256,8 @@
               }
             @endphp
             <li class="blog-comment{{ $isSelf ? ' is-self' : '' }}">
-              <div class="blog-comment-avatar" aria-hidden="true">{{ $authorInitial }}</div>
+              <div class="blog-comment-avatar"
+                   aria-hidden="true">{{ $authorInitial }}</div>
               <div class="blog-comment-content">
                 <div class="blog-comment-header">
                   <div class="blog-comment-author">
@@ -234,18 +268,18 @@
                   </div>
                   <div class="blog-comment-meta">
                     @if ($commentAt)
-                      <time datetime="{{ $commentAt->toIso8601String() }}" class="blog-comment-timestamp">{{ $commentAt->diffForHumans() }}</time>
+                      <time datetime="{{ $commentAt->toIso8601String() }}"
+                            class="blog-comment-timestamp">{{ $commentAt->diffForHumans() }}</time>
                     @endif
                     @if (auth()->user()?->hasAnyRole(['admin', 'moderator']))
-                      <form
-                        method="post"
-                        action="{{ route('blog.comments.destroy', [$post, $comment]) }}"
-                        class="blog-comment-delete-form"
-                        onsubmit="return confirm('¿Eliminar este comentario?');"
-                      >
+                      <form method="post"
+                            action="{{ route('blog.comments.destroy', [$post, $comment]) }}"
+                            class="blog-comment-delete-form"
+                            onsubmit="return confirm('¿Eliminar este comentario?');">
                         @csrf
                         @method('delete')
-                        <button type="submit" class="blog-comment-delete-button">
+                        <button type="submit"
+                                class="blog-comment-delete-button">
                           Eliminar
                         </button>
                       </form>
@@ -268,12 +302,10 @@
         <ul class="blog-post-attachments-list">
           @foreach ($post->attachments as $attachment)
             <li>
-              <a
-                href="{{ Storage::disk('public')->url($attachment->path) }}"
-                target="_blank"
-                rel="noopener"
-                class="blog-post-attachment-link"
-              >
+              <a href="{{ Storage::disk('public')->url($attachment->path) }}"
+                 target="_blank"
+                 rel="noopener"
+                 class="blog-post-attachment-link">
                 {{ $attachment->original_name }}
               </a>
               <span class="attachment-meta">({{ number_format($attachment->size / 1024, 1) }} KB)</span>
@@ -284,8 +316,8 @@
     @endif
 
     <footer class="blog-post-footer">
-      <a class="btn" href="{{ route('blog.index') }}">← Volver</a>
+      <a class="btn"
+         href="{{ route('blog.index') }}">← Volver</a>
     </footer>
   </article>
 @endsection
-
