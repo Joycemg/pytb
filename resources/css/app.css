@@ -664,7 +664,11 @@
     }
 
     .blog-comments-head {
-        @apply flex items-center justify-between gap-3;
+        @apply flex items-center justify-between gap-3 border-b border-slate-200 pb-4;
+    }
+
+    .blog-comments-title {
+        @apply text-lg font-semibold text-slate-900;
     }
 
     .blog-comment-form {
@@ -696,27 +700,65 @@
     }
 
     .blog-comment {
-        @apply rounded-2xl border border-slate-100 bg-white p-4 shadow-sm;
+        @apply relative grid gap-4 rounded-2xl border border-slate-100 bg-white/90 p-5 shadow-sm md:grid-cols-[auto,1fr];
+    }
+
+    .blog-comment::before {
+        content: '';
+        position: absolute;
+        inset-inline-start: 18px;
+        inset-block-start: 18px;
+        inline-size: 12px;
+        block-size: 12px;
+        border-radius: 9999px;
+        background: var(--blog-accent, #7b2d26);
+        opacity: 0.08;
     }
 
     .blog-comment.is-self {
-        @apply border-[#7b2d26]/40 bg-rose-50/60;
+        @apply border-[#7b2d26]/40 bg-rose-50/70;
+    }
+
+    .blog-comment.is-self::before {
+        opacity: 0.16;
+    }
+
+    .blog-comment-avatar {
+        @apply relative flex h-12 w-12 items-center justify-center rounded-full text-base font-semibold uppercase tracking-[0.18em];
+        color: var(--blog-accent, #7b2d26);
+        background: rgba(123, 45, 38, 0.12);
+        border: 2px solid rgba(123, 45, 38, 0.2);
+        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
+    }
+
+    .blog-comment.is-self .blog-comment-avatar {
+        color: var(--blog-accent-text, #3f1a17);
+        background: rgba(123, 45, 38, 0.18);
+        border-color: rgba(123, 45, 38, 0.35);
+    }
+
+    .blog-comment-content {
+        @apply space-y-3;
     }
 
     .blog-comment-header {
-        @apply flex flex-col gap-2 border-b border-slate-100 pb-2 md:flex-row md:items-center md:justify-between;
+        @apply flex flex-col gap-2 border-b border-slate-100 pb-2 md:flex-row md:items-start md:justify-between;
     }
 
     .blog-comment-author {
-        @apply inline-flex items-center gap-2 text-sm font-semibold text-slate-700;
+        @apply inline-flex items-center gap-2 text-sm font-semibold text-slate-800;
     }
 
     .blog-comment-badge {
-        @apply inline-flex items-center rounded-full bg-[#7b2d26]/10 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-[#7b2d26];
+        @apply inline-flex items-center rounded-full bg-[#7b2d26]/10 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-[-0.18em] text-[#7b2d26];
     }
 
     .blog-comment-meta {
         @apply flex flex-wrap items-center gap-2 text-xs text-slate-500;
+    }
+
+    .blog-comment-timestamp {
+        @apply font-medium text-slate-500;
     }
 
     .blog-comment-delete-form {
@@ -724,15 +766,15 @@
     }
 
     .blog-comment-delete-button {
-        @apply rounded-full border border-transparent px-2 py-1 text-xs font-semibold text-red-600 transition hover:border-red-600 hover:text-red-700;
+        @apply rounded-full border border-transparent px-2 py-1 text-xs font-semibold text-red-600 transition hover:border-red-600 hover:text-red-700 focus-visible:border-red-600 focus-visible:text-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-200;
     }
 
     .blog-comment-body {
-        @apply mt-3 whitespace-pre-wrap text-sm leading-relaxed text-slate-700;
+        @apply mt-2 whitespace-pre-wrap rounded-xl bg-slate-50/60 px-4 py-3 text-sm leading-relaxed text-slate-700;
     }
 
     .blog-comments-empty {
-        @apply text-sm text-slate-500;
+        @apply rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 px-4 py-5 text-center text-sm text-slate-500;
     }
 
     .blog-community-page {
