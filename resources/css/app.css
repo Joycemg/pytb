@@ -696,7 +696,23 @@
     }
 
     .blog-comments-list {
-        @apply space-y-5;
+        @apply relative mt-6 space-y-6 border-t border-slate-200 pt-6 pl-0 list-none;
+        margin: 0;
+    }
+
+    .blog-comments-list::before {
+        content: '';
+        position: absolute;
+        inset-block: 12px;
+        inset-inline-start: 24px;
+        inline-size: 2px;
+        border-radius: 9999px;
+        background: linear-gradient(
+            180deg,
+            rgba(var(--blog-accent-rgb, 123, 45, 38), 0.2) 0%,
+            rgba(var(--blog-accent-rgb, 123, 45, 38), 0.06) 100%
+        );
+        pointer-events: none;
     }
 
     .blog-comment {
