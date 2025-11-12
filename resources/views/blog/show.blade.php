@@ -179,7 +179,6 @@
     <section class="blog-comments" id="comentarios" aria-labelledby="blog-comments-title">
       <div class="blog-comments-head">
         <h2 id="blog-comments-title">Comentarios</h2>
-        <span class="blog-comments-count" aria-label="Cantidad de comentarios">{{ $commentsCount }}</span>
       </div>
 
       @auth
