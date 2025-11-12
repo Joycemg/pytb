@@ -2,14 +2,14 @@
 
 return [
     'default_theme' => 'classic',
-    'default_accent' => '#2563EB',
+    'default_accent' => '#8C2E2E',
     'default_text_color' => '#0F172A',
     'themes' => [
         'classic' => [
             'label' => 'Clásico',
-            'accent' => '#2563EB',
+            'accent' => '#8C2E2E',
             'text' => '#0F172A',
-            'preview' => 'linear-gradient(135deg, rgba(37, 99, 235, 0.18) 0%, rgba(37, 99, 235, 0.06) 100%)',
+            'preview' => 'linear-gradient(135deg, rgba(140, 46, 46, 0.18) 0%, rgba(140, 46, 46, 0.06) 100%)',
         ],
         'sunset' => [
             'label' => 'Atardecer',
@@ -37,6 +37,7 @@ return [
         ],
     ],
     'accent_palette' => [
+        '#8C2E2E' => 'Vino tinto',
         '#2563EB' => 'Azul eléctrico',
         '#F97316' => 'Mandarina',
         '#DB2777' => 'Magenta',
