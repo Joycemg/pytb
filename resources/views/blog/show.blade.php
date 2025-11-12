@@ -178,7 +178,7 @@
 
     <section class="blog-comments" id="comentarios" aria-labelledby="blog-comments-title">
       <div class="blog-comments-head">
-        <h2 id="blog-comments-title">Comentarios</h2>
+        <h2 id="blog-comments-title" class="blog-comments-title">Comentarios</h2>
       </div>
 
       @auth
@@ -216,36 +216,44 @@
             @php
               $commentAt = optional($comment->created_at)?->timezone($timezone);
               $isSelf = $userComment && $comment->id === $userComment->id;
+              $authorName = $comment->author->name ?? 'Miembro de la comunidad';
+              $authorInitial = mb_strtoupper(mb_substr($authorName, 0, 1, 'UTF-8'), 'UTF-8');
+              if ($authorInitial === '') {
+                $authorInitial = '?';
+              }
             @endphp
             <li class="blog-comment{{ $isSelf ? ' is-self' : '' }}">
-              <div class="blog-comment-header">
-                <div class="blog-comment-author">
-                  <span class="blog-comment-name">{{ $comment->author->name ?? 'Miembro de la comunidad' }}</span>
-                  @if ($isSelf)
-                    <span class="blog-comment-badge">Tu comentario</span>
-                  @endif
+              <div class="blog-comment-avatar" aria-hidden="true">{{ $authorInitial }}</div>
+              <div class="blog-comment-content">
+                <div class="blog-comment-header">
+                  <div class="blog-comment-author">
+                    <span class="blog-comment-name">{{ $authorName }}</span>
+                    @if ($isSelf)
+                      <span class="blog-comment-badge">Tu comentario</span>
+                    @endif
+                  </div>
+                  <div class="blog-comment-meta">
+                    @if ($commentAt)
+                      <time datetime="{{ $commentAt->toIso8601String() }}" class="blog-comment-timestamp">{{ $commentAt->diffForHumans() }}</time>
+                    @endif
+                    @if (auth()->user()?->hasAnyRole(['admin', 'moderator']))
+                      <form
+                        method="post"
+                        action="{{ route('blog.comments.destroy', [$post, $comment]) }}"
+                        class="blog-comment-delete-form"
+                        onsubmit="return confirm('¿Eliminar este comentario?');"
+                      >
+                        @csrf
+                        @method('delete')
+                        <button type="submit" class="blog-comment-delete-button">
+                          Eliminar
+                        </button>
+                      </form>
+                    @endif
+                  </div>
                 </div>
-                <div class="blog-comment-meta">
-                  @if ($commentAt)
-                    <time datetime="{{ $commentAt->toIso8601String() }}">{{ $commentAt->diffForHumans() }}</time>
-                  @endif
-                  @if (auth()->user()?->hasAnyRole(['admin', 'moderator']))
-                    <form
-                      method="post"
-                      action="{{ route('blog.comments.destroy', [$post, $comment]) }}"
-                      class="blog-comment-delete-form"
-                      onsubmit="return confirm('¿Eliminar este comentario?');"
-                    >
-                      @csrf
-                      @method('delete')
-                      <button type="submit" class="blog-comment-delete-button">
-                        Eliminar
-                      </button>
-                    </form>
-                  @endif
-                </div>
+                <p class="blog-comment-body">{!! nl2br(e($comment->body)) !!}</p>
               </div>
-              <p class="blog-comment-body">{!! nl2br(e($comment->body)) !!}</p>
             </li>
           @endforeach
         </ul>
