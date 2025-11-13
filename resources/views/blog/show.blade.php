@@ -37,11 +37,6 @@
     $wordCount = max(0, str_word_count($plainContent));
     $readingMinutes = max(1, (int) ceil($wordCount / $wordsPerMinute));
 
-    $likesSummary = array_merge([
-      'count' => 0,
-      'hasLiked' => false,
-    ], $likesSummary ?? []);
-
     $comments = collect($comments ?? []);
     $commentsCount = $comments->count();
     $userComment = $userComment ?? null;
@@ -58,6 +53,24 @@
         : sprintf('%s comentarios', number_format($commentsCount, 0, ',', '.'));
     $readingTimeText = $wordCount > 0 ? sprintf('%d min de lectura', $readingMinutes) : null;
     $wordCountText = $wordCount > 0 ? number_format($wordCount, 0, ',', '.') . ' palabras' : null;
+    $likesSummary = array_merge([
+      'count' => 0,
+      'hasLiked' => false,
+    ], $likesSummary ?? []);
+    $likesCount = (int) $likesSummary['count'];
+    $hasLiked = (bool) $likesSummary['hasLiked'];
+    $likesSummaryText = $likesCount === 0
+      ? 'Sé la primera persona en marcar “Me gusta”.'
+      : sprintf(
+        '%d %s %s “Me gusta”.',
+        $likesCount,
+        \Illuminate\Support\Str::plural('persona', $likesCount),
+        $likesCount === 1 ? 'marcó' : 'marcaron'
+      );
+    $likeButtonLabel = $hasLiked ? 'Quitar “Me gusta”' : 'Marcar “Me gusta”';
+    $likeButtonAria = $likesCount > 0
+      ? sprintf('%s. %s', $likeButtonLabel, $likesSummaryText)
+      : $likeButtonLabel;
   @endphp
 
   @php
@@ -82,7 +95,39 @@
           @if ($isFeatured)
             <p class="blog-post-eyebrow">Publicación destacada</p>
           @endif
-          <h1 class="page-title blog-post-title">{{ $post->title }}</h1>
+          <div class="blog-post-title-row">
+            <h1 class="page-title blog-post-title">{{ $post->title }}</h1>
+            @auth
+              @if ($canLike)
+                <form method="post"
+                      action="{{ route('blog.likes.toggle', $post) }}"
+                      class="blog-post-like-form">
+                  @csrf
+                  <button type="submit"
+                          class="blog-post-like-button{{ $hasLiked ? ' is-active' : '' }}"
+                          data-once
+                          data-label-pending="{{ $hasLiked ? 'Te gusta' : 'Me gusta' }}"
+                          aria-pressed="{{ $hasLiked ? 'true' : 'false' }}"
+                          aria-label="{{ $likeButtonAria }}">
+                    <span class="blog-post-like-button-icon"
+                          aria-hidden="true">
+                      <svg viewBox="0 0 24 24"
+                           role="img"
+                           aria-hidden="true"
+                           focusable="false">
+                        <path d="M9.75 21.75a1.5 1.5 0 0 1-1.5-1.5v-6a.75.75 0 0 0-.75-.75H4.5a1.5 1.5 0 0 0-1.5 1.5v6a1.5 1.5 0 0 0 1.5 1.5h5.25Zm2.222-.023c-1.074 0-1.947-.873-1.947-1.947V9.92c0-.525.207-1.029.574-1.4l4.58-4.611a1.1 1.1 0 0 1 1.873.779v2.98h3.274a1.5 1.5 0 0 1 1.447 1.911l-2.037 7.012a2.25 2.25 0 0 1-2.158 1.611h-5.606Z"
+                              fill="currentColor" />
+                      </svg>
+                    </span>
+                    <span class="blog-post-like-button-label">{{ $hasLiked ? 'Te gusta' : 'Me gusta' }}</span>
+                    <span class="blog-post-like-button-count"
+                          aria-hidden="true">{{ number_format($likesCount, 0, ',', '.') }}</span>
+                    <span class="sr-only">{{ $likesSummaryText }}</span>
+                  </button>
+                </form>
+              @endif
+            @endauth
+          </div>
           <ul class="blog-post-meta"
               role="list">
             @php $authorName = trim($post->author->name ?? ''); @endphp
@@ -141,65 +186,6 @@
     <div class="blog-post-content">
       {!! $hasMarkup ? $rawContent : nl2br(e($rawContent)) !!}
     </div>
-
-    @php
-      $likesCount = (int) $likesSummary['count'];
-      $hasLiked = (bool) $likesSummary['hasLiked'];
-    @endphp
-    @php
-      $likesSummaryText = $likesCount === 0
-        ? 'Sé la primera persona en marcar “Me gusta”.'
-        : sprintf(
-          '%d %s %s “Me gusta”.',
-          $likesCount,
-          \Illuminate\Support\Str::plural('persona', $likesCount),
-          $likesCount === 1 ? 'marcó' : 'marcaron'
-        );
-      $likeButtonLabel = $hasLiked ? 'Quitar “Me gusta”' : 'Marcar “Me gusta”';
-      $likeButtonAria = $likesCount > 0
-        ? sprintf('%s. %s', $likeButtonLabel, $likesSummaryText)
-        : $likeButtonLabel;
-    @endphp
-    <section class="blog-post-likes"
-             role="region"
-             aria-live="polite">
-      <div class="blog-post-likes-main">
-        @auth
-          @if ($canLike)
-            <form method="post"
-                  action="{{ route('blog.likes.toggle', $post) }}"
-                  class="blog-post-like-form">
-              @csrf
-              <button type="submit"
-                      class="blog-post-like-button{{ $hasLiked ? ' is-active' : '' }}"
-                      data-once
-                      data-label-pending="{{ $hasLiked ? 'Te gusta' : 'Me gusta' }}"
-                      aria-pressed="{{ $hasLiked ? 'true' : 'false' }}"
-                      aria-label="{{ $likeButtonAria }}">
-                <span class="blog-post-like-button-icon"
-                      aria-hidden="true">
-                  <svg viewBox="0 0 24 24"
-                       role="img"
-                       aria-hidden="true"
-                       focusable="false">
-                    <path d="M9.75 21.75a1.5 1.5 0 0 1-1.5-1.5v-6a.75.75 0 0 0-.75-.75H4.5a1.5 1.5 0 0 0-1.5 1.5v6a1.5 1.5 0 0 0 1.5 1.5h5.25Zm2.222-.023c-1.074 0-1.947-.873-1.947-1.947V9.92c0-.525.207-1.029.574-1.4l4.58-4.611a1.1 1.1 0 0 1 1.873.779v2.98h3.274a1.5 1.5 0 0 1 1.447 1.911l-2.037 7.012a2.25 2.25 0 0 1-2.158 1.611h-5.606Z"
-                          fill="currentColor" />
-                  </svg>
-                </span>
-                <span class="blog-post-like-button-label">{{ $hasLiked ? 'Te gusta' : 'Me gusta' }}</span>
-                <span class="blog-post-like-button-count"
-                      aria-hidden="true">{{ number_format($likesCount, 0, ',', '.') }}</span>
-                <span class="sr-only">{{ $likesSummaryText }}</span>
-              </button>
-            </form>
-          @else
-
-          @endif
-        @else
-
-        @endauth
-      </div>
-    </section>
 
     @if ($post->tags->isNotEmpty())
       <ul class="blog-post-tags"

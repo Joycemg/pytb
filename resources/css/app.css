@@ -529,38 +529,6 @@
         @apply font-semibold text-slate-700 underline underline-offset-4 hover:text-slate-900;
     }
 
-    .blog-post-likes {
-        @apply relative mt-12 flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white/90 p-6 text-slate-600 shadow-sm;
-        overflow: hidden;
-    }
-
-    .blog-post-likes::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle at top left, rgba(123, 45, 38, 0.12), transparent 55%),
-            linear-gradient(135deg, rgba(148, 163, 184, 0.12), transparent 65%);
-        pointer-events: none;
-    }
-
-    .blog-post-likes > * {
-        position: relative;
-        z-index: 1;
-    }
-
-    .blog-post-likes-main {
-        @apply flex flex-wrap items-center gap-3 rounded-2xl;
-        padding: 0;
-        border: none;
-        background: none;
-        color: #2f3748;
-        box-shadow: none;
-    }
-
-    .blog-post-likes-main > * {
-        margin: 0;
-    }
-
     .blog-post-like-form {
         @apply inline-flex items-center;
         gap: 0.35rem;
@@ -630,35 +598,6 @@
         font-size: 0.65rem;
         padding: 0 0.3rem;
     }
-
-
-    .blog-post-likes-hint {
-        @apply text-sm text-slate-500;
-    }
-
-    .blog-post-likes-login {
-        @apply inline-flex items-center gap-2 rounded-full border border-slate-300/80 bg-white/70 px-3 py-1.5 text-sm font-semibold text-slate-700 underline-offset-4 transition duration-150 ease-in-out;
-        text-decoration: none;
-    }
-
-    .blog-post-likes-login::after {
-        content: '→';
-        font-size: 0.85em;
-        color: var(--blog-accent, #7b2d26);
-        transition: transform 0.2s ease;
-    }
-
-    .blog-post-likes-login:hover,
-    .blog-post-likes-login:focus-visible {
-        color: var(--blog-accent, #7b2d26);
-        text-decoration: underline;
-    }
-
-    .blog-post-likes-login:hover::after,
-    .blog-post-likes-login:focus-visible::after {
-        transform: translateX(2px);
-    }
-
     .blog-comments {
         @apply mt-12 space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm;
     }
@@ -974,6 +913,14 @@
         .blog-post-head-top {
             @apply gap-1.5;
         }
+    }
+
+    .blog-post-title-row {
+        @apply flex flex-wrap items-start gap-3;
+    }
+
+    .blog-post-title-row .blog-post-like-form {
+        @apply shrink-0;
     }
 
     .blog-post-title {

@@ -25,6 +25,17 @@
         gap: .65rem;
     }
 
+    .blog-post-title-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: .75rem;
+    }
+
+    .blog-post-title-row .blog-post-like-form {
+        flex-shrink: 0;
+    }
+
     .blog-post-head-grid {
         display: flex;
         flex-direction: column;
@@ -138,28 +149,6 @@
         display: none;
     }
 
-    .blog-post-likes {
-        margin-top: clamp(1.5rem, 3vw, 2rem);
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: clamp(.55rem, 1.5vw, .9rem);
-        color: #444b5d;
-    }
-
-    .blog-post-likes-main {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: clamp(.55rem, 1.5vw, .9rem);
-        padding: 0;
-        border-radius: clamp(1.35rem, 2vw, 1.75rem);
-        border: none;
-        background: none;
-        color: #2f3748;
-        box-shadow: none;
-    }
-
     .blog-post-like-form {
         margin: 0;
         display: inline-flex;
@@ -242,29 +231,6 @@
         font-weight: 600;
         padding: 0 .3rem;
     }
-
-
-    .blog-post-likes-hint {
-        font-size: .875rem;
-        color: rgba(253, 247, 245, .85);
-        margin: 0;
-    }
-
-    .blog-post-likes-login {
-        font-size: .875rem;
-        font-weight: 600;
-        color: var(--blog-accent, var(--brand, #8c2e2e));
-        text-decoration: underline;
-        text-decoration-thickness: 2px;
-        text-underline-offset: 4px;
-        transition: opacity .15s ease;
-    }
-
-    .blog-post-likes-login:hover,
-    .blog-post-likes-login:focus-visible {
-        opacity: .85;
-    }
-
     .blog-post-content {
         font-size: 1.05rem;
         line-height: 1.7;
