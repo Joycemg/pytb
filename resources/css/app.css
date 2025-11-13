@@ -529,75 +529,6 @@
         @apply font-semibold text-slate-700 underline underline-offset-4 hover:text-slate-900;
     }
 
-    .blog-post-like-form {
-        @apply inline-flex items-center;
-        gap: 0.35rem;
-        padding: 0;
-        border: none;
-        border-radius: 0;
-        background: none;
-        box-shadow: none;
-        transition: none;
-    }
-
-    .blog-post-like-form:focus-within {
-        background: none;
-        box-shadow: none;
-        transform: none;
-    }
-
-    .blog-post-like-button {
-        @apply relative inline-flex items-center justify-center text-white transition duration-150 ease-in-out;
-        width: 3.5rem;
-        height: 3.5rem;
-        border-radius: 0.5rem;
-        border: 1px solid color-mix(in srgb, #521919 80%, transparent);
-        background-color: #7b2d26;
-        box-shadow: 0 6px 18px rgba(123, 45, 38, 0.25);
-    }
-
-    .blog-post-like-button:hover,
-    .blog-post-like-button:focus-visible {
-        background-color: color-mix(in srgb, #7b2d26 85%, #a34747 15%);
-        box-shadow: 0 10px 22px rgba(123, 45, 38, 0.28);
-    }
-
-    .blog-post-like-button.is-active {
-        background-color: #631f1f;
-    }
-
-    .blog-post-like-button:focus-visible {
-        @apply outline-none;
-        box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(123, 45, 38, 0.45);
-    }
-
-    .blog-post-like-button-icon {
-        @apply flex items-center justify-center;
-        width: 1.5rem;
-        height: 1.5rem;
-    }
-
-    .blog-post-like-button-icon svg {
-        width: 1.1rem;
-        height: 1.1rem;
-    }
-
-    .blog-post-like-button-label {
-        display: none;
-    }
-
-    .blog-post-like-button-count {
-        @apply absolute flex items-center justify-center font-semibold;
-        min-width: 1.25rem;
-        height: 1.25rem;
-        top: 0.4rem;
-        left: 0.4rem;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.15);
-        color: #fff;
-        font-size: 0.65rem;
-        padding: 0 0.3rem;
-    }
     .blog-comments {
         @apply mt-12 space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm;
     }
@@ -916,11 +847,7 @@
     }
 
     .blog-post-title-row {
-        @apply flex flex-wrap items-start gap-3;
-    }
-
-    .blog-post-title-row .blog-post-like-form {
-        @apply shrink-0;
+        @apply flex flex-col gap-2 sm:flex-wrap sm:items-start sm:gap-3;
     }
 
     .blog-post-title {
@@ -978,6 +905,19 @@
         color: #475569;
     }
 
+    @media (max-width: 640px) {
+        .blog-post-meta {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .blog-post-meta-item {
+            width: 100%;
+            justify-content: flex-start;
+        }
+    }
+
     .blog-post-meta-icon {
         font-size: 0.6875rem;
         line-height: 0.875rem;
@@ -1011,6 +951,22 @@
 
     .blog-post-footer {
         @apply mt-10 flex flex-wrap gap-3;
+    }
+
+    @media (max-width: 640px) {
+        .blog-comments {
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+        }
+
+        .blog-comments-head {
+            @apply flex-col items-start gap-3;
+        }
+
+        .blog-comments-count {
+            width: 100%;
+            justify-content: center;
+        }
     }
 
     .blog-form-layout {
