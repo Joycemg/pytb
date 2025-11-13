@@ -580,8 +580,8 @@
 
     .blog-post-like-button {
         @apply relative inline-flex items-center justify-center text-white transition duration-150 ease-in-out;
-        width: 3rem;
-        height: 3rem;
+        width: 3.5rem;
+        height: 3.5rem;
         border-radius: 0.5rem;
         border: 1px solid color-mix(in srgb, #521919 80%, transparent);
         background-color: #7b2d26;
@@ -622,8 +622,8 @@
         @apply absolute flex items-center justify-center font-semibold;
         min-width: 1.5rem;
         height: 1.5rem;
-        bottom: 0.35rem;
-        right: 0.35rem;
+        top: 0.35rem;
+        left: 0.35rem;
         border-radius: 999px;
         background: rgba(255, 255, 255, 0.15);
         color: #fff;
