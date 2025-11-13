@@ -298,21 +298,10 @@
               <section id="blog-form-media" class="blog-form-section" aria-labelledby="blog-form-media-title">
                 <div class="blog-form-section-header">
                   <h2 id="blog-form-media-title" class="blog-form-section-title">Recursos y archivos</h2>
-                  <p class="blog-form-section-description">Complementá la entrada con imágenes destacadas y materiales adicionales para descargar.</p>
+                  <p class="blog-form-section-description">Complementá la entrada con materiales adicionales para descargar.</p>
                 </div>
 
                 <div class="blog-form-section-body">
-                  <div class="form-group">
-                    <label for="hero_image_url">Imagen de cabecera (opcional)</label>
-                    <input id="hero_image_url" name="hero_image_url" type="text" value="{{ old('hero_image_url', $post->hero_image_url) }}" placeholder="https://cdn.ejemplo.com/imagen.jpg">
-                    <small class="hint">La imagen se mostrará en la parte superior de la entrada. Debe ser una URL absoluta.</small>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="hero_image_caption">Texto descriptivo de la imagen</label>
-                    <input id="hero_image_caption" name="hero_image_caption" type="text" value="{{ old('hero_image_caption', $post->hero_image_caption) }}" maxlength="160" placeholder="Créditos o una breve descripción de la foto">
-                  </div>
-
                   <div class="form-group">
                     <label for="attachments">Adjuntar archivos</label>
                     <input id="attachments" name="attachments[]" type="file" multiple>
