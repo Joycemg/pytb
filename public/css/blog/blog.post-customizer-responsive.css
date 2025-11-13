@@ -32,10 +32,6 @@
         gap: .75rem;
     }
 
-    .blog-post-title-row .blog-post-like-form {
-        flex-shrink: 0;
-    }
-
     .blog-post-head-grid {
         display: flex;
         flex-direction: column;
@@ -149,87 +145,37 @@
         display: none;
     }
 
-    .blog-post-like-form {
-        margin: 0;
-        display: inline-flex;
-        align-items: center;
-        gap: .35rem;
-        padding: 0;
-        border: none;
-        border-radius: 0;
-        background: none;
-        box-shadow: none;
-        transition: none;
-    }
+    @media (max-width: 40em) {
+        .blog-post {
+            margin-top: 1.25rem;
+            padding: 1.25rem;
+            border-radius: 1.5rem;
+        }
 
-    .blog-post-like-form:focus-within {
-        background: none;
-        box-shadow: none;
-        transform: none;
-    }
+        .blog-post .page-head {
+            margin-bottom: 1.75rem;
+            padding-bottom: 1.25rem;
+        }
 
-    .blog-post-like-button {
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 3.5rem;
-        height: 3.5rem;
-        border-radius: .5rem;
-        border: 1px solid color-mix(in srgb, #521919 80%, transparent);
-        background-color: #7b2d26;
-        color: #fff;
-        box-shadow: 0 6px 18px rgba(123, 45, 38, .25);
-        transition: box-shadow .18s ease, background-color .18s ease;
-    }
+        .blog-post-title-row {
+            flex-direction: column;
+            gap: .5rem;
+        }
 
-    .blog-post-like-button:hover,
-    .blog-post-like-button:focus-visible {
-        background-color: color-mix(in srgb, #7b2d26 85%, #a34747 15%);
-        box-shadow: 0 10px 22px rgba(123, 45, 38, .28);
-    }
+        .blog-post-meta {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: .4rem;
+        }
 
-    .blog-post-like-button.is-active {
-        background-color: #631f1f;
-    }
+        .blog-post-meta-item {
+            width: 100%;
+            justify-content: flex-start;
+        }
 
-    .blog-post-like-button:focus-visible {
-        outline: none;
-        box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(123, 45, 38, .45);
-    }
-
-    .blog-post-like-button-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 1.5rem;
-        height: 1.5rem;
-    }
-
-    .blog-post-like-button-icon svg {
-        width: 1.1rem;
-        height: 1.1rem;
-    }
-
-    .blog-post-like-button-label {
-        display: none;
-    }
-
-    .blog-post-like-button-count {
-        position: absolute;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 1.25rem;
-        height: 1.25rem;
-        top: .4rem;
-        left: .4rem;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, .15);
-        color: #fff;
-        font-size: .65rem;
-        font-weight: 600;
-        padding: 0 .3rem;
+        .blog-post-meta-card {
+            padding: 1rem 1.25rem;
+        }
     }
     .blog-post-content {
         font-size: 1.05rem;

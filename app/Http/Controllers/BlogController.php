@@ -230,7 +230,6 @@ final class BlogController extends Controller
         }
 
         $post->load(['author', 'attachments', 'tags']);
-        $post->loadCount('likes');
 
         $comments = $post->comments()
             ->with(['author'])
@@ -243,30 +242,16 @@ final class BlogController extends Controller
             $userComment = $comments->firstWhere('user_id', $user->id);
         }
 
-        $userHasLiked = false;
-        if ($user !== null) {
-            $userHasLiked = $post->likes()
-                ->where('user_id', $user->id)
-                ->exists();
-        }
-
         $canComment = false;
         if ($user !== null) {
             $canComment = method_exists($user, 'estaAprobado') ? (bool) $user->estaAprobado() : true;
         }
-
-        $likesCount = (int) ($post->likes_count ?? 0);
 
         return view('blog.show', [
             'post' => $post,
             'comments' => $comments,
             'userComment' => $userComment,
             'canComment' => $canComment,
-            'canLike' => $canComment,
-            'likesSummary' => [
-                'count' => $likesCount,
-                'hasLiked' => $userHasLiked,
-            ],
         ]);
     }
 
