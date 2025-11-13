@@ -122,16 +122,16 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        min-width: 1.5rem;
-        height: 1.5rem;
-        top: .35rem;
-        left: .35rem;
+        min-width: 1.25rem;
+        height: 1.25rem;
+        top: .4rem;
+        left: .4rem;
         border-radius: 999px;
         background: rgba(255, 255, 255, .15);
         color: #fff;
-        font-size: .75rem;
+        font-size: .65rem;
         font-weight: 600;
-        padding: 0 .35rem;
+        padding: 0 .3rem;
     }
 
 
