@@ -25,6 +25,156 @@
         gap: .65rem;
     }
 
+    .blog-post-head-grid {
+        display: flex;
+        flex-direction: column;
+        gap: clamp(1.5rem, 4vw, 2.5rem);
+    }
+
+    .blog-post-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: .75rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        font-size: .95rem;
+        color: color-mix(in srgb, var(--ink) 70%, transparent);
+    }
+
+    .blog-post-meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        font-weight: 500;
+    }
+
+    .blog-post-meta-item:not(:first-child)::before {
+        content: '';
+        display: inline-block;
+        width: .35rem;
+        height: .35rem;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--ink) 45%, transparent);
+        margin-right: .55rem;
+    }
+
+    .blog-post-meta-icon {
+        display: inline-flex;
+        width: .65rem;
+        height: .65rem;
+        border-radius: 50%;
+        background: color-mix(in srgb, var(--blog-accent) 65%, transparent);
+    }
+
+    .blog-post-meta-card {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        padding: clamp(1.25rem, 3vw, 1.65rem) clamp(1.35rem, 3.5vw, 1.85rem);
+        border-radius: 1.15rem;
+        background: linear-gradient(180deg,
+                color-mix(in srgb, var(--blog-accent) 18%, rgba(255, 255, 255, .95)) 0%,
+                rgba(255, 255, 255, .95) 85%);
+        border: 1px solid color-mix(in srgb, var(--blog-accent) 35%, transparent);
+        box-shadow: 0 16px 32px rgba(15, 23, 42, .12);
+    }
+
+    .blog-post-meta-card-title {
+        margin: 0;
+        font-size: .9rem;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: color-mix(in srgb, var(--blog-accent-text) 90%, transparent);
+    }
+
+    .blog-post-meta-grid {
+        display: flex;
+        flex-direction: column;
+        gap: .85rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .blog-post-meta-entry {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .blog-post-meta-label {
+        font-size: .8rem;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        font-weight: 600;
+        color: color-mix(in srgb, var(--ink) 65%, transparent);
+    }
+
+    .blog-post-meta-value {
+        font-size: 1rem;
+        font-weight: 600;
+        color: color-mix(in srgb, var(--ink) 88%, transparent);
+        text-align: right;
+    }
+
+    .blog-post-meta-extra {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: .45rem;
+        padding: .1rem .5rem;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--blog-accent) 25%, transparent);
+        color: color-mix(in srgb, var(--blog-accent) 80%, transparent);
+        font-size: .75rem;
+        font-weight: 600;
+    }
+
+    .blog-post-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .65rem;
+    }
+
+    .blog-post-action-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: .45rem .95rem;
+        border-radius: 999px;
+        font-size: .85rem;
+        font-weight: 600;
+        color: color-mix(in srgb, var(--blog-accent-text) 90%, transparent);
+        background: color-mix(in srgb, rgba(255, 255, 255, .95) 70%, var(--blog-accent) 30%);
+        border: 1px solid color-mix(in srgb, var(--blog-accent) 35%, transparent);
+        text-decoration: none;
+        transition: transform .15s ease, box-shadow .15s ease;
+    }
+
+    .blog-post-action-link:hover,
+    .blog-post-action-link:focus-visible {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 20px rgba(15, 23, 42, .15);
+    }
+
+    .blog-post-action-link:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, .9), 0 0 0 4px color-mix(in srgb, var(--blog-accent) 40%, transparent);
+    }
+
+    @media (min-width: 50em) {
+        .blog-post-head-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
+            align-items: flex-start;
+            gap: clamp(1.75rem, 4vw, 2.75rem);
+        }
+    }
+
     .blog-post .page-head::before {
         display: none;
     }
