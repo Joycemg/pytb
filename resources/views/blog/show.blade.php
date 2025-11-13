@@ -51,9 +51,19 @@
     $heroImageAlt = trim($post->hero_image_caption ?? '') ?: ($post->title ?? 'Imagen del artículo');
   @endphp
 
-  @php $accentRgbString = $accentRgb ? implode(', ', $accentRgb) : null; @endphp
+  @php
+    $accentRgbString = $accentRgb ? implode(', ', $accentRgb) : null;
+    $themeStyleTokens = [
+      "--blog-accent: {$accent};",
+      "--blog-accent-text: {$accentText};",
+    ];
+    if ($accentRgbString) {
+      $themeStyleTokens[] = "--blog-accent-rgb: {$accentRgbString};";
+    }
+    $themeStyleAttr = implode(' ', $themeStyleTokens);
+  @endphp
   <article class="page container blog-post blog-theme-{{ $theme }}"
-           style="--blog-accent: {{ $accent }}; --blog-accent-text: {{ $accentText }}; @if($accentRgbString) --blog-accent-rgb: {{ $accentRgbString }}; @endif">
+           style="{{ $themeStyleAttr }}">
     <header class="page-head blog-post-head">
       <div class="blog-post-head-top">
         <a class="blog-post-back"
@@ -197,9 +207,13 @@
       </div>
     </section>
 
-    <section class="blog-comments"
-             id="comentarios"
-             aria-labelledby="blog-comments-title">
+  </article>
+
+  <section class="page container blog-comments-section"
+           id="comentarios"
+           aria-labelledby="blog-comments-title">
+    <div class="blog-comments"
+         style="{{ $themeStyleAttr }}">
       <div class="blog-comments-head">
         <h2 id="blog-comments-title"
             class="blog-comments-title">Comentarios</h2>
@@ -234,8 +248,7 @@
             <p class="blog-comment-note">Ya dejaste tu comentario.</p>
           @endif
         @else
-          <p class="blog-comments-hint">Tu cuenta debe estar aprobada para poder comentar y reaccionar a las publicaciones.
-          </p>
+          <p class="blog-comments-hint">Tu cuenta debe estar aprobada para poder comentar y reaccionar a las publicaciones.</p>
         @endif
       @else
         <p class="blog-comments-hint">
@@ -294,9 +307,12 @@
       @else
         <p class="blog-comments-empty">Todavía no hay comentarios. ¡Sé la primera persona en opinar!</p>
       @endif
-    </section>
+    </div>
+  </section>
 
-    @if ($post->attachments->isNotEmpty())
+  @if ($post->attachments->isNotEmpty())
+    <div class="page container blog-post-attachments-container"
+         style="{{ $themeStyleAttr }}">
       <section class="blog-post-attachments">
         <h2>Archivos adjuntos</h2>
         <ul class="blog-post-attachments-list">
@@ -313,11 +329,15 @@
           @endforeach
         </ul>
       </section>
-    @endif
+    </div>
+  @endif
 
+  <div class="page container blog-post-footer-container"
+       style="{{ $themeStyleAttr }}">
     <footer class="blog-post-footer">
       <a class="btn"
          href="{{ route('blog.index') }}">← Volver</a>
     </footer>
-  </article>
+  </div>
+
 @endsection
