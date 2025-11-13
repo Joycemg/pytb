@@ -49,6 +49,15 @@
     $canLike = $canLike ?? false;
     $timezone = config('app.timezone', 'UTC');
     $heroImageAlt = trim($post->hero_image_caption ?? '') ?: ($post->title ?? 'Imagen del artículo');
+    $tagNames = $post->tags?->pluck('name') ?? collect();
+    $tagsCount = $tagNames->count();
+    $tagsPreview = $tagsCount > 0 ? $tagNames->take(3)->implode(', ') : null;
+    $extraTagsCount = max(0, $tagsCount - 3);
+    $commentsCountText = $commentsCount === 1
+        ? '1 comentario'
+        : sprintf('%s comentarios', number_format($commentsCount, 0, ',', '.'));
+    $readingTimeText = $wordCount > 0 ? sprintf('%d min de lectura', $readingMinutes) : null;
+    $wordCountText = $wordCount > 0 ? number_format($wordCount, 0, ',', '.') . ' palabras' : null;
   @endphp
 
   @php
@@ -65,50 +74,96 @@
   <article class="page container blog-post blog-theme-{{ $theme }}"
            style="{{ $themeStyleAttr }}">
     <header class="page-head blog-post-head">
-      <div class="blog-post-head-top">
-        <a class="blog-post-back"
-           href="{{ route('blog.index') }}">← Volver a las novedades</a>
-        @php $isFeatured = (bool) ($post->is_featured ?? false); @endphp
-        @if ($isFeatured)
-          <p class="blog-post-eyebrow">Publicación destacada</p>
-        @endif
-        <h1 class="page-title blog-post-title">{{ $post->title }}</h1>
-        <p class="blog-post-meta"
-           role="list">
-          @php $authorName = trim($post->author->name ?? ''); @endphp
-          <span class="blog-post-meta-item"
+      <div class="blog-post-head-grid">
+        <div class="blog-post-head-top">
+          <a class="blog-post-back"
+             href="{{ route('blog.index') }}">← Volver a las novedades</a>
+          @php $isFeatured = (bool) ($post->is_featured ?? false); @endphp
+          @if ($isFeatured)
+            <p class="blog-post-eyebrow">Publicación destacada</p>
+          @endif
+          <h1 class="page-title blog-post-title">{{ $post->title }}</h1>
+          <ul class="blog-post-meta"
+              role="list">
+            @php $authorName = trim($post->author->name ?? ''); @endphp
+            <li class="blog-post-meta-item"
                 role="listitem">
-            <span class="blog-post-meta-icon"
-                  aria-hidden="true"></span>
-            <span>Por {{ $authorName !== '' ? $authorName : 'Equipo de La Taberna' }}</span>
-          </span>
-          @php $publishedAt = $post->published_at?->timezone($timezone); @endphp
-          @if ($publishedAt)
-            <span class="blog-post-meta-divider"
-                  role="presentation"></span>
-            <span class="blog-post-meta-item"
-                  role="listitem">
               <span class="blog-post-meta-icon"
                     aria-hidden="true"></span>
-              <time
-                    datetime="{{ $publishedAt->toIso8601String() }}">{{ $publishedAt->translatedFormat('d \d\e F, Y H:i') }}</time>
-            </span>
-          @endif
-          @if ($wordCount > 0)
-            <span class="blog-post-meta-divider"
-                  role="presentation"></span>
-            <span class="blog-post-meta-item"
+              <span>Por {{ $authorName !== '' ? $authorName : 'Equipo de La Taberna' }}</span>
+            </li>
+            @php $publishedAt = $post->published_at?->timezone($timezone); @endphp
+            @if ($publishedAt)
+              <li class="blog-post-meta-item"
                   role="listitem">
-              <span class="blog-post-meta-icon"></span>
-            </span>
-          @endif
-        </p>
-      </div>
-
-      <div class="blog-post-meta-card">
-        <div class="blog-post-actions">
-
+                <span class="blog-post-meta-icon"
+                      aria-hidden="true"></span>
+                <time datetime="{{ $publishedAt->toIso8601String() }}">{{ $publishedAt->translatedFormat('d \d\e F, Y H:i') }}</time>
+              </li>
+            @endif
+            @if ($readingTimeText)
+              <li class="blog-post-meta-item"
+                  role="listitem">
+                <span class="blog-post-meta-icon"
+                      aria-hidden="true"></span>
+                <span>{{ $readingTimeText }}</span>
+              </li>
+            @endif
+            <li class="blog-post-meta-item"
+                role="listitem">
+              <span class="blog-post-meta-icon"
+                    aria-hidden="true"></span>
+              <span>{{ $commentsCountText }}</span>
+            </li>
+          </ul>
         </div>
+
+        <aside class="blog-post-meta-card"
+               aria-label="Resumen del artículo">
+          <h2 class="blog-post-meta-card-title">Resumen rápido</h2>
+          <ul class="blog-post-meta-grid"
+              role="list">
+            @if ($readingTimeText)
+              <li class="blog-post-meta-entry"
+                  role="listitem">
+                <span class="blog-post-meta-label">Lectura</span>
+                <span class="blog-post-meta-value">{{ $readingTimeText }}</span>
+              </li>
+            @endif
+            @if ($wordCountText)
+              <li class="blog-post-meta-entry"
+                  role="listitem">
+                <span class="blog-post-meta-label">Extensión</span>
+                <span class="blog-post-meta-value">{{ $wordCountText }}</span>
+              </li>
+            @endif
+            <li class="blog-post-meta-entry"
+                role="listitem">
+              <span class="blog-post-meta-label">Comentarios</span>
+              <span class="blog-post-meta-value">{{ $commentsCountText }}</span>
+            </li>
+            <li class="blog-post-meta-entry"
+                role="listitem">
+              <span class="blog-post-meta-label">Etiquetas</span>
+              <span class="blog-post-meta-value">
+                @if ($tagsCount > 0)
+                  {{ $tagsPreview }}
+                  @if ($extraTagsCount > 0)
+                    <span class="blog-post-meta-extra">+{{ $extraTagsCount }}</span>
+                  @endif
+                @else
+                  Sin etiquetas
+                @endif
+              </span>
+            </li>
+          </ul>
+          <div class="blog-post-actions">
+            <a class="blog-post-action-link"
+               href="#comentarios">Ir a comentarios</a>
+            <a class="blog-post-action-link"
+               href="{{ route('blog.index') }}">Explorar más novedades</a>
+          </div>
+        </aside>
       </div>
 
     </header>
