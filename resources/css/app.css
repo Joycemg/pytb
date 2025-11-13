@@ -993,11 +993,11 @@
     }
 
     .blog-post-meta {
-        @apply flex flex-wrap items-center gap-1 text-[0.75rem] leading-relaxed text-slate-500 md:text-[0.875rem];
+        @apply flex flex-wrap items-center gap-1 text-[0.6875rem] leading-relaxed text-slate-500 md:text-[0.75rem];
     }
 
     .blog-post-meta-item {
-        @apply inline-flex items-center gap-1 font-medium text-slate-600;
+        @apply inline-flex items-center gap-1 p-0 font-medium text-slate-600;
     }
 
     .blog-post-meta-icon {

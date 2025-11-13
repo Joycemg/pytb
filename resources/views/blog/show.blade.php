@@ -73,23 +73,21 @@
           <p class="blog-post-eyebrow">Publicación destacada</p>
         @endif
         <h1 class="page-title blog-post-title">{{ $post->title }}</h1>
-      </div>
-
-      <div class="blog-post-meta-card"
-           role="list">
-        @php $publishedAt = $post->published_at?->timezone($timezone); @endphp
         <p class="blog-post-meta"
-           role="listitem">
+           role="list">
           @php $authorName = trim($post->author->name ?? ''); @endphp
-          <span class="blog-post-meta-item">
+          <span class="blog-post-meta-item"
+                role="listitem">
             <span class="blog-post-meta-icon"
                   aria-hidden="true"></span>
             <span>Por {{ $authorName !== '' ? $authorName : 'Equipo de La Taberna' }}</span>
           </span>
+          @php $publishedAt = $post->published_at?->timezone($timezone); @endphp
           @if ($publishedAt)
             <span class="blog-post-meta-divider"
                   role="presentation"></span>
-            <span class="blog-post-meta-item">
+            <span class="blog-post-meta-item"
+                  role="listitem">
               <span class="blog-post-meta-icon"
                     aria-hidden="true"></span>
               <time
@@ -99,13 +97,16 @@
           @if ($wordCount > 0)
             <span class="blog-post-meta-divider"
                   role="presentation"></span>
-            <span class="blog-post-meta-item">
+            <span class="blog-post-meta-item"
+                  role="listitem">
               <span class="blog-post-meta-icon"></span>
+            </span>
           @endif
         </p>
+      </div>
 
-        <div class="blog-post-actions"
-             role="listitem">
+      <div class="blog-post-meta-card">
+        <div class="blog-post-actions">
 
         </div>
       </div>
