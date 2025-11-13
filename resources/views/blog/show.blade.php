@@ -118,52 +118,12 @@
           </ul>
         </div>
 
-        <aside class="blog-post-meta-card"
-               aria-label="Resumen del artículo">
-          <h2 class="blog-post-meta-card-title">Resumen rápido</h2>
-          <ul class="blog-post-meta-grid"
-              role="list">
-            @if ($readingTimeText)
-              <li class="blog-post-meta-entry"
-                  role="listitem">
-                <span class="blog-post-meta-label">Lectura</span>
-                <span class="blog-post-meta-value">{{ $readingTimeText }}</span>
-              </li>
-            @endif
-            @if ($wordCountText)
-              <li class="blog-post-meta-entry"
-                  role="listitem">
-                <span class="blog-post-meta-label">Extensión</span>
-                <span class="blog-post-meta-value">{{ $wordCountText }}</span>
-              </li>
-            @endif
-            <li class="blog-post-meta-entry"
-                role="listitem">
-              <span class="blog-post-meta-label">Comentarios</span>
-              <span class="blog-post-meta-value">{{ $commentsCountText }}</span>
-            </li>
-            <li class="blog-post-meta-entry"
-                role="listitem">
-              <span class="blog-post-meta-label">Etiquetas</span>
-              <span class="blog-post-meta-value">
-                @if ($tagsCount > 0)
-                  {{ $tagsPreview }}
-                  @if ($extraTagsCount > 0)
-                    <span class="blog-post-meta-extra">+{{ $extraTagsCount }}</span>
-                  @endif
-                @else
-                  Sin etiquetas
-                @endif
-              </span>
-            </li>
-          </ul>
-          <div class="blog-post-actions">
-            <a class="blog-post-action-link"
-               href="#comentarios">Ir a comentarios</a>
-            <a class="blog-post-action-link"
-               href="{{ route('blog.index') }}">Explorar más novedades</a>
-          </div>
-        </aside>
+        <div class="blog-post-actions">
+          <a class="blog-post-action-link"
+             href="#comentarios">Ir a comentarios</a>
+          <a class="blog-post-action-link"
+             href="{{ route('blog.index') }}">Explorar más novedades</a>
+        </div>
       </div>
 
     </header>
