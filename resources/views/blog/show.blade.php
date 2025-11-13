@@ -118,12 +118,6 @@
           </ul>
         </div>
 
-        <div class="blog-post-actions">
-          <a class="blog-post-action-link"
-             href="#comentarios">Ir a comentarios</a>
-          <a class="blog-post-action-link"
-             href="{{ route('blog.index') }}">Explorar más novedades</a>
-        </div>
       </div>
 
     </header>

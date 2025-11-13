@@ -1011,14 +1011,14 @@
         flex-wrap: wrap;
         align-items: center;
         gap: 0.25rem;
-        font-size: 0.6875rem;
-        line-height: 1.625;
+        font-size: 0.625rem;
+        line-height: 1.5;
         color: #64748b;
     }
 
     @media (min-width: 768px) {
         .blog-post-meta {
-            font-size: 0.75rem;
+            font-size: 0.6875rem;
         }
     }
 
@@ -1032,8 +1032,8 @@
     }
 
     .blog-post-meta-icon {
-        font-size: 0.75rem;
-        line-height: 1rem;
+        font-size: 0.6875rem;
+        line-height: 0.875rem;
         color: #94a3b8;
     }
 
@@ -1048,10 +1048,6 @@
         .blog-post-meta-divider {
             display: block;
         }
-    }
-
-    .blog-post-actions {
-        @apply flex flex-wrap items-center gap-2 md:ml-auto;
     }
 
     .blog-post-share {
