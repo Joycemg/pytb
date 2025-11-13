@@ -112,22 +112,6 @@
 
     </header>
 
-    @if ($post->tags->isNotEmpty())
-      <ul class="blog-post-tags"
-          aria-label="Etiquetas">
-        @foreach ($post->tags as $tag)
-          <li>
-            <a class="blog-post-tag"
-               href="{{ route('blog.index', ['q' => '#' . $tag->name]) }}">
-              <span class="blog-post-tag-symbol"
-                    aria-hidden="true">#</span>
-              <span>{{ $tag->name }}</span>
-            </a>
-          </li>
-        @endforeach
-      </ul>
-    @endif
-
     @if ($post->hero_image_url)
       <figure class="blog-post-hero">
         <img src="{{ $post->hero_image_url }}"
@@ -206,6 +190,22 @@
         @endauth
       </div>
     </section>
+
+    @if ($post->tags->isNotEmpty())
+      <ul class="blog-post-tags"
+          aria-label="Etiquetas">
+        @foreach ($post->tags as $tag)
+          <li>
+            <a class="blog-post-tag"
+               href="{{ route('blog.index', ['q' => '#' . $tag->name]) }}">
+              <span class="blog-post-tag-symbol"
+                    aria-hidden="true">#</span>
+              <span>{{ $tag->name }}</span>
+            </a>
+          </li>
+        @endforeach
+      </ul>
+    @endif
 
   </article>
 
