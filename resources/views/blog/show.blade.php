@@ -147,7 +147,7 @@
 
   </article>
 
-  <section class="page container blog-comments-section"
+  <section class="blog-comments-section"
            id="comentarios"
            aria-labelledby="blog-comments-title">
     @php
@@ -156,8 +156,9 @@
           : 'Todavía no hay comentarios, ¡sumate a la conversación!';
       $commentsEmptyMessage = 'Todavía no hay comentarios. ¡Sé la primera persona en opinar!';
     @endphp
-    <div class="blog-comments"
-         style="{{ $themeStyleAttr }}">
+    <div class="page container blog-comments-container">
+      <div class="blog-comments"
+           style="{{ $themeStyleAttr }}">
       <div class="blog-comments-head">
         <div class="blog-comments-heading">
           <h2 id="blog-comments-title"
@@ -221,6 +222,9 @@
                       $authorInitial = '?';
                     }
                   @endphp
+                  @if (! $loop->first)
+                    <hr class="blog-comment-divider">
+                  @endif
                   <article class="blog-comment{{ $isSelf ? ' is-self' : '' }}">
                     <div class="blog-comment-avatar"
                          aria-hidden="true">{{ $authorInitial }}</div>
@@ -263,6 +267,7 @@
           </div>
       </div>
     </div>
+  </div>
   </section>
 
   @if ($post->attachments->isNotEmpty())
