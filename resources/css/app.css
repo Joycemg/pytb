@@ -606,11 +606,11 @@
     }
 
     .blog-comment-content {
-        @apply flex flex-col gap-3;
+        @apply flex flex-col;
     }
 
     .blog-comment-header {
-        @apply flex flex-wrap items-start gap-x-3 gap-y-0 border-b border-slate-100 pb-3;
+        @apply flex flex-wrap items-start gap-x-3 gap-y-0 border-b border-slate-100;
     }
 
     .blog-comment-author {
