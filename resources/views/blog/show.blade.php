@@ -245,8 +245,8 @@
                               @csrf
                               @method('delete')
                               <button type="submit"
-                                      class="blog-comment-delete-button">
-                                Eliminar
+                                      class="blog-comment-delete-button btn btn-danger">
+                                X
                               </button>
                             </form>
                           @endif
