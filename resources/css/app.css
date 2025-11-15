@@ -530,7 +530,7 @@
     }
 
     .blog-comments {
-        @apply mt-12 space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm;
+        @apply space-y-6 rounded-3xl border border-slate-200 p-6 shadow-sm;
     }
 
     .blog-comments-head {
@@ -599,11 +599,10 @@
     }
 
     .blog-comment {
-        @apply grid gap-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm md:grid-cols-[auto,1fr];
-    }
-
-    .blog-comment.is-self {
-        @apply border-[#7b2d26]/40 bg-rose-50/70;
+        @apply grid gap-5 border border-slate-200 p-6 shadow-sm md:grid-cols-[auto,1fr];
+        border-color: rgba(var(--blog-accent-rgb, 123, 45, 38), 0.28);
+        background: color-mix(in srgb, var(--blog-accent) 8%, rgba(255, 255, 255, 0.96));
+        box-shadow: 0 1px 2px rgba(var(--blog-accent-rgb, 15, 23, 42), 0.08);
     }
 
     .blog-comment-avatar {
@@ -612,12 +611,6 @@
         background: rgba(123, 45, 38, 0.12);
         border: 2px solid rgba(123, 45, 38, 0.2);
         box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.08);
-    }
-
-    .blog-comment.is-self .blog-comment-avatar {
-        color: var(--blog-accent-text, #3f1a17);
-        background: rgba(123, 45, 38, 0.18);
-        border-color: rgba(123, 45, 38, 0.35);
     }
 
     .blog-comment-content {
