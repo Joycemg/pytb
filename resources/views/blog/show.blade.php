@@ -170,7 +170,7 @@
       </div>
 
       <div class="blog-comments-body">
-        <div class="blog-comments-column blog-comments-column-form">
+        <div class="blog-comment-composer">
           @auth
             @if ($canComment)
               @if ($userComment === null)
@@ -208,63 +208,62 @@
             </p>
           @endauth
         </div>
-
-          <div class="blog-comments-column blog-comments-column-list">
-            @if ($commentsCount > 0)
-              <div class="blog-comments-list">
-                @foreach ($comments as $comment)
-                  @php
-                    $commentAt = optional($comment->created_at)?->timezone($timezone);
-                    $isSelf = $userComment && $comment->id === $userComment->id;
-                    $authorName = $comment->author->name ?? 'Miembro de la comunidad';
-                    $authorInitial = mb_strtoupper(mb_substr($authorName, 0, 1, 'UTF-8'), 'UTF-8');
-                    if ($authorInitial === '') {
-                      $authorInitial = '?';
-                    }
-                  @endphp
-                  @if (! $loop->first)
-                    <hr class="blog-comment-divider">
-                  @endif
-                  <article class="blog-comment{{ $isSelf ? ' is-self' : '' }}">
-                    <div class="blog-comment-avatar"
-                         aria-hidden="true">{{ $authorInitial }}</div>
-                    <div class="blog-comment-content">
-                      <div class="blog-comment-header">
-                        <div class="blog-comment-author">
-                          <span class="blog-comment-name">{{ $authorName }}</span>
-                          @if ($isSelf)
-                            <span class="blog-comment-badge">Tu comentario</span>
-                          @endif
-                        </div>
-                        <div class="blog-comment-meta">
-                          @if ($commentAt)
-                            <time datetime="{{ $commentAt->toIso8601String() }}"
-                                  class="blog-comment-timestamp">{{ $commentAt->diffForHumans() }}</time>
-                          @endif
-                          @if (auth()->user()?->hasAnyRole(['admin', 'moderator']))
-                            <form method="post"
-                                  action="{{ route('blog.comments.destroy', [$post, $comment]) }}"
-                                  class="blog-comment-delete-form"
-                                  onsubmit="return confirm('¿Eliminar este comentario?');">
-                              @csrf
-                              @method('delete')
-                              <button type="submit"
-                                      class="blog-comment-delete-button btn btn-danger">
-                                X
-                              </button>
-                            </form>
-                          @endif
-                        </div>
+        <div class="blog-comments-thread">
+          @if ($commentsCount > 0)
+            <div class="blog-comments-list">
+              @foreach ($comments as $comment)
+                @php
+                  $commentAt = optional($comment->created_at)?->timezone($timezone);
+                  $isSelf = $userComment && $comment->id === $userComment->id;
+                  $authorName = $comment->author->name ?? 'Miembro de la comunidad';
+                  $authorInitial = mb_strtoupper(mb_substr($authorName, 0, 1, 'UTF-8'), 'UTF-8');
+                  if ($authorInitial === '') {
+                    $authorInitial = '?';
+                  }
+                @endphp
+                @if (! $loop->first)
+                  <hr class="blog-comment-divider">
+                @endif
+                <article class="blog-comment{{ $isSelf ? ' is-self' : '' }}">
+                  <div class="blog-comment-avatar"
+                       aria-hidden="true">{{ $authorInitial }}</div>
+                  <div class="blog-comment-content">
+                    <div class="blog-comment-header">
+                      <div class="blog-comment-author">
+                        <span class="blog-comment-name">{{ $authorName }}</span>
+                        @if ($isSelf)
+                          <span class="blog-comment-badge">Tu comentario</span>
+                        @endif
                       </div>
-                      <p class="blog-comment-body">{!! nl2br(e($comment->body)) !!}</p>
+                      <div class="blog-comment-meta">
+                        @if ($commentAt)
+                          <time datetime="{{ $commentAt->toIso8601String() }}"
+                                class="blog-comment-timestamp">{{ $commentAt->diffForHumans() }}</time>
+                        @endif
+                        @if (auth()->user()?->hasAnyRole(['admin', 'moderator']))
+                          <form method="post"
+                                action="{{ route('blog.comments.destroy', [$post, $comment]) }}"
+                                class="blog-comment-delete-form"
+                                onsubmit="return confirm('¿Eliminar este comentario?');">
+                            @csrf
+                            @method('delete')
+                            <button type="submit"
+                                    class="blog-comment-delete-button btn btn-danger">
+                              X
+                            </button>
+                          </form>
+                        @endif
+                      </div>
                     </div>
-                  </article>
-                @endforeach
-              </div>
-            @else
-              <p class="blog-comments-empty">{{ $commentsEmptyMessage }}</p>
-            @endif
-          </div>
+                    <p class="blog-comment-body">{!! nl2br(e($comment->body)) !!}</p>
+                  </div>
+                </article>
+              @endforeach
+            </div>
+          @else
+            <p class="blog-comments-empty">{{ $commentsEmptyMessage }}</p>
+          @endif
+        </div>
       </div>
     </div>
   </div>

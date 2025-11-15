@@ -550,18 +550,14 @@
     }
 
     .blog-comments-body {
-        @apply grid gap-6 pt-6 lg:grid-cols-[minmax(0,320px),1fr];
+        @apply flex flex-col gap-6 pt-6;
     }
 
-    .blog-comments-column {
-        @apply space-y-4;
+    .blog-comment-composer {
+        @apply space-y-4 rounded-3xl border border-slate-100 bg-slate-50/70 p-6;
     }
 
-    .blog-comments-column-form {
-        @apply self-start;
-    }
-
-    .blog-comments-column-list {
+    .blog-comments-thread {
         @apply space-y-6;
     }
 
@@ -590,7 +586,7 @@
     }
 
     .blog-comments-list {
-        @apply mt-6 grid gap-y-3;
+        @apply grid gap-y-3;
     }
 
     .blog-comment-divider {
