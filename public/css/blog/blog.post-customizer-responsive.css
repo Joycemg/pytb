@@ -14,8 +14,8 @@
     }
 
     .blog-post .page-head {
-        margin-bottom: 2.5rem;
-        padding: 0 0 1.75rem;
+        margin-bottom: 3rem;
+        padding: 0 0 1rem;
         border-bottom: 3px solid color-mix(in srgb, var(--blog-accent) 65%, transparent);
     }
 

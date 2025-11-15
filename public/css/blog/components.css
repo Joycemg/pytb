@@ -86,8 +86,9 @@
     flex-wrap: wrap;
     gap: .6rem;
     list-style: none;
-    margin: 1.5rem 0 0;
-    padding: 0;
+    margin: 2.5rem 0 0;
+    padding: 1.5rem 0 0;
+    border-top: 3px solid color-mix(in srgb, var(--blog-accent) 65%, transparent);
 }
 
 .blog-post-tags>li {
