@@ -549,15 +549,6 @@
         @apply text-sm text-slate-500;
     }
 
-    .blog-comments-count {
-        @apply inline-flex min-w-[3.5rem] items-center justify-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600;
-        letter-spacing: 0.18em;
-    }
-
-    .blog-comments-count .sr-only {
-        @apply sr-only;
-    }
-
     .blog-comments-body {
         @apply grid gap-6 pt-6 lg:grid-cols-[minmax(0,320px),1fr];
     }
@@ -961,11 +952,6 @@
 
         .blog-comments-head {
             @apply flex-col items-start gap-3;
-        }
-
-        .blog-comments-count {
-            width: 100%;
-            justify-content: center;
         }
     }
 

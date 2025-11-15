@@ -151,10 +151,8 @@
            id="comentarios"
            aria-labelledby="blog-comments-title">
     @php
-      $commentsCountFormatted = number_format($commentsCount, 0, ',', '.');
-      $commentsCountLabel = $commentsCount === 1 ? $commentsCountFormatted . ' comentario' : $commentsCountFormatted . ' comentarios';
       $commentsSummary = $commentsCount > 0
-          ? 'Esto es lo que dice nuestra comunidad.'
+          ? null
           : 'Todavía no hay comentarios, ¡sumate a la conversación!';
       $commentsEmptyMessage = 'Todavía no hay comentarios. ¡Sé la primera persona en opinar!';
     @endphp
@@ -164,13 +162,9 @@
         <div class="blog-comments-heading">
           <h2 id="blog-comments-title"
               class="blog-comments-title">Comentarios</h2>
-          <p class="blog-comments-summary">{{ $commentsSummary }}</p>
-        </div>
-        <div class="blog-comments-count"
-             role="status"
-             aria-live="polite">
-          <span aria-hidden="true">{{ $commentsCountFormatted }}</span>
-          <span class="sr-only">{{ $commentsCountLabel }}</span>
+          @if ($commentsSummary !== null)
+            <p class="blog-comments-summary">{{ $commentsSummary }}</p>
+          @endif
         </div>
       </div>
 
