@@ -590,7 +590,16 @@
     }
 
     .blog-comments-list {
-        @apply mt-6 grid gap-6;
+        @apply mt-6 grid gap-y-3;
+    }
+
+    .blog-comment-divider {
+        grid-column: 1 / -1;
+        height: 2px;
+        border: 0;
+        margin: 0;
+        background: linear-gradient(90deg, rgba(var(--blog-accent-rgb, 123, 45, 38), 0), rgba(var(--blog-accent-rgb, 123, 45, 38), 0.45), rgba(var(--blog-accent-rgb, 123, 45, 38), 0));
+        border-radius: 999px;
     }
 
     .blog-comment {
