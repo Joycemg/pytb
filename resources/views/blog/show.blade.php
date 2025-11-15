@@ -210,7 +210,7 @@
 
           <div class="blog-comments-column blog-comments-column-list">
             @if ($commentsCount > 0)
-              <ul class="blog-comments-list">
+              <div class="blog-comments-list">
                 @foreach ($comments as $comment)
                   @php
                     $commentAt = optional($comment->created_at)?->timezone($timezone);
@@ -221,7 +221,7 @@
                       $authorInitial = '?';
                     }
                   @endphp
-                  <li class="blog-comment{{ $isSelf ? ' is-self' : '' }}">
+                  <article class="blog-comment{{ $isSelf ? ' is-self' : '' }}">
                     <div class="blog-comment-avatar"
                          aria-hidden="true">{{ $authorInitial }}</div>
                     <div class="blog-comment-content">
@@ -254,9 +254,9 @@
                       </div>
                       <p class="blog-comment-body">{!! nl2br(e($comment->body)) !!}</p>
                     </div>
-                  </li>
+                  </article>
                 @endforeach
-              </ul>
+              </div>
             @else
               <p class="blog-comments-empty">{{ $commentsEmptyMessage }}</p>
             @endif
