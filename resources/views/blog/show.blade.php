@@ -216,17 +216,11 @@
                   $commentAt = optional($comment->created_at)?->timezone($timezone);
                   $isSelf = $userComment && $comment->id === $userComment->id;
                   $authorName = $comment->author->name ?? 'Miembro de la comunidad';
-                  $authorInitial = mb_strtoupper(mb_substr($authorName, 0, 1, 'UTF-8'), 'UTF-8');
-                  if ($authorInitial === '') {
-                    $authorInitial = '?';
-                  }
                 @endphp
                 @if (! $loop->first)
                   <hr class="blog-comment-divider">
                 @endif
                 <article class="blog-comment{{ $isSelf ? ' is-self' : '' }}">
-                  <div class="blog-comment-avatar"
-                       aria-hidden="true">{{ $authorInitial }}</div>
                   <div class="blog-comment-content">
                     <div class="blog-comment-header">
                       <div class="blog-comment-author">
