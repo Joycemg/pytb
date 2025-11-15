@@ -50,7 +50,6 @@
     $commentsCountText = $commentsCount === 1
         ? '1 comentario'
         : sprintf('%s comentarios', number_format($commentsCount, 0, ',', '.'));
-    $readingTimeText = $wordCount > 0 ? sprintf('%d min de lectura', $readingMinutes) : null;
     $wordCountText = $wordCount > 0 ? number_format($wordCount, 0, ',', '.') . ' palabras' : null;
   @endphp
 
@@ -95,14 +94,6 @@
                 <span class="blog-post-meta-icon"
                       aria-hidden="true"></span>
                 <time datetime="{{ $publishedAt->toIso8601String() }}">{{ $publishedAt->translatedFormat('d \d\e F, Y H:i') }}</time>
-              </li>
-            @endif
-            @if ($readingTimeText)
-              <li class="blog-post-meta-item"
-                  role="listitem">
-                <span class="blog-post-meta-icon"
-                      aria-hidden="true"></span>
-                <span>{{ $readingTimeText }}</span>
               </li>
             @endif
             <li class="blog-post-meta-item"
