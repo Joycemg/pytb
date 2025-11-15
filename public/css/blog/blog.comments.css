@@ -150,7 +150,6 @@
 .blog-comment-content {
     display: flex;
     flex-direction: column;
-    gap: .75rem;
 }
 
 .blog-comment-header {
@@ -159,7 +158,6 @@
     align-items: flex-start;
     column-gap: .75rem;
     row-gap: 0;
-    padding-bottom: .75rem;
     border-bottom: 1px solid #f1f5f9;
 }
 
