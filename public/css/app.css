@@ -32,6 +32,7 @@
 @import "blog/blog.tokens.css";
 @import "blog/blog.post-customizer-responsive.css";
 @import "blog/blog.hero-filter.css";
+@import "blog/blog.comments.css";
 @import "blog/components.css";
 @import "blog/history.css";
 /* ===== Helpers específicos del layout.blade ===== */
